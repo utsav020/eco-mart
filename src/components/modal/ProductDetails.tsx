@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from "react";
-import Modal from "react-bootstrap/Modal";
+// import Modal from "react-bootstrap/Modal";
 import { useCart } from "@/components/header/CartContext";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -53,13 +53,13 @@ const ProductDetails: React.FC<ModalProps> = ({
   return (
     <>
 
-      <Modal
+      {/* <Modal
         show={show}
         onHide={handleClose}
         backdrop="static"
         keyboard={false}
         dialogClassName="modal-compare"
-      >
+      > */}
         <div className="product-details-popup-wrapper popup">
           <div className="rts-product-details-section2 product-details-popup-section">
             <div className="product-details-popup">
@@ -177,7 +177,7 @@ const ProductDetails: React.FC<ModalProps> = ({
             </div>
           </div>
         </div>
-      </Modal>
+      {/* </Modal> */}
     </>
   );
 };

@@ -1,7 +1,7 @@
 "use client"
 import HeaderOne from "@/components/header/HeaderOne";
 import ShortService from "@/components/service/ShortService";
-import FooterOne from "@/components/footer/FooterOne";
+import FooterOne from "../../../../components/footer/FooterTwo";
 import Posts from "@/data/Posts.json";
 import { useParams } from 'next/navigation';
 

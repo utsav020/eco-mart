@@ -1,10 +1,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useCart } from "@/components/header/CartContext";
-import { useCompare } from "@/components/header/CompareContext";
 import { useWishlist } from "@/components/header/WishlistContext";
 import Link from "next/link";
-import CompareModal from "@/components/modal/CompareModal";
 import ProductDetails from "@/components/modal/ProductDetails";
 
 import { ToastContainer, toast } from "react-toastify";
@@ -89,20 +87,7 @@ const BlogGridMain: React.FC<BlogGridMainProps> = ({
     setTimeout(() => setAdded(false), 2000); // Reset back to normal after 2 seconds
   };
 
-  const { addToCompare } = useCompare();
-  const handleCompare = () => {
-    addToCompare({
-      image: `/assets/images/grocery/${ProductImage}`,
-      name: ProductTitle ?? "Default Product Title",
-      price: Price ?? "0",
-      description:
-        "Lorem Ipsum is simply dummy text of the printing and typesetting industry.", // Or dynamic if available
-      rating: 5, // Static or dynamic value
-      ratingCount: 25, // You can replace this
-      weight: "500g", // If you have dynamic, replace it
-      inStock: true, // Or false
-    });
-  };
+
 
   const { addToWishlist } = useWishlist();
   const handleWishlist = () => {
@@ -142,17 +127,6 @@ const BlogGridMain: React.FC<BlogGridMainProps> = ({
             }}
           >
             <i className="fa-light fa-heart" />
-          </span>
-          <span
-            className="single-action openuptip"
-            data-flow="up"
-            title="Compare"
-            onClick={() => {
-              handleCompare();
-              compare();
-            }}
-          >
-            <i className="fa-solid fa-arrows-retweet" />
           </span>
           <span
             className="single-action openuptip cta-quickview product-details-popup-btn"
@@ -217,7 +191,6 @@ const BlogGridMain: React.FC<BlogGridMainProps> = ({
         </div>
       </div>
 
-      <CompareModal show={activeModal === "one"} handleClose={handleClose} />
       <ProductDetails
         show={activeModal === "two"}
         handleClose={handleClose}

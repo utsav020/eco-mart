@@ -10,9 +10,9 @@ import {
   ReactPortal,
 } from "react";
 import HeaderOne from "@/components/header/HeaderOne";
-import ShortService from "@/components/service/ShortService";
-import RelatedProduct from "@/components/product/RelatedProduct";
-import FooterOne from "@/components/footer/FooterOne";
+// import ShortService from "../../../../components/service/ShortService";
+import RelatedProduct from "../../../../components/product/PopularProduct";
+import FooterOne from "../../../../components/footer/FooterTwo";
 import { useParams } from "next/navigation";
 import { Minus, Plus } from "lucide-react";
 
@@ -129,7 +129,7 @@ const CompareElements: React.FC = () => {
 
   if (!product) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+      <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-gray-50 to-gray-100">
         <div className="text-center max-w-md mx-auto p-8">
           <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <i className="fa-regular fa-triangle-exclamation text-red-500 text-2xl"></i>
@@ -212,7 +212,7 @@ const CompareElements: React.FC = () => {
   const filteredReviews = reviewsData;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100/30">
+    <div className="min-h-screen bg-linear-to-br from-gray-50 to-gray-100/30">
       <HeaderOne />
       {/* Breadcrumb */}
       <div className="bg-white/80 backdrop-blur-sm border-b border-gray-200/60 py-4 sticky top-0 z-40">
@@ -316,7 +316,7 @@ const CompareElements: React.FC = () => {
                   </p>
                   <div className="max-w-[400px]">
                     {/* Price Section */}
-                    <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl max-w-[400px] p-6 border border-green-200/40">
+                    <div className="bg-linear-to-r from-green-50 to-emerald-50 rounded-2xl max-w-[400px] p-6 border border-green-200/40">
                       <div className="flex items-end justify-between mb-3">
                         <div className="flex items-baseline gap-3">
                           <span className="text-4xl font-bold text-green-700">
@@ -326,7 +326,7 @@ const CompareElements: React.FC = () => {
                             Rs. {product.regularPrice ?? "0.00"}
                           </span>
                         </div>
-                        <span className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
+                        <span className="bg-linear-to-r from-green-500 to-emerald-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
                           Save Rs. {product.regularPrice! - product.salePrice!}
                         </span>
                       </div>
@@ -466,7 +466,7 @@ const CompareElements: React.FC = () => {
                           <img
                             src="/assets/images/shop/payment-btn.jpg"
                             alt="Payment Methods"
-                            className="w-[500px] max-w-[100%] h-auto rounded-lg"
+                            className="w-[500px] max-w-full h-auto rounded-lg"
                           />
                         </div>
                       </div>
@@ -540,7 +540,7 @@ const CompareElements: React.FC = () => {
                                 ))}
                               </ul>
                             </div>
-                            <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 border border-green-200/40">
+                            <div className="bg-linear-to-br from-green-50 to-emerald-50 rounded-2xl p-6 border border-green-200/40">
                               <h5 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
                                 <i className="fa-regular fa-clock text-green-500"></i>
                                 Preparation Tips
@@ -643,7 +643,7 @@ const CompareElements: React.FC = () => {
           {/* Customer Reviews Section */}
           <div className="lg:col-span-8 mt-12">
             <div className="bg-white rounded-3xl shadow-lg border border-gray-100/60 overflow-hidden">
-              <div className="border-b border-gray-200/60 bg-gradient-to-r from-green-50 to-emerald-50 p-8 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+              <div className="border-b border-gray-200/60 bg-linear-to-r from-green-50 to-emerald-50 p-8 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
                 <div>
                   <h2 className="text-3xl font-bold text-gray-900 mb-2">
                     Customer Reviews
@@ -875,7 +875,7 @@ const CompareElements: React.FC = () => {
                       >
                         <div className="flex items-start justify-between mb-4">
                           <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                            <div className="w-12 h-12 bg-linear-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
                               {review.avatar}
                             </div>
                             <div>
@@ -942,7 +942,7 @@ const CompareElements: React.FC = () => {
         </div>
       </div>{" "}
       <RelatedProduct />
-      <ShortService />
+      {/* <ShortService /> */}
       <FooterOne />{" "}
       <ToastContainer
         position="bottom-right"

@@ -174,16 +174,16 @@ export default function BlogGridMain() {
         <HeaderThree />
       </div>
 
-      <div className="max-w-[1430px] px-[20px] mx-auto">
+      <div className="max-w-[1430px] px-5 mx-auto">
         {/* ✅ Filter Bar */}
-        <div className="w-full xl:px-[0] bg-[#F5F5F5] max-w-[1730px] h-[280px] md:h-[80px] md:rounded-[200px] mx-auto py-2 px-4 flex flex-col md:flex-row items-center justify-between gap-3 mt-4">
-          <div className="md:flex block items-center ml-[20px] md:mt-[0] mt-[20px] gap-4 text-[16px] font-medium text-gray-700 overflow-x-auto">
+        <div className="w-full xl:px-0 bg-[#F5F5F5] max-w-[1730px] h-[280px] md:h-20 md:rounded-[200px] mx-auto py-2 px-4 flex flex-col md:flex-row items-center justify-between gap-3 mt-4">
+          <div className="md:flex block items-center ml-5 md:mt-0 mt-5 gap-4 text-[16px] font-medium text-gray-700 overflow-x-auto">
             {categories.map((category) => (
               <button
                 key={category}
                 style={{borderRadius: "200px"}}
                 onClick={() => handleCategoryClick(category)}
-                className={`px-4 py-1.5 h-[36px] rounded-full whitespace-nowrap transition-all duration-200 ${
+                className={`px-4 py-1.5 h-9 rounded-full whitespace-nowrap transition-all duration-200 ${
                   activeCategory === category
                     ? "text-white shadow-sm bg-[#8CC63F] rounded-full"
                     : "hover:text-[#8CC63F] text-gray-700 rounded-full"
@@ -196,7 +196,7 @@ export default function BlogGridMain() {
         </div>
 
         {/* ✅ Product List */}
-        <div className="bg-white max-w-[1430px] w-full mt-[20px] mx-auto">
+        <div className="bg-white max-w-[1430px] w-full mt-5 mx-auto">
           {loading ? (
             <div className="flex justify-center items-center py-10">
               <div className="animate-spin h-8 w-8 border-4 border-[#A3C526] border-t-transparent rounded-full"></div>
@@ -218,11 +218,11 @@ export default function BlogGridMain() {
 
                   {/* Image section */}
                   <div className="relative flex justify-center items-center">
-                    <div className="h-[288px]">
+                    <div className="h-72">
                       <img
                         src={getImage(product, index) || "/assets/images/products/Oats.png"}
                         alt={product.productName}
-                        className="w-[331.75px] h-[288px] object-cover"
+                        className="w-[331.75px] h-72 object-cover"
                       />
                     </div>
 
@@ -254,7 +254,7 @@ export default function BlogGridMain() {
 
                   {/* ✅ Product Details */}
                   <div className="pb-3 mt-[13px]">
-                    <div className="flex items-center justify-between h-[24px]">
+                    <div className="flex items-center justify-between h-6">
                       <div className="">
                         <p className="text-[14px] font-bold text-[#000000] truncate">
                         {product.productName || "Organic Product"}

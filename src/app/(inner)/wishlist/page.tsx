@@ -1,10 +1,6 @@
 "use client";
-
-import ShortService from "@/components/service/ShortService";
 import CartMain from "./CartMain";
-import FooterOne from "@/components/footer/FooterOne";
 import HeaderThree from "@/components/header/HeaderThree";
-import FooterThree from "@/components/footer/FooterThree";
 import FooterTwo from "@/components/footer/FooterTwo";
 import { useRouter } from "next/navigation"; // ✅ Correct router
 

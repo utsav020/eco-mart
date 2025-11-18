@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import ShortService from "@/components/service/ShortService";
-import RelatedProduct from "@/components/product/RelatedProduct";
+// import RelatedProduct from "@/components/product/RelatedProduct";
 import FooterTwo from "@/components/footer/FooterTwo";
 import { Minus, Plus } from "lucide-react";
 import { useCart } from "@/components/header/CartContext";
@@ -473,10 +473,10 @@ const CompareElements: React.FC = () => {
       </div>
 
       {/* ✅ Show Related Products Dynamically */}
-      {React.createElement(RelatedProduct as any, {
+      {/* {React.createElement(RelatedProduct as any, {
         products: relatedProducts,
         title: "Related Products",
-      })}
+      })} */}
 
       <div className="mt-[100px]">
         <FooterTwo />
