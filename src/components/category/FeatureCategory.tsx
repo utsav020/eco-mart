@@ -24,7 +24,7 @@ const router = useRouter();
       <div className="">
         <div className="md:flex justify-between item-center md:px-5">
           <div className="h-[129px] md:w-[613px] pl-5 md:p-0">
-            <p className="font-bold border-2 text-[30px] lg:text-[35px]">
+            <p className="font-bold text-[30px] lg:text-[35px]">
               Shop by Category <br />
               <span className="lg:text-[30px] text-[18px] font-normal">
                 Naturally grown, carefully selected Products
@@ -48,7 +48,7 @@ const router = useRouter();
           {categories.map((cat, index) => (
             <div
               key={index}
-              className="relative group border-2 max-w-[1430px] mx-auto overflow-hidden cursor-pointer"
+              className="relative group max-w-[1430px] mx-auto overflow-hidden cursor-pointer"
             >
               <a href="">
                 <img

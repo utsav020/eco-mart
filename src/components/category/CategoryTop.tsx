@@ -133,7 +133,7 @@ export default function CategoryTop() {
 
           {/* Overlay Content */}
           <div className="absolute inset-0 bg-black/5 flex flex-col justify-center px-10 text-white">
-            <div className="md:ml-[355px] lg:ml-[480px] ml-[80px] w-[230px] md:w-[400px] overflow-hidden border-black">
+            <div className="md:ml-[355px] lg:ml-[480px] 2xl:ml-[330px] ml-20 w-[230px] md:w-[400px] overflow-hidden border-black">
               <div className="">
                 <i className="text-[28px] md:text-[35px] font-semibold italic mb-2">
                   Explore More <br /> Of Our Products

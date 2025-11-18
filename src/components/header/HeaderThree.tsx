@@ -80,7 +80,7 @@ export default function HeaderThree() {
             </div>
 
             {/* User + Icons */}
-            <div className="hidden w-[117px] justify-evenly lg:flex border items-center">
+            <div className="hidden w-[117px] justify-evenly lg:flex items-center">
               <div className="">
                 <img
                   src="/assets/images/navbar/User.png"
@@ -165,7 +165,14 @@ export default function HeaderThree() {
                 onClick={() => handleNavClick("/wishlist")}
               />
 
-              <Cart />
+              <div className="">
+                <img
+                  src="/assets/images/navbar/Bag.png"
+                  alt="Wishlist"
+                  className="w-[26px] cursor-pointer"
+                  onClick={() => handleNavClick("/cart")}
+                />
+              </div>
             </div>
           </div>
         )}
