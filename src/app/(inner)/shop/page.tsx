@@ -240,7 +240,7 @@ export default function BlogGridMain() {
                           )
                         }`}
                       >
-                        <Heart
+                        <Heart 
                           className={`w-6 h-6 ${
                             wishlistItems.some(
                               (item) => String(item.id) === String(product._id)
