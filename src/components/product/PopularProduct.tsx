@@ -183,7 +183,7 @@ const PopularProducts: React.FC = () => {
                   />
 
                   {/* Wishlist icon */}
-                  <div className="absolute bottom-3 right-3">
+                  <div className="absolute bottom-1 right-0">
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -195,7 +195,7 @@ const PopularProducts: React.FC = () => {
                       }`}
                     >
                       <Heart
-                        className={`w-10 h-10 ${
+                        className={`w-6 h-6 ${
                           isInWishlist
                             ? "fill-[#077D40] text-[#077D40]" 
                             : "text-[#333333]"
@@ -234,7 +234,7 @@ const PopularProducts: React.FC = () => {
                   {/* Add to cart */}
                   <div className="mt-[25px] w-[332px] hover:text-white text-[14px] h-[51px]">
                     <button
-                      className={`w-full h-[51px] border border-black rounded hover:bg-[#077D40] hover:text-white transition ${
+                      className={`w-full h-[51px] border border-[#00000080] hover:bg-[#077D40] hover:text-white transition ${
                         addedProductId === (product._id || index)
                           ? "bg-[#077D40] text-white"
                           : ""

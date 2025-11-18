@@ -228,7 +228,7 @@ export default function BlogGridMain() {
                     </div>
 
                     {/* Wishlist icon */}
-                    <div className="absolute bottom-3 right-3">
+                    <div className="absolute bottom-1 right-0">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
@@ -241,7 +241,7 @@ export default function BlogGridMain() {
                         }`}
                       >
                         <Heart
-                          className={`w-10 h-10 ${
+                          className={`w-6 h-6 ${
                             wishlistItems.some(
                               (item) => String(item.id) === String(product._id)
                             )

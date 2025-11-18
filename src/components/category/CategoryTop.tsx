@@ -106,7 +106,7 @@ export default function CategoryTop() {
 
           {/* Overlay Content */}
           <div className="absolute inset-0 bg-black/5 left-0 flex flex-col justify-center text-white">
-            <div className="md:ml-[330px] lg:ml-[400px] ml-[120px] md:h-[115px]">
+            <div className="md:ml-[330px] lg:ml-[400px] 2xl:ml-[300px] ml-[120px] md:h-[115px]">
               <i className="text-[#077D40] text-[28px] md:text-[35px] font-semibold italic mb-2">
                 Get 20% Off
               </i>
@@ -115,7 +115,7 @@ export default function CategoryTop() {
                 On All Organic Beans
               </i>
             </div>
-            <div className="md:ml-[330px] lg:ml-[400px] mt-[10px] ml-[120px]">
+            <div className="md:ml-[330px] lg:ml-[400px] 2xl:ml-[300px] mt-2.5 ml-[120px]">
               <p className="text-[18px] md:text-[20px] text-gray-100">
                 Pure, natural, and packed <br /> with goodness
               </p>

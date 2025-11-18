@@ -4,19 +4,19 @@ import { ArrowLeft, Check } from "lucide-react";
 export default function AboutBanner() {
   return (
     <>
-      <div className="max-w-[1430px] border-2 w-full mx-auto">
+      <div className="max-w-[1430px] w-full mx-auto">
         {/* Intro Section */}
         <div className="flex flex-col lg:flex-row justify-between items-start xl:items-center px-6 xl:px-0">
           <div className="w-full lg:w-[957px]">
             <img
               src="/assets/images/about/about.png"
               alt="About DaduFresh"
-              className="w-[957px] h-[613px] border-2"
+              className="w-[957px] h-[613px]"
             />
           </div>
 
           <div className="mt-6 lg:mt-0 w-full lg:ml-8 max-w-[712px]">
-            <p className="leading-[56px] font-bold text-[#077D40] text-[28px] border-2 md:text-[35px]">
+            <p className="leading-14 font-bold text-[#077D40] text-[28px] md:text-[35px]">
               Kalavad FPO – DaduFresh
             </p>
 
@@ -77,7 +77,7 @@ export default function AboutBanner() {
         </div>
 
         {/* Our Purpose and Promise */}
-        <div className="mt-[100px] border-2">
+        <div className="mt-[100px]">
           <p className="text-[#077D40] px-[20px] text-[35px] font-bold text-center leading-[76.5px]">
             Our Purpose and Promise
           </p>
@@ -154,7 +154,7 @@ export default function AboutBanner() {
             </div>
 
             {/* Right Image Section (Millets, Dals, Beans, Whole Corn) */}
-            <div className="max-w-[950.99px] mx-auto md:w-[750px] lg:w-[810px] border-2 w-[360px] mt-[100px] 2xl:h-[1088px]">
+            <div className="max-w-[950.99px] mx-auto md:w-[750px] lg:w-[810px] w-[360px] mt-[100px] 2xl:h-[1088px]">
               <div className="flex gap-[10px] md:gap-[20px] lg:gap-[30px]">
                 {/* Image one */}
                 <div className="2xl:w-[262px]">
