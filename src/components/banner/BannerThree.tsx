@@ -42,15 +42,20 @@ const BannerThreeSwiper = () => {
             }}
           >
             <div className="px-6 md:px-16 lg:px-28 max-w-[900px]">
-              <p className="text-[#2D2D2D] text-3xl sm:text-4xl md:text-5xl lg:text-[56px] font-bold leading-tight mb-4">
-                Carefully Selected Beans Pure Nutrition
-                <span className="text-[#A3C526]"> In Every Bite.</span>
-              </p>
+              <div className="w-full">
+                <div className="w-[760px]">
+                  <p className="text-[#2D2D2D] text-3xl sm:text-4xl md:text-5xl lg:text-[56px] font-bold leading-tight mb-4">
+                    Carefully Selected Beans Pure Nutrition
+                    <span className="text-[#A3C526]"> In Every Bite.</span>
+                  </p>
+                </div>
 
-              <p className="text-[#575757] text-sm sm:text-base md:text-[20px] max-w-[750px] mb-8">
-                Pure, natural, and packed with goodness—that’s the power of
-                organic beans! Fuel your day the natural way with organic beans!
-              </p>
+                <p className="text-[#575757] text-sm sm:text-base md:text-[20px] max-w-[750px] mb-8">
+                  Pure, natural, and packed with goodness—that’s the power of
+                  organic beans! Fuel your day the natural way with organic
+                  beans!
+                </p>
+              </div>
 
               <div className="group">
                 <div
@@ -90,15 +95,19 @@ const BannerThreeSwiper = () => {
             }}
           >
             <div className="px-6 md:px-16 lg:px-28 max-w-[900px]">
-              <p className="text-[#2D2D2D] text-3xl sm:text-4xl md:text-5xl lg:text-[56px] font-bold leading-tight mb-4">
+              <div className="">
+                <div className="w-[760px]">
+                  <p className="text-[#2D2D2D] text-3xl sm:text-4xl md:text-5xl lg:text-[56px] font-bold leading-tight mb-4">
                 Carefully Selected Beans Pure Nutrition
                 <span className="text-[#A3C526]"> In Every Bite.</span>
               </p>
+                </div>
 
               <p className="text-[#575757] text-sm sm:text-base md:text-[20px] max-w-[750px] mb-8">
                 Pure, natural, and packed with goodness—that’s the power of
                 organic beans! Fuel your day the natural way with organic beans!
               </p>
+              </div>
 
               <div className="group">
                 <div

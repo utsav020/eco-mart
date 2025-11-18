@@ -37,7 +37,7 @@ export default function Home() {
       </div>
 
       {/* Wishlist Content */}
-      <div className="max-w-[1730px] mx-auto mt-[80px] px-4">
+      <div className="max-w-[1730px] mx-auto mt-20 px-4">
         <CartMain />
       </div>
 

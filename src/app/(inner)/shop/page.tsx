@@ -120,6 +120,7 @@ export default function BlogGridMain() {
       productName: product.productName ?? "Default Product Title",
       regularPrice: product.regularPrice,
       productImage: product.image || "",
+      description: product.discription ?? "No description available"
     });
     setAddedProductId(product._id || index);
     setTimeout(() => setAddedProductId(null), 4000);

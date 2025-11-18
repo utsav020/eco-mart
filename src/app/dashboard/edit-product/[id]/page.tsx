@@ -403,7 +403,7 @@ export default function EditProductPage() {
         {error && (
           <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
             <div className="flex items-center">
-              <div className="flex-shrink-0">
+              <div className="shrink-0">
                 <svg
                   className="h-5 w-5 text-red-400"
                   viewBox="0 0 20 20"
@@ -427,7 +427,7 @@ export default function EditProductPage() {
         {success && (
           <div className="mb-6 bg-green-50 border border-green-200 rounded-lg p-4">
             <div className="flex items-center">
-              <div className="flex-shrink-0">
+              <div className="shrink-0">
                 <svg
                   className="h-5 w-5 text-green-400"
                   viewBox="0 0 20 20"
@@ -1046,7 +1046,7 @@ export default function EditProductPage() {
               {/* Action Buttons Card */}
               <div className="bg-white max-w-[320px] w-full shadow-sm rounded-lg border border-gray-200">
                 <div className="p-6 space-y-4">
-                  <div className="text-white flex items-center justify-center rounded-xl h-[40px] font-semibold bg-green-500">
+                  <div className="text-white flex items-center justify-center rounded-xl h-10 font-semibold bg-green-500">
                     <button
                       type="submit"
                       disabled={saving}
@@ -1063,7 +1063,7 @@ export default function EditProductPage() {
                     </button>
                   </div>
 
-                  <div className="flex items-center justify-center rounded-xl h-[40px] border border-green-500 font-semibold hover:bg-green-500 hover:text-white transition-colors">
+                  <div className="flex items-center justify-center rounded-xl h-10 border border-green-500 font-semibold hover:bg-green-500 hover:text-white transition-colors">
                     <button
                       type="button"
                       onClick={() => router.back()}

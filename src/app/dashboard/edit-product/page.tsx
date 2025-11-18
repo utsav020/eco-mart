@@ -791,7 +791,7 @@ const EditProductPage: React.FC = () => {
                       <input
                         type="text"
                         value={item}
-                        className="p-2 rounded-lg flex-grow"
+                        className="p-2 rounded-lg grow"
                         onChange={(e) =>
                           handleProductInfoChange(f.key, idx, e.target.value)
                         }

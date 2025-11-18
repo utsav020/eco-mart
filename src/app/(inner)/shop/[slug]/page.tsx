@@ -107,7 +107,8 @@ const CompareElements: React.FC = () => {
       active: true,
       regularPrice: undefined,
       productImage: "",
-      productName: ""
+      productName: "",
+      description: product.discription ?? "No description available"
     });
 
     setAdded(true);

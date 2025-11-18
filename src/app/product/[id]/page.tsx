@@ -164,6 +164,7 @@ const CompareElements: React.FC = () => {
       regularPrice: product.regularPrice,
       productImage: product.image || activeImage || "",
       title: product.productName,
+      description: product.discription ?? "No description available"
     });
 
     setAdded(true);
@@ -270,7 +271,7 @@ const CompareElements: React.FC = () => {
                           <img
                             src={thumb.image_url}
                             alt="thumb"
-                            className="w-[80px] mt-3 flex items-center justify-center h-[80px] object-cover"
+                            className="w-20 mt-3 flex items-center justify-center h-20 object-cover"
                           />
                         </div>
                       </div>
@@ -314,7 +315,7 @@ const CompareElements: React.FC = () => {
                       <div className="">
                         <p className="text-[16px] text-gray-900">Weight:</p>
                       </div>
-                      <div className="flex text-[13px] border rounded-[8px] border-[#D9D9D9] w-[169px] h-[30px]">
+                      <div className="flex text-[13px] border rounded-lg border-[#D9D9D9] w-[169px] h-[30px]">
                         {["1kg", "500g"].map((weight) => (
                           <button
                             style={{ borderRadius: "8px" }}
@@ -429,8 +430,8 @@ const CompareElements: React.FC = () => {
 
         {/* Tabs */}
         <div className="w-full">
-          <nav className="flex border-b max-w-[1730px] h-[80px] border-gray-200">
-            <div className="flex gap-10 h-[80px] items-center justify-center w-[350px] text-[20px]">
+          <nav className="flex border-b max-w-[1730px] h-20 border-gray-200">
+            <div className="flex gap-10 h-20 items-center justify-center w-[350px] text-[20px]">
               {tabs.map((tab) => (
                 <div className="">
                   <button

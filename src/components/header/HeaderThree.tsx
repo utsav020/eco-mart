@@ -47,7 +47,7 @@ export default function HeaderThree() {
       </div>
 
       {/* Main Header */}
-      <div className="max-w-[1430px] border mx-auto px-4 lg:px-0 py-4">
+      <div className="max-w-[1430px] mx-auto px-4 lg:px-0 py-4">
         <div className="max-w-[1430px] bg-white mx-auto">
           <div className="flex justify-between">
             {/* Logo */}

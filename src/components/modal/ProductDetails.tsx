@@ -43,6 +43,7 @@ const ProductDetails: React.FC<ModalProps> = ({
       price: priceNumber,
       regularPrice: priceNumber, // You may want to use a different value if available
       quantity: quantity,
+      discription: "",
       active: true,
     };
 

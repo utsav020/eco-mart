@@ -36,7 +36,7 @@ export default function CheckOutMain() {
       <div className="w-full max-w-[570px] rounded-lg">
         <form onSubmit={handleOrderSubmit} className="space-y-8">
           {/* Billing Address */}
-          <div className="max-w-[570px] h-[567px] bg-white rounded-[4px] shadow-xl p-4 sm:p-6 lg:p-8">
+          <div className="max-w-[570px] h-[567px] rounded-sm p-4 sm:p-6 lg:p-8">
             <div>
               <h2 className="text-lg font-semibold mb-4 text-gray-800">
                 Billing Address
@@ -47,7 +47,7 @@ export default function CheckOutMain() {
                   <label className="block text-[12px] font-medium text-gray-700">
                     First Name
                   </label>
-                  <div className="h-[44px] text-[15px] border border-[#B2BCCA] rounded-[4px]">
+                  <div className="h-11 text-[15px] border border-[#B2BCCA] rounded-sm">
                     <input
                       id="firstName"
                       type="text"
@@ -63,7 +63,7 @@ export default function CheckOutMain() {
                   <label className="block text-[12px] font-medium text-gray-700">
                     Last Name
                   </label>
-                  <div className="h-[44px] text-[15px] border border-[#B2BCCA] rounded-[4px]">
+                  <div className="h-11 text-[15px] border border-[#B2BCCA] rounded-sm">
                     <input
                       id="lastName"
                       type="text"
@@ -82,7 +82,7 @@ export default function CheckOutMain() {
                 <label className="block text-[12px] font-medium text-gray-700">
                   Email Address
                 </label>
-                <div className="h-[44px] text-[15px] border border-[#B2BCCA] rounded-[4px]">
+                <div className="h-11 text-[15px] border border-[#B2BCCA] rounded-sm">
                   <input
                     id="email"
                     type="email"
@@ -100,7 +100,7 @@ export default function CheckOutMain() {
                 <label className="block text-[12px] font-medium text-gray-700">
                   Street Address
                 </label>
-                <div className="h-[44px] text-[15px] border border-[#B2BCCA] rounded-[4px]">
+                <div className="h-11 text-[15px] border border-[#B2BCCA] rounded-sm">
                   <input
                     id="address"
                     type="text"
@@ -113,7 +113,7 @@ export default function CheckOutMain() {
                 </div>
               </div>
 
-              <div className="h-[44px] mt-[15px] text-[15px] border border-[#B2BCCA] rounded-[4px]"></div>
+              <div className="h-11 mt-[15px] text-[15px] border border-[#B2BCCA] rounded-sm"></div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                 {/* State */}
@@ -121,12 +121,12 @@ export default function CheckOutMain() {
                   <label className="block text-[12px] font-medium text-gray-700">
                     State/Province
                   </label>
-                  <div className="h-[44px] text-[15px] border border-[#B2BCCA] rounded-[4px]">
+                  <div className="h-11 text-[15px] border border-[#B2BCCA] rounded-sm">
                     <select
                       id="state"
                       value={billingInfo.state}
                       onChange={handleInputChange}
-                      className="w-full h-[44px] text-[15px] px-3 py-2 focus:ring-2 focus:ring-green-500 outline-none"
+                      className="w-full h-11 text-[15px] px-3 py-2 focus:ring-2 focus:ring-green-500 outline-none"
                     >
                       {/* <option value="">Select State</option> */}
                       <option value="California">California</option>
@@ -141,7 +141,7 @@ export default function CheckOutMain() {
                   <label className="block text-[12px] font-medium text-gray-700">
                     City
                   </label>
-                  <div className="h-[44px] text-[15px] flex items-center border border-[#B2BCCA] rounded-[4px]">
+                  <div className="h-11 text-[15px] flex items-center border border-[#B2BCCA] rounded-sm">
                     <input
                       id="city"
                       type="text"
@@ -158,13 +158,13 @@ export default function CheckOutMain() {
                   <label className="block text-[12px] font-medium text-gray-700">
                     Zip/Postal Code
                   </label>
-                  <div className="h-[44px] flex items-center text-[15px] border border-[#B2BCCA] rounded-[4px]">
+                  <div className="h-11 flex items-center text-[15px] border border-[#B2BCCA] rounded-sm">
                     <input
                       id="zip"
                       type="text"
                       value={billingInfo.zip}
                       onChange={handleInputChange}
-                      className="w-full h-[44px] px-3 py-2 focus:ring-2 focus:ring-green-500 outline-none"
+                      className="w-full h-11 px-3 py-2 focus:ring-2 focus:ring-green-500 outline-none"
                       placeholder="22434"
                     />
                   </div>
@@ -175,7 +175,7 @@ export default function CheckOutMain() {
                   <label className="block text-[12px] font-medium text-gray-700">
                     Phone Number
                   </label>
-                  <div className="h-[44px] text-[15px] flex items-center border border-[#B2BCCA] rounded-[4px]">
+                  <div className="h-11 text-[15px] flex items-center border border-[#B2BCCA] rounded-sm">
                     <input
                       id="phone"
                       type="tel"
@@ -211,7 +211,7 @@ export default function CheckOutMain() {
             </div>
           </div>
 
-          <div className="max-w-[570px] h-[395px] bg-white rounded-[4px] shadow-xl p-4 sm:p-6 lg:p-8">
+          <div className="max-w-[570px] h-[395px] bg-white rounded-sm shadow-xl p-4 sm:p-6 lg:p-8">
             {/* Payment Method */}
             <div>
               <h2 className="text-lg font-semibold mb-4 text-gray-800">
@@ -227,7 +227,7 @@ export default function CheckOutMain() {
                         : "border-gray-300 hover:border-green-400"
                     }`}
                   >
-                    <div className="h-[20px] flex items-center gap-[8px]">
+                    <div className="h-5 flex items-center gap-2">
                       <input
                         type="radio"
                         name="payment"
@@ -253,7 +253,7 @@ export default function CheckOutMain() {
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <div className="flex items-center w-[189px] border-2 gap-[8px]">
+                      <div className="flex items-center w-[189px] border-2 gap-2">
                         <div className="">
                           <input
                             type="radio"

@@ -5,7 +5,7 @@ import HeaderThree from "@/components/header/HeaderThree";
 
 export default function Home() {
     return (
-        <div className="demo-one">
+        <div className="">
             <HeaderThree />
 
 

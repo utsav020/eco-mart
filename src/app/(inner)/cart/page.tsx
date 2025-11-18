@@ -23,7 +23,7 @@ export default function Home() {
           </span>
 
           {/* Arrow */}
-          <i className="fa-regular fa-chevron-right ml-3 text-gray-500"></i>
+          <i className="ml-3 text-gray-500">/</i>
 
           {/* Current Page */}
           <span className="text-[#018F45] font-medium ml-3">My Cart</span>
@@ -36,9 +36,9 @@ export default function Home() {
       </div>
 
       {/* Footer */}
-      <div className="mt-20">
+      {/* <div className="mt-20">
         <FooterTwo />
-      </div>
+      </div> */}
     </div>
   );
 }
