@@ -1,4 +1,4 @@
-@import "tailwindcss";
+/* @import "tailwindcss";
 
 :root {
   --background: #ffffff;
@@ -23,4 +23,198 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+} */
+@import "tailwindcss";
+/* :root {
+  --background: #ffffff;
+  --foreground: #171717;
 }
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  html {
+    color-scheme: dark;
+  }
+} */
+
+
+/* Remove default arrow in IE */
+/* select::-ms-expand {
+  display: none;
+} */
+
+/* Focus styles */
+/* select:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+} */
+
+/* Disabled state */
+/* select:disabled {
+  background-color: #f9fafb;
+  color: #6b7280;
+  cursor: not-allowed;
+} */
+
+
+/* .custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  display: none;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f8fafc;
+  border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+} */
+
+
+
+/* :root {
+  --font-secondary: var(--font-poltawski-nowy);
+} */
+
+
+body {
+  font-family: var(--font-poltawski-nowy),;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-poltawski-nowy);
+}
+
+.swiper-button-prev,
+.swiper-button-next {
+  color: #f97316; /* orange-500 */
+  transition: color 0.3s;
+}
+
+.swiper-button-prev:hover,
+.swiper-button-next:hover {
+  color: #ea580c; /* orange-600 */
+}
+
+
+/* ✅ Hide scrollbar cross-browser */
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+  
+
+/* Smooth transitions for all interactive elements */
+* {
+  transition-property: color, background-color, border-color, transform, box-shadow;
+  transition-duration: 200ms;
+  transition-timing-function: ease-in-out;
+}
+
+
+/* Swap animations */
+@keyframes leftToRightSwap {
+  0% { transform: translate(0, -50%); }
+  100% { transform: translate(250%, -50%); }
+}
+
+@keyframes rightToLeftSwap {
+  0% { transform: translate(0, -50%); }
+  100% { transform: translate(-250%, -50%); }
+}
+
+@keyframes topToBottomSwap {
+  0% { transform: translate(-50%, 0); }
+  100% { transform: translate(-50%, 250%); }
+}
+
+@keyframes bottomToTopSwap {
+  0% { transform: translate(-50%, 0); }
+  100% { transform: translate(-50%, -250%); }
+}
+
+/* Phase 3 combined */
+@keyframes leftToRightSwapPhase3 {
+  0% { transform: translate(0, -50%); }
+  100% { transform: translate(250%, 50%); }
+}
+
+@keyframes rightToLeftSwapPhase3 {
+  0% { transform: translate(0, -50%); }
+  100% { transform: translate(-250%, -150%); }
+}
+
+@keyframes topToBottomSwapPhase3 {
+  0% { transform: translate(-50%, 0); }
+  100% { transform: translate(150%, 250%); }
+}
+
+@keyframes bottomToTopSwapPhase3 {
+  0% { transform: translate(-50%, 0); }
+  100% { transform: translate(-150%, -250%); }
+}
+
+/* Center pulse */
+@keyframes pulseScale {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+
+/* Utility classes */
+.animate-leftToRightSwap { animation: leftToRightSwap 2s ease-in-out forwards; }
+.animate-rightToLeftSwap { animation: rightToLeftSwap 2s ease-in-out forwards; }
+.animate-topToBottomSwap { animation: topToBottomSwap 2s ease-in-out forwards; }
+.animate-bottomToTopSwap { animation: bottomToTopSwap 2s ease-in-out forwards; }
+
+.animate-leftToRightSwapPhase3 { animation: leftToRightSwapPhase3 5s ease-in-out forwards; }
+.animate-rightToLeftSwapPhase3 { animation: rightToLeftSwapPhase3 5s ease-in-out forwards; }
+.animate-topToBottomSwapPhase3 { animation: topToBottomSwapPhase3 5s ease-in-out forwards; }
+.animate-bottomToTopSwapPhase3 { animation: bottomToTopSwapPhase3 5s ease-in-out forwards; }
+
+.animate-pulseScale { animation: pulseScale 1.5s ease-in-out infinite; }
+
+/* Reset positions */
+.reset-left { transform: translate(0, -50%); }
+.reset-right { transform: translate(0, -50%); }
+.reset-top { transform: translate(-50%, 0); }
+.reset-bottom { transform: translate(-50%, 0); }
+
+
