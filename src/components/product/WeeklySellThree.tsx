@@ -27,7 +27,7 @@ const AboutPage: React.FC = () => {
 
   return (
     <div className="max-w-[1920px] mx-auto m-0 p-0 flex">
-      <div className="hidden lg:block w-[300px] mt-[0px]">
+      <div className="hidden lg:block w-[300px] mt-0">
         <img
           src={"/assets/images/why/Bg-1.png"}
           alt=""
@@ -43,7 +43,7 @@ const AboutPage: React.FC = () => {
         </div>
 
         {/* Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 max-w-[1180px] gap-8 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 w-full justify-between lg:w-[600px] xl:w-[1130px] max-w-[1380px] gap-8 mb-16">
           {features.map((feature, index) => (
             <div
               key={index}

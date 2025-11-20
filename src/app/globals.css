@@ -352,3 +352,25 @@ h1, h2, h3, h4, h5, h6 {
 .animate-lineMove {
   animation: lineMove 1.3s linear infinite;
 }
+
+
+.marquee-wrapper {
+  overflow: hidden;
+  white-space: nowrap;
+  display: flex;
+  font-size: 20px;
+}
+
+.marquee-track {
+  display: inline-flex;
+  animation: marquee-slide 5s linear infinite;
+}
+
+@keyframes marquee-slide {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}

@@ -178,21 +178,23 @@ export default function BlogGridMain() {
 
       <div className="max-w-[1430px] px-5 mx-auto">
         {/* ✅ Filter Bar */}
-        <div className="w-full xl:px-0 bg-[#F5F5F5] max-w-[1730px] h-[280px] md:h-20 md:rounded-[200px] mx-auto py-2 px-4 flex flex-col md:flex-row items-center justify-between gap-3 mt-4">
-          <div className="md:flex block items-center ml-5 md:mt-0 mt-5 gap-4 text-[16px] font-medium text-gray-700 overflow-x-auto">
+        <div className="w-full xl:px-0 bg-[#F5F5F5] max-w-[1730px] h-[280px] md:h-20 md:rounded-[200px] mx-auto py-2 px-4 items-center justify-between gap-3 mt-4">
+          <div className="md:flex block items-center ml-auto max-w-full w-[203px] mx-auto md:ml-5 md:mt-0 mt-5 gap-4 text-[16px] font-medium text-gray-700 overflow-x-auto">
             {categories.map((category) => (
-              <button
-                key={category}
-                style={{ borderRadius: "200px" }}
-                onClick={() => handleCategoryClick(category)}
-                className={`px-4 py-1.5 h-9 rounded-full whitespace-nowrap transition-all duration-200 ${
-                  activeCategory === category
-                    ? "text-white shadow-sm bg-[#8CC63F] rounded-full"
-                    : "hover:text-[#8CC63F] text-gray-700 rounded-full"
-                }`}
-              >
-                {category}
-              </button>
+              <div className="max-w-full mx-auto">
+                <button
+                  key={category}
+                  // style={{ borderRadius: "200px" }}
+                  onClick={() => handleCategoryClick(category)}
+                  className={`px-4 py-1.5 h-9 rounded-full max-w-[200px] w-[200px] mx-auto md:w-full whitespace-nowrap transition-all duration-200 ${
+                    activeCategory === category
+                      ? "text-white shadow-sm bg-[#8CC63F] rounded-full"
+                      : "hover:text-[#8CC63F] text-gray-700 rounded-full"
+                  }`}
+                >
+                  {category}
+                </button>
+              </div>
             ))}
           </div>
         </div>
@@ -200,27 +202,6 @@ export default function BlogGridMain() {
         {/* ✅ Product List */}
         <div className="bg-white max-w-[1430px] w-full mt-5 mx-auto">
           {loading ? (
-            // <div className="flex justify-center items-center py-10">
-            //   <div className="animate-spin h-8 w-8 border-4 border-[#A3C526] border-t-transparent rounded-full"></div>
-            // </div>
-            // <div className="loader-container">
-            //   <div className="logo-wrapper">
-            //     <img
-            //       src="/assets/images/logo/Dadu_Fresh_Logo 1.png"
-            //       alt="Dadu Fresh Logo"
-            //     />
-            //   </div>
-            // </div>
-
-            // <div className="logo-spin-loader">
-            //   <img
-            //     src="/assets/images/logo/Dadu_Fresh_Logo 1.png"
-            //     alt="Dadu Fresh Logo"
-            //   />
-            // </div>
-
-            
-
             <div className="">
               <LogoLineLoader />
             </div>

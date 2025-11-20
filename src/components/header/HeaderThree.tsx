@@ -27,22 +27,23 @@ export default function HeaderThree() {
     <header className="w-full">
       {/* Top Green Bar */}
       <div className="w-full bg-[#018F45] text-white text-[15px] py-2">
-        <div className="max-w-[1920px] mx-auto flex items-center justify-evenly overflow-hidden">
-          <span className="w-[351px]">
-            CSC kalavad farmer producer company limited
-          </span>
-          <span className="w-[351px]">
-            CSC kalavad farmer producer company limited
-          </span>
-          <span className="w-[351px]">
-            CSC kalavad farmer producer company limited
-          </span>
-          <span className="w-[351px]">
-            CSC kalavad farmer producer company limited
-          </span>
-          <span className="w-[351px]">
-            CSC kalavad farmer producer company limited
-          </span>
+        <div className="max-w-[1920px] mx-auto w-full flex items-center justify-evenly ">
+          {/* Top Green Bar */}
+          <div className="w-full bg-[#018F45] text-white text-[15px] py-2">
+            <div className="max-w-[1920px] mx-auto w-full">
+              <div className="marquee-wrapper">
+                <div className="marquee-track">
+                  {/* Text repeated twice for continuous loop */}
+                  <span className="px-6">
+                    CSC kalavad farmer producer company limited
+                  </span>
+                  <span className="px-6">
+                    CSC kalavad farmer producer company limited
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 

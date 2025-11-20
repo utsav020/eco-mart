@@ -98,13 +98,13 @@ const ProductCirclePage = () => {
     animationPhase >= 1 ? "animate-pulseScale" : "";
 
   return (
-    <div className="flex flex-col max-w-[1430px] border-2 mt-[100px] mx-auto max-h-[1125px] items-center justify-center min-h-screen bg-white p-8">
+    <div className="2xl:flex hidden flex-col max-w-[1430px] border-2 mt-[100px] mx-auto max-h-[1125px] items-center justify-center min-h-screen bg-white p-8">
       {/* Circle Layout */}
       <div className="relative w-[400px] h-[400px] md:w-[650px] md:h-[650px] flex items-center justify-center">
         {/* Central Product */}
         <div className="absolute flex flex-col items-center justify-center">
           <div
-            className={`w-40 h-40 rounded-full flex items-center justify-center bg-gray-300 md:w-[280px] -mt-[40px] md:h-[280px] transition-all duration-500 ${getCenterImageClass()}`}
+            className={`w-40 h-40 rounded-full flex items-center justify-center bg-gray-300 md:w-[280px] -mt-10 md:h-[280px] transition-all duration-500 ${getCenterImageClass()}`}
           >
             <Image
               src={centerImage}
