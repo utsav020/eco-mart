@@ -363,7 +363,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .marquee-track {
   display: inline-flex;
-  animation: marquee-slide 5s linear infinite;
+  animation: marquee-slide 15s linear infinite;
 }
 
 @keyframes marquee-slide {

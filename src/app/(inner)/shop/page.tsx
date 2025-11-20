@@ -179,14 +179,14 @@ export default function BlogGridMain() {
       <div className="max-w-[1430px] px-5 mx-auto">
         {/* ✅ Filter Bar */}
         <div className="w-full xl:px-0 bg-[#F5F5F5] max-w-[1730px] h-[280px] md:h-20 md:rounded-[200px] mx-auto py-2 px-4 items-center justify-between gap-3 mt-4">
-          <div className="md:flex block items-center ml-auto max-w-full w-[203px] mx-auto md:ml-5 md:mt-0 mt-5 gap-4 text-[16px] font-medium text-gray-700 overflow-x-auto">
+          <div className="md:flex block items-center ml-auto max-w-full w-[203px] md:w-[570px] mx-auto md:ml-5 lg:mt-3.5 mt-5 gap-4 text-[16px] font-medium text-gray-700 overflow-x-auto">
             {categories.map((category) => (
               <div className="max-w-full mx-auto">
                 <button
                   key={category}
                   // style={{ borderRadius: "200px" }}
                   onClick={() => handleCategoryClick(category)}
-                  className={`px-4 py-1.5 h-9 rounded-full max-w-[200px] w-[200px] mx-auto md:w-full whitespace-nowrap transition-all duration-200 ${
+                  className={`px-4 py-1.5 h-9 rounded-full max-w-[600px] w-[200px] mx-auto md:w-full whitespace-nowrap transition-all duration-200 ${
                     activeCategory === category
                       ? "text-white shadow-sm bg-[#8CC63F] rounded-full"
                       : "hover:text-[#8CC63F] text-gray-700 rounded-full"

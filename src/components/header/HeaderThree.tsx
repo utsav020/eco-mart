@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import Cart from "./Cart";
 import { usePathname, useRouter } from "next/navigation";
 import { Menu, X } from "lucide-react";
 
@@ -18,6 +17,13 @@ export default function HeaderThree() {
     { label: "Contact Us", path: "/contact" },
   ];
 
+  const CSCText = [
+    "CSC kalavad farmer producer company limited",
+    "CSC kalavad farmer producer company limited",
+    "CSC kalavad farmer producer company limited",
+    "CSC kalavad farmer producer company limited",
+  ];
+
   const handleNavClick = (path: string) => {
     router.push(path);
     setMobileOpen(false);
@@ -25,93 +31,80 @@ export default function HeaderThree() {
 
   return (
     <header className="w-full">
-      {/* Top Green Bar */}
+
+      {/* ---------------- TOP GREEN MARQUEE ---------------- */}
       <div className="w-full bg-[#018F45] text-white text-[15px] py-2">
-        <div className="max-w-[1920px] mx-auto w-full flex items-center justify-evenly ">
-          {/* Top Green Bar */}
-          <div className="w-full bg-[#018F45] text-white text-[15px] py-2">
-            <div className="max-w-[1920px] mx-auto w-full">
-              <div className="marquee-wrapper">
-                <div className="marquee-track">
-                  {/* Text repeated twice for continuous loop */}
-                  <span className="px-6">
-                    CSC kalavad farmer producer company limited
-                  </span>
-                  <span className="px-6">
-                    CSC kalavad farmer producer company limited
-                  </span>
-                </div>
-              </div>
-            </div>
+        <div className="marquee-wrapper">
+
+          {/* Track (repeated twice = infinite loop) */}
+          <div className="marquee-track">
+            {CSCText.map((t, i) => (
+              <span key={`a-${i}`} className="px-10">{t}</span>
+            ))}
+
+            {/* Duplicate to avoid gap */}
+            {CSCText.map((t, i) => (
+              <span key={`b-${i}`} className="px-10">{t}</span>
+            ))}
           </div>
+
         </div>
       </div>
 
-      {/* Main Header */}
+      {/* ---------------- MAIN HEADER ---------------- */}
       <div className="max-w-[1430px] mx-auto px-4 lg:px-0 py-4">
-        <div className="max-w-[1430px] bg-white mx-auto">
-          <div className="flex justify-between">
-            {/* Logo */}
-            <div
-              className="lg:flex hidden items-center gap-3 cursor-pointer"
-              onClick={() => handleNavClick("/index-three")}
-            >
-              <img
-                src="/assets/images/logo/Dadu_Fresh_Logo 1.png"
-                alt="logo"
-                className="h-[65px] w-auto"
-              />
-            </div>
+        <div className="flex justify-between items-center bg-white">
 
-            {/* Desktop Navbar */}
-            <div className="hidden lg:flex items-center font-semibold justify-between text-[18px] w-[416px]">
-              {navItems.map((item) => (
-                <div
-                  key={item.path}
-                  onClick={() => handleNavClick(item.path)}
-                  className={`cursor-pointer transition ${
-                    pathname === item.path
-                      ? "text-[#018F45]"
-                      : "text-black hover:text-[#077D40]"
-                  }`}
-                >
-                  {item.label}
-                </div>
-              ))}
-            </div>
-
-            {/* User + Icons */}
-            <div className="hidden w-[117px] justify-evenly lg:flex items-center">
-              <div className="">
-                <img
-                  src="/assets/images/navbar/User.png"
-                  alt="User"
-                  className="w-[26px] cursor-pointer"
-                  onClick={() => handleNavClick("/account")}
-                />
-              </div>
-
-              <div className="">
-                <img
-                  src="/assets/images/navbar/Heart.png"
-                  alt="Wishlist"
-                  className="w-[26px] cursor-pointer"
-                  onClick={() => handleNavClick("/wishlist")}
-                />
-              </div>
-
-              <div className="">
-                <img
-                  src="/assets/images/navbar/Bag.png"
-                  alt="Wishlist"
-                  className="w-[26px] cursor-pointer"
-                  onClick={() => handleNavClick("/cart")}
-                />
-              </div>
-            </div>
+          {/* Logo */}
+          <div
+            className="hidden lg:flex items-center gap-3 cursor-pointer"
+            onClick={() => handleNavClick("/index-three")}
+          >
+            <img
+              src="/assets/images/logo/Dadu_Fresh_Logo 1.png"
+              alt="logo"
+              className="h-[65px] w-auto"
+            />
           </div>
 
-          <div className="flex items-center lg:hidden justify-between max-w-full w-full">
+          {/* Desktop Navbar */}
+          <nav className="hidden lg:flex items-center font-semibold text-[18px] gap-10">
+            {navItems.map((item) => (
+              <div
+                key={item.path}
+                onClick={() => handleNavClick(item.path)}
+                className={`cursor-pointer transition ${
+                  pathname === item.path
+                    ? "text-[#018F45]"
+                    : "text-black hover:text-[#077D40]"
+                }`}
+              >
+                {item.label}
+              </div>
+            ))}
+          </nav>
+
+          {/* Desktop Icons */}
+          <div className="hidden lg:flex items-center gap-6">
+            <img
+              src="/assets/images/navbar/User.png"
+              className="w-[26px] cursor-pointer"
+              onClick={() => handleNavClick("/account")}
+            />
+            <img
+              src="/assets/images/navbar/Heart.png"
+              className="w-[26px] cursor-pointer"
+              onClick={() => handleNavClick("/wishlist")}
+            />
+            <img
+              src="/assets/images/navbar/Bag.png"
+              className="w-[26px] cursor-pointer"
+              onClick={() => handleNavClick("/cart")}
+            />
+          </div>
+
+          {/* Mobile Header */}
+          <div className="flex items-center lg:hidden justify-between w-full">
             <div
               className="flex items-center gap-3 cursor-pointer"
               onClick={() => handleNavClick("/index-three")}
@@ -123,17 +116,16 @@ export default function HeaderThree() {
               />
             </div>
 
-            <div className="">
-              <button className="" onClick={() => setMobileOpen(!mobileOpen)}>
-                {mobileOpen ? <X size={28} /> : <Menu size={28} />}
-              </button>
-            </div>
+            <button onClick={() => setMobileOpen(!mobileOpen)}>
+              {mobileOpen ? <X size={28} /> : <Menu size={28} />}
+            </button>
           </div>
         </div>
 
-        {/* Mobile Responsive Menu */}
+        {/* ---------------- MOBILE MENU ---------------- */}
         {mobileOpen && (
           <div className="lg:hidden mt-4 bg-white border-t pt-4">
+
             <div className="flex flex-col gap-4 text-[18px] pb-4">
               {navItems.map((item) => (
                 <div
@@ -150,30 +142,23 @@ export default function HeaderThree() {
               ))}
             </div>
 
-            {/* Mobile User Icons */}
+            {/* Mobile Icons */}
             <div className="flex items-center gap-6 border-t pt-4">
               <img
                 src="/assets/images/navbar/User.png"
-                alt="User"
                 className="w-[26px] cursor-pointer"
                 onClick={() => handleNavClick("/account")}
               />
-
               <img
                 src="/assets/images/navbar/Heart.png"
-                alt="Wishlist"
                 className="w-[26px] cursor-pointer"
                 onClick={() => handleNavClick("/wishlist")}
               />
-
-              <div className="">
-                <img
-                  src="/assets/images/navbar/Bag.png"
-                  alt="Wishlist"
-                  className="w-[26px] cursor-pointer"
-                  onClick={() => handleNavClick("/cart")}
-                />
-              </div>
+              <img
+                src="/assets/images/navbar/Bag.png"
+                className="w-[26px] cursor-pointer"
+                onClick={() => handleNavClick("/cart")}
+              />
             </div>
           </div>
         )}
