@@ -218,3 +218,137 @@ h1, h2, h3, h4, h5, h6 {
 .reset-bottom { transform: translate(-50%, 0); }
 
 
+
+
+/* LOGO LODAR */
+
+.loader-container {
+  width: 180px;
+  height: 180px;
+  margin: 80px auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  perspective: 1200px;
+}
+
+.logo-wrapper {
+  width: 140px;
+  height: 140px;
+  padding: 18px;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 15px 25px rgba(0,0,0,0.18);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: logoSpin 2.4s ease-in-out infinite;
+  transform-style: preserve-3d;
+}
+
+.logo-wrapper img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+@keyframes logoSpin {
+  0% {
+    transform: rotateY(0deg) rotateX(0deg) scale(1);
+  }
+  40% {
+    transform: rotateY(180deg) rotateX(10deg) scale(1.05);
+  }
+  70% {
+    transform: rotateY(260deg) rotateX(0deg) scale(1);
+  }
+  100% {
+    transform: rotateY(360deg) rotateX(0deg) scale(1);
+  }
+}
+
+
+
+
+.logo-spin-loader {
+  width: 140px;
+  height: 140px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 70px auto;
+  animation: spinRound 2s linear infinite;
+}
+
+.logo-spin-loader img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+@keyframes spinRound {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+
+
+.logo-line-loader {
+  width: 150px;
+  margin: 40px auto;
+  text-align: center;
+}
+
+.logo-line-loader img {
+  width: 100%;
+  height: auto;
+  margin-bottom: 12px;
+}
+
+.loading-line {
+  width: 100%;
+  height: 4px;
+  background: #e0e0e0;
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+}
+
+.loading-line::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 4px;
+  width: 40%;
+  background: #32c732; /* green like your brand */
+  border-radius: 10px;
+  animation: loadingMove 1.2s linear infinite;
+}
+
+@keyframes loadingMove {
+  0% {
+    left: -40%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+
+@keyframes lineMove {
+  0% {
+    left: -40%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+.animate-lineMove {
+  animation: lineMove 1.3s linear infinite;
+}

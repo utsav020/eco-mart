@@ -90,7 +90,7 @@ const ProductViewModal: React.FC<Props> = ({ product, onClose }) => {
       <div className="bg-white rounded-3xl shadow-2xl w-full max-w-4xl max-h-[95vh] overflow-hidden animate-slide-up">
         {/* Header */}
         <div className="relative bg-emerald-100 p-8 text-black">
-          <div className="absolute top-4 right-4">
+          <div className="absolute top  -4 right-4">
             <button
               onClick={onClose}
               className="text-black p-3 rounded-2xl transition-all duration-300 transform hover:scale-110"

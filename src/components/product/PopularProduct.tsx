@@ -5,6 +5,7 @@ import { useCart } from "../header/CartContext";
 import { useWishlist } from "../header/WishlistContext";
 import { toast, ToastContainer } from "react-toastify";
 import { Heart } from "lucide-react";
+import LogoLineLoader from "../loader/LogoLineLoader";
 
 interface ProductType {
   product_id: number | undefined;
@@ -137,7 +138,7 @@ const PopularProducts: React.FC = () => {
   return (
     <div className="bg-white max-w-[1430px] md:px-0 lg:px-0 w-full mt-[100px] mx-auto">
       {/* ✅ Title */}
-      <div className="mb-10 lg:pl-0 px-[15px] md:px-[20px] lg:px-0">
+      <div className="mb-10 lg:pl-0 px-[15px] md:px-5 lg:px-0">
         <p className="md:text-[35px] text-[30px] font-bold text-[#2D2D2D] mb-2">
           Shop Our Products
         </p>
@@ -148,8 +149,11 @@ const PopularProducts: React.FC = () => {
 
       {/* ✅ Product Grid */}
       {loading ? (
-        <div className="flex justify-center items-center py-10">
-          <div className="animate-spin h-8 w-8 border-4 border-[#A3C526] border-t-transparent rounded-full"></div>
+        // <div className="flex justify-center items-center py-10">
+        //   <div className="animate-spin h-8 w-8 border-4 border-[#A3C526] border-t-transparent rounded-full"></div>
+        // </div>
+        <div className="">
+          <LogoLineLoader />
         </div>
       ) : error ? (
         <p className="text-center text-gray-500 py-10">{error}</p>

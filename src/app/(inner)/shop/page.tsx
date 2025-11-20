@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import { useProduct } from "@/components/context/page";
 import { ProductImage } from "@/app/dashboard/types/product";
 import { useCategory } from "@/components/context/CategoryContext";
+import LogoLineLoader from "@/components/loader/LogoLineLoader";
 
 interface ProductType {
   _id?: string;
@@ -120,7 +121,7 @@ export default function BlogGridMain() {
       productName: product.productName ?? "Default Product Title",
       regularPrice: product.regularPrice,
       productImage: product.image || "",
-      description: product.discription ?? "No description available"
+      description: product.discription ?? "No description available",
     });
     setAddedProductId(product._id || index);
     setTimeout(() => setAddedProductId(null), 4000);
@@ -182,7 +183,7 @@ export default function BlogGridMain() {
             {categories.map((category) => (
               <button
                 key={category}
-                style={{borderRadius: "200px"}}
+                style={{ borderRadius: "200px" }}
                 onClick={() => handleCategoryClick(category)}
                 className={`px-4 py-1.5 h-9 rounded-full whitespace-nowrap transition-all duration-200 ${
                   activeCategory === category
@@ -199,8 +200,29 @@ export default function BlogGridMain() {
         {/* ✅ Product List */}
         <div className="bg-white max-w-[1430px] w-full mt-5 mx-auto">
           {loading ? (
-            <div className="flex justify-center items-center py-10">
-              <div className="animate-spin h-8 w-8 border-4 border-[#A3C526] border-t-transparent rounded-full"></div>
+            // <div className="flex justify-center items-center py-10">
+            //   <div className="animate-spin h-8 w-8 border-4 border-[#A3C526] border-t-transparent rounded-full"></div>
+            // </div>
+            // <div className="loader-container">
+            //   <div className="logo-wrapper">
+            //     <img
+            //       src="/assets/images/logo/Dadu_Fresh_Logo 1.png"
+            //       alt="Dadu Fresh Logo"
+            //     />
+            //   </div>
+            // </div>
+
+            // <div className="logo-spin-loader">
+            //   <img
+            //     src="/assets/images/logo/Dadu_Fresh_Logo 1.png"
+            //     alt="Dadu Fresh Logo"
+            //   />
+            // </div>
+
+            
+
+            <div className="">
+              <LogoLineLoader />
             </div>
           ) : error ? (
             <p className="text-center text-gray-500 py-10">{error}</p>
@@ -221,7 +243,10 @@ export default function BlogGridMain() {
                   <div className="relative flex justify-center items-center">
                     <div className="h-72">
                       <img
-                        src={getImage(product, index) || "/assets/images/products/Oats.png"}
+                        src={
+                          getImage(product, index) ||
+                          "/assets/images/products/Oats.png"
+                        }
                         alt={product.productName}
                         className="w-[331.75px] h-72 object-cover"
                       />
@@ -234,13 +259,11 @@ export default function BlogGridMain() {
                           e.stopPropagation();
                           handleWishlist(product);
                         }}
-                        className={`p-2 rounded-full transition ${
-                          wishlistItems.some(
-                            (item) => String(item.id) === String(product._id)
-                          )
-                        }`}
+                        className={`p-2 rounded-full transition ${wishlistItems.some(
+                          (item) => String(item.id) === String(product._id)
+                        )}`}
                       >
-                        <Heart 
+                        <Heart
                           className={`w-6 h-6 ${
                             wishlistItems.some(
                               (item) => String(item.id) === String(product._id)
@@ -258,24 +281,24 @@ export default function BlogGridMain() {
                     <div className="flex items-center justify-between h-6">
                       <div className="">
                         <p className="text-[14px] font-bold text-[#000000] truncate">
-                        {product.productName || "Organic Product"}
-                      </p>
+                          {product.productName || "Organic Product"}
+                        </p>
                       </div>
                       <div className="flex text-[16px]">★★★★★</div>
                     </div>
 
                     <div className="flex items-center mt-[15px] justify-between">
-                     <div className="">
-                       <p className="text-gray-600 text-[14px]">
-                        {product.regularPrice
-                          ? `₹${product.regularPrice}`
-                          : "₹95.00"}
-                      </p>
-                     </div>
+                      <div className="">
+                        <p className="text-gray-600 text-[14px]">
+                          {product.regularPrice
+                            ? `₹${product.regularPrice}`
+                            : "₹95.00"}
+                        </p>
+                      </div>
                       <div className="">
                         <p className="text-[12px] text-[#3333338C]/55">
-                        4.86 (887k Reviews)
-                      </p>
+                          4.86 (887k Reviews)
+                        </p>
                       </div>
                     </div>
 
