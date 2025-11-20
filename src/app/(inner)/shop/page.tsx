@@ -203,7 +203,7 @@ export default function BlogGridMain() {
         <div className="bg-white max-w-[1430px] w-full mt-5 mx-auto">
           {loading ? (
             <div className="">
-              <LogoLineLoader />
+              <LogoLineLoader /> 
             </div>
           ) : error ? (
             <p className="text-center text-gray-500 py-10">{error}</p>
