@@ -2,28 +2,26 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff } from "lucide-react";
-import FooterTwo from "../../../components/footer/FooterTwo";
+import { Eye, EyeOff, X } from "lucide-react";
 
 export default function Login() {
+  const router = useRouter();
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const router = useRouter();
 
-  const handleChange = (e: { target: { id: any; value: any } }) => {
-    setFormData({
-      ...formData,
-      [e.target.id]: e.target.value,
-    });
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
     setError("");
   };
 
-  const handleSubmit = async (e: { preventDefault: () => void }) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
@@ -47,9 +45,10 @@ export default function Login() {
           localStorage.setItem("token", data.token);
           localStorage.setItem("user", JSON.stringify(data.user));
         }
+
         router.push("/index-three");
       } else {
-        setError(data.message || "Login failed");
+        setError(data.message || "Login failed. Try again.");
       }
     } catch (err) {
       setError("Network error. Please try again.");
@@ -59,220 +58,135 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Breadcrumb */}
-      <div className="bg-white py-4 border-b border-gray-200">
-        <div className="container mx-auto px4">
-          <div className="flex items-center space-x-2 text-[16px] text-gray-600">
-            <a href="/" className="hover:text-blue-600 transition-colors">
-              Home
-            </a>
-            <span className="text-gray-400">›</span>
-            <span className="text-gray-900 font-medium">Login</span>
+    <div className="w-full max-w-[795px] h-[750px] mx-auto mt-24 bg-white rounded-2xl shadow-lg border border-gray-200 relative p-8 lg:p-10">
+      {/* Card */}
+      <div className="max-w-[528px] mx-auto">
+        {/* Close Button */}
+        <button className="absolute top-4 right-4 text-gray-500 hover:text-black transition">
+          <X size={20} />
+        </button>
+
+        {/* Title */}
+        <h2 className="text-center text-[32px] font-bold text-[#333333]">Log in</h2>
+        <p className="text-center text-[#111111] text-[16px] mt-1">
+          Don’t have an Account?{" "}
+          <a href="/register" className="text-[#111111] underline">
+            Sign up
+          </a>
+        </p>
+
+        {/* Error Box */}
+        {error && (
+          <div className="mt-6 p-3 bg-red-100 text-red-700 border border-red-300 rounded-lg text-sm">
+            {error}
           </div>
+        )}
+
+        {/* Social Login Buttons */}
+        <div className="mt-8 space-y-4">
+          <button className="w-full h-[72px] border border-gray-300 rounded-full py-3 flex items-center justify-center gap-3 text-gray-700 hover:bg-gray-50 transition">
+            <img
+              src="/assets/images/icons/Facebook.png"
+              className="w-6 h-6"
+              alt="facebook"
+            />
+            Log in with Facebook
+          </button>
+
+          <button className="w-full h-[72px] border border-gray-300 rounded-full py-3 flex items-center justify-center gap-3 text-gray-700 hover:bg-gray-50 transition">
+            <img
+              src="/assets/images/icons/google.png"
+              className="w-6 h-6"
+              alt="google"
+            />
+            Log in with Google
+          </button>
         </div>
-      </div>
 
-      {/* Login Section */}
-      <div className="py-12 border-2 lg:py-16">
-        <div className="container mx-auto px-4">
-          <div className="max-w-2xl mx-auto">
-            {/* Card Container */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-              {/* Header */}
-              <div className="text-center mb-8">
-                <div className="w-16 h-16 mx-auto mb-4 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <img
-                    className="w-10 h-10 object-contain"
-                    src="assets/images/logo/fav.png"
-                    alt="logo"
-                  />
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                  Welcome Back
-                </h3>
-                <p className="text-gray-600">Sign in to your account</p>
+        {/* OR Divider */}
+        <div className="flex items-center my-8 gap-4">
+          <div className="flex-1 h-px bg-[#666666]"></div>
+          <span className="text-[#666666] text-[24px]">OR</span>
+          <div className="flex-1 h-px bg-[#666666]"></div>
+        </div>
+
+        {/* Login Form */}
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Email */}
+          <div>
+            <label className="text-[#666666] text-[16px]">Your email</label>
+            <input
+              id="email"
+              type="email"
+              required
+              value={formData.email}
+              onChange={handleChange}
+              className="w-full mt-2 h-14 border border-[#66666659] rounded-lg px-4 py-2"
+              placeholder=""
+            />
+          </div>
+
+          {/* Password */}
+          <div>
+            <div className="flex justify-between">
+              <div className="">
+                <label className="text-[#666666] text-[16px]">Your password</label>
               </div>
-
-              {/* Error Message */}
-              {error && (
-                <div className="mb-6 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center space-x-2">
-                  <svg
-                    className="w-4 h-4 text-red-500 flex-shrink-0"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  <p className="text-red-700 text-[16px]">{error}</p>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="text-gray-500"
+                >
+                  {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
+                  
+                </button>
+                <div className="text-[#666666] text-[16px]">
+                  Hide
                 </div>
-              )}
-
-              {/* Login Form */}
-              <form onSubmit={handleSubmit} className="space-y-5">
-                <div>
-                  <label
-                    htmlFor="email"
-                    className="block text-[16px] font-medium text-gray-700 mb-1"
-                  >
-                    Email Address
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                    placeholder="Enter your email"
-                  />
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="password"
-                    className="block text-[16px] font-medium text-gray-700 mb-1"
-                  >
-                    Password
-                  </label>
-                  <div className="w-full flex justify-between py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors pr-10">
-                    <div className="">
-                      <input
-                        type={showPassword ? "text" : "password"}
-                        id="password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        required
-                        className=""
-                        placeholder="Enter your password"
-                      />
-                    </div>
-
-                    <div className="">
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className=" text-gray-400 hover:text-gray-600"
-                      >
-                        {showPassword ? (
-                          <Eye className="w-8" />
-                        ) : (
-                          <EyeOff className="w-8" />
-                        )}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between text-[16px]">
-                  <label className="flex items-center space-x-2">
-                    <div className="flex gap-3">
-                      <div className="">
-                        <input
-                          type="checkbox"
-                          className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                        />
-                      </div>
-
-                      <div className="">
-                        <span className="text-gray-600">Remember me</span>
-                      </div>
-                    </div>
-                  </label>
-                  <div className="">
-                    <a
-                      href="/forgot-password"
-                      className="text-blue-600 hover:text-blue-500"
-                    >
-                      Forgot password?
-                    </a>
-                  </div>
-                </div>
-
-                <div className="w-full border-gray-400 border hover:border-green-600 hover:text-white text-[15px] rounded-lg hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors">
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full py-3 px-4 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors"
-                  >
-                    {loading ? (
-                      <div className="flex items-center justify-center space-x-2">
-                        <div className="w-4 h-4 border-2 border-t-transparent rounded-full animate-spin"></div>
-                        <span>Logging in...</span>
-                      </div>
-                    ) : (
-                      "Login Account"
-                    )}
-                  </button>
-                </div>
-              </form>
-
-              {/* Divider */}
-              <div className="mt-6 mb-4">
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-gray-300" />
-                  </div>
-                  <div className="relative flex justify-center text-[16px]">
-                    <span className="px-2 bg-white text-gray-500">
-                      Or continue with
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Social Login */}
-              <div className="flex justify-center space-x-4">
-                <div className="w-full h-full flex items-center justify-center border border-gray-300 rounded-lg hover:border-gray-400 hover:bg-gray-50 transition-colors">
-                  <button
-                    type="button"
-                    className="flex items-center justify-center"
-                  >
-                    <img
-                      src="assets/images/form/google.svg"
-                      alt="Google login"
-                      className="w-35 h-5 p-3"
-                    />
-                  </button>
-                </div>
-                <div className="w-full h-full flex items-center justify-center border border-gray-300 rounded-lg hover:border-gray-400 hover:bg-gray-50 transition-colors">
-                  <button
-                    type="button"
-                    className="flex items-center justify-center"
-                  >
-                    <img
-                      src="assets/images/form/facebook.svg"
-                      alt="Facebook login"
-                      className="w-36 h-5 p-3"
-                    />
-                  </button>
-                </div>
-              </div>
-
-              {/* Sign Up Link */}
-              <div className="text-center mt-6 pt-4 border-t border-gray-200">
-                <p className="text-gray-600 text-[16px]">
-                  Don't have an account?{" "}
-                  <span className=" ">
-                    <a
-                      href="/register"
-                      className="font-medium"
-                    >
-                      Sign up now
-                    </a>
-                  </span>
-                </p>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
 
-      <FooterTwo />
+            <div className="w-full mt-2 h-14 flex items-center border border-[#66666659] rounded-lg px-4 py-2">
+              <input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                required
+                value={formData.password}
+                onChange={handleChange}
+                className="flex-1 outline-none"
+                placeholder=""
+              />
+            </div>
+          </div>
+
+          {/* Forgot Password */}
+          <div className="text-right">
+            <a
+              href="/forgot-password"
+              className="text-[16px] text-#111111 underline"
+            >
+              Forget your password
+            </a>
+          </div>
+
+          {/* Login Button */}
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-gray-300 text-white py-3 rounded-full text-center text-[16px] font-medium hover:bg-gray-400 transition disabled:cursor-not-allowed"
+          >
+            {loading ? (
+              <div className="flex items-center justify-center gap-2">
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                <span>Logging in...</span>
+              </div>
+            ) : (
+              "Log in"
+            )}
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

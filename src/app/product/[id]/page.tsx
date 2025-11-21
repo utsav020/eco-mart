@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from "react";
 import ShortService from "@/components/service/ShortService";
-// import RelatedProduct from "@/components/product/RelatedProduct";
 import FooterTwo from "@/components/footer/FooterTwo";
 import { Minus, Plus } from "lucide-react";
 import { useCart } from "@/components/header/CartContext";
@@ -31,6 +30,7 @@ interface ProductType {
   regularPrice?: number | null;
   salePrice?: number | null;
   description?: string;
+  discription?: string;
   has_variants?: boolean | number;
   productImages?: ProductImage[];
   productWeight?: string;
@@ -57,12 +57,6 @@ const CompareElements: React.FC = () => {
   const [activeTab, setActiveTab] = useState("tab1");
   const [loading, setLoading] = useState<boolean>(true);
 
-  const tabs = [
-    { id: "tab1", label: "Product Details" },
-    { id: "tab2", label: "Specifications" },
-  ];
-
-  // ✅ Load Product (from context, localStorage, or API)
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -106,7 +100,6 @@ const CompareElements: React.FC = () => {
     fetchProduct();
   }, [selectedProduct, id]);
 
-  // ✅ Fetch Related Products based on category_id
   useEffect(() => {
     const fetchRelated = async () => {
       if (!product?.category_id) return;
@@ -115,7 +108,6 @@ const CompareElements: React.FC = () => {
           `https://ekomart-backend.onrender.com/api/product/getproductbycategory/${product.category_id}`
         );
         const data = await res.json();
-        // Filter out current product
         const filtered = data.filter(
           (item: ProductType) => item._id !== product._id
         );
@@ -130,7 +122,6 @@ const CompareElements: React.FC = () => {
     }
   }, [product?.category_id]);
 
-  // ✅ Initialize Weight & Price
   useEffect(() => {
     if (product) {
       const withWeights = {
@@ -164,7 +155,7 @@ const CompareElements: React.FC = () => {
       regularPrice: product.regularPrice,
       productImage: product.image || activeImage || "",
       title: product.productName,
-      description: product.discription ?? "No description available"
+      description: product.discription ?? "No description available",
     });
 
     setAdded(true);
@@ -172,9 +163,15 @@ const CompareElements: React.FC = () => {
     setTimeout(() => setAdded(false), 3000);
   };
 
-  const increaseQuantity = () => setQuantity((prev) => prev + 1);
-  const decreaseQuantity = () =>
-    setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
+  const thumbnails =
+    product?.productImages && product.productImages.length > 0
+      ? product.productImages
+      : [
+          { image_id: 1, image_url: "/assets/images/shop/01.jpg" },
+          { image_id: 2, image_url: "/assets/images/shop/02.jpg" },
+          { image_id: 3, image_url: "/assets/images/shop/03.jpg" },
+          { image_id: 4, image_url: "/assets/images/shop/04.jpg" },
+        ];
 
   if (loading)
     return (
@@ -185,10 +182,7 @@ const CompareElements: React.FC = () => {
 
   if (!product)
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center">
-        <p className="text-lg text-gray-600 mb-4">
-          No product data found. Please return to the shop.
-        </p>
+      <div className="min-h-screen flex items-center justify-center">
         <button
           onClick={() => router.push("/")}
           className="px-6 py-3 bg-[#077D40] text-white rounded-full"
@@ -198,286 +192,264 @@ const CompareElements: React.FC = () => {
       </div>
     );
 
-  const thumbnails =
-    product.productImages && product.productImages.length > 0
-      ? product.productImages
-      : [
-          { image_id: 1, image_url: "/assets/images/shop/01.jpg" },
-          { image_id: 2, image_url: "/assets/images/shop/02.jpg" },
-          { image_id: 3, image_url: "/assets/images/shop/03.jpg" },
-          { image_id: 4, image_url: "/assets/images/shop/04.jpg" },
-        ];
+  const increaseQuantity = () => setQuantity((q) => q + 1);
+  const decreaseQuantity = () => setQuantity((q) => (q > 1 ? q - 1 : 1));
 
   return (
     <div className="min-h-screen">
       <HeaderThree />
 
       {/* Breadcrumb */}
-      <div className="bg-white py-4 sticky top-0 z-40">
-        <div className="container mx-auto px-4">
-          <div className="flex w-full gap-3 items-center text-[16px]">
-            <a
-              href="/"
-              className="text-gray-500 text-[20px] hover:text-green-600 transition-colors duration-200 flex items-center gap-1"
-            >
+      <div className="bg-white py-3 sticky top-0 z-40">
+        <div className="max-w-[1430px] mx-auto">
+          <div className="flex items-center gap-3 text-sm md:text-[20px]">
+            <a href="/" className="text-gray-500 hover:text-green-600">
               Home
             </a>
-            <i className="fa-regular fa-chevron-right text-md text-gray-400" />
-            <a
-              href="/shop"
-              className="text-gray-500 hover:text-green-600 transition-colors duration-200"
-            >
+            <span className="text-gray-300">/</span>
+            <a href="/shop" className="text-gray-500 hover:text-green-600">
               Shop
             </a>
-            <i className="fa-regular fa-chevron-right text-md text-gray-400" />
-            <span className="text-green-600 font-semibold truncate max-w-[200px]">
-              {product.productName ?? "Product"}
+            <span className="text-gray-300">/</span>
+            <span className="text-green-600 font-semibold truncate">
+              {product.productName}
             </span>
           </div>
         </div>
       </div>
 
       {/* Product Details */}
-      <div className="max-w-[1730px] border-2 mx-auto py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-8 gap-8">
-          <div className="lg:col-span-8">
-            <div className="bg-white overflow-hidden mb-8">
-              <div className="flex gap-20 flex-col lg:flex-row">
-                {/* Images */}
-                <div className="space-y-6 max-w-[500px]">
-                  <div className="max-w-[500px] h-[500px] mx-auto bg-white overflow-hidden aspect-square">
-                    <img
-                      src={activeImage}
-                      alt={product.productName}
-                      className="w-[500px] h-[500px] object-cover"
-                    />
-                  </div>
+      <div className="max-w-[1430px] mx-auto py-8 px-4 xl:px-4 2xl:px-0">
+        <div className="grid grid-cols-1 lg:grid-cols-2 mx-auto xl:flex xl:gap-0 gap-10">
+          {/* Left Section */}
+          <div className="max-w-[500px] mx-auto 2xl:mx-0 w-full">
+            <div className="max-w-[500px] w-full">
+              <img
+                src={activeImage}
+                alt={product.productName}
+                className="w-[500px] h-[500px] object-cover rounded-lg"
+              />
+            </div>
 
-                  {/* Thumbnails */}
-                  <div className="grid max-w-[500px] h-[90px]">
-                    {thumbnails.map((thumb) => (
-                      <div
-                        key={thumb.image_id}
-                        className="w-[185px] h-[90px] mx-auto"
-                      >
-                        <div
-                          onClick={() => setActiveImage(thumb.image_url)}
-                          className={`cursor-pointer w-[90px] h-[90px] rounded-xl overflow-hidden transition-all duration-300 group ${
-                            activeImage === thumb.image_url
-                              ? "border-green-500 ring-2 ring-[#077D40] shadow-md scale-105"
-                              : "border-gray-200/60 hover:border-green-300 hover:shadow-md"
-                          }`}
-                        >
-                          <img
-                            src={thumb.image_url}
-                            alt="thumb"
-                            className="w-20 mt-3 flex items-center justify-center h-20 object-cover"
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+            {/* Thumbnails */}
+            <div className="flex gap-4 max-w-[500px] mx-auto mt-4">
+              {thumbnails.map((thumb) => (
+                <div className="max-w-[500px] mx-auto">
+                  <img
+                    key={thumb.image_id}
+                    onClick={() => setActiveImage(thumb.image_url)}
+                    src={thumb.image_url}
+                    className={`w-24 h-24 object-cover rounded-lg cursor-pointer border ${
+                      activeImage === thumb.image_url
+                        ? "border-[#077D40] border-2 p-1"
+                        : "border-[#077D40] border-2"
+                    }`}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Right Section */}
+          <div className="space-y-6 xl:w-[829px] xl:ml-[61px]">
+            <h1 className="text-3xl font-bold text-gray-900">
+              {product.productName}
+            </h1>
+            <div className="">
+              <p className="text-gray-600">{product.description}</p>
+            </div>
+            {/* ✅ Dynamic Price Display */}
+            <div className="flex items-baseline gap-3 mb-0">
+              <span className="text-[30px] font-bold text-[#077D40]">
+                Rs.{" "}
+                {selectedWeight === "1kg"
+                  ? ((product.salePrice ?? 0) * 2).toString()
+                  : (product.salePrice ?? "0.00").toString()}
+              </span>
+
+              {product.regularPrice && (
+                <span className="text-[20px] text-gray-400 line-through">
+                  Rs.{" "}
+                  {selectedWeight === "1kg"
+                    ? ((product.regularPrice ?? 0) * 2).toString()
+                    : (product.regularPrice ?? "0.00").toString()}
+                </span>
+              )}
+            </div>
+
+            <div className="h-[182px] w-60">
+              {/* Weight Selector (FIXED) */}
+              <div className="flex gap-4 items-end">
+                <div className="h-[54px] flex items-end">
+                  <p className="text-gray-900 font-medium mb-1">Weight:</p>
                 </div>
 
-                {/* Product Info */}
-                <div className="space-y-6">
-                  <p className="text-[30px] font-bold text-gray-900">
-                    {product.productName}
+                <div className="flex text-[13px] w-[169px] border rounded-lg border-[#D9D9D9] h-[34px] overflow-hidden">
+                  {["1kg", "500g"].map((weight) => (
+                    <button
+                      key={weight}
+                      onClick={() => setSelectedWeight(weight)}
+                      className={`flex-1 font-semibold transition-all duration-300
+                      ${
+                        selectedWeight === weight
+                          ? "bg-[#077D40] text-white"
+                          : "bg-white text-black"
+                      }`}
+                    >
+                      {weight}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Availability */}
+              <div className="mt-4 h-10 flex gap-3 items-end">
+                <div className="">
+                  <p className="text-[16px">Availability: </p>
+                </div>
+                <div className="">
+                  <p className="font-semibold text-[#077D40]">
+                    {product.stock && product.stock > 0
+                      ? "In Stock"
+                      : "Out of Stock"}
                   </p>
-                  <div className="w-[829px]">
-                    <p className="text-gray-600 text-[16px]">
-                      {product.description}
-                    </p>
+                </div>
+              </div>
+
+              {/* Quantity & Buttons */}
+              <div className="mt-6  flex flex-col sm:flex-row xl:flex-col sm:gap-6 gap-3">
+                <div className="flex h-11 items-end gap-4">
+                  <div className="">
+                    <p>Quantity:</p>
                   </div>
 
-                  {/* ✅ Dynamic Price Display */}
-                  <div className="flex items-baseline gap-3">
-                    <span className="text-[30px] font-bold text-[#077D40]">
-                      Rs.{" "}
-                      {selectedWeight === "1kg"
-                        ? ((product.salePrice ?? 0) * 2).toString()
-                        : (product.salePrice ?? "0.00").toString()}
-                    </span>
-
-                    {product.regularPrice && (
-                      <span className="text-[20px] text-gray-400 line-through">
-                        Rs.{" "}
-                        {selectedWeight === "1kg"
-                          ? ((product.regularPrice ?? 0) * 2).toString()
-                          : (product.regularPrice ?? "0.00").toString()}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Weight Selector */}
-                  <div className="flex flex-col h-[54px] mb-0 md:flex-row items-start md:items-end gap-4">
-                    <div className="flex items-center gap-4">
-                      <div className="">
-                        <p className="text-[16px] text-gray-900">Weight:</p>
-                      </div>
-                      <div className="flex text-[13px] border rounded-lg border-[#D9D9D9] w-[169px] h-[30px]">
-                        {["1kg", "500g"].map((weight) => (
-                          <button
-                            style={{ borderRadius: "8px" }}
-                            key={weight}
-                            onClick={() => setSelectedWeight(weight)}
-                            className={`rounded-xl font-semibold w-1/2 transition-all duration-200 ${
-                              selectedWeight === weight
-                                ? "text-white bg-[#077D40]"
-                                : "text-black"
-                            }`}
-                          >
-                            {weight}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Availability */}
-                  <div className="mb-0 flex items-end h-[54px]">
-                    <p className="text-[16px] ">
-                      Availability:{" "}
-                      <span className="font-semibold text-[#077D40]">
-                        {product.stock && product.stock > 0
-                          ? "In Stock"
-                          : "Out of Stock"}
-                      </span>
-                    </p>
-                  </div>
-
-                  {/* Quantity Selector */}
-                  <div className="flex h-[54px] items-end gap-10">
-                    <div className="flex items-center gap-10">
-                      <span className="text-[16px] text-gray-900">
-                        Quantity:
-                      </span>
-                      <div className="flex w-[101px] h-[30px] bg-[#EBEBEBB8] justify-between items-center border border-gray-300 rounded-xl">
-                        <div className="w-[35px] flex items-center h-[30px] rounded-[5px] bg-[#C3C3C1]">
-                          <button
-                            className="pl-3.5"
-                            onClick={decreaseQuantity}
-                            disabled={quantity <= 1}
-                          >
-                            <Minus size={16} />
-                          </button>
-                        </div>
-                        <span className="text-[16px]  font-bold">
-                          {quantity}
-                        </span>
-
-                        <div className="w-[35px] flex items-center pl-3.5 h-[30px] rounded-[5px] bg-[#C3C3C1]">
-                          <button className="" onClick={increaseQuantity}>
-                            <Plus size={16} />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Buttons */}
-                  <div className="flex gap-4 mt-[25px]">
-                    <div className="hover:text-white w-[332px] h-[51px] text-[14px]">
+                  <div className="flex items-center w-[101px] gap-3 bg-[#F3F3F3] rounded-lg">
+                    <div className="bg-[#C3C3C1] rounded-md w-[35px] h-[30px]">
                       <button
-                        onClick={handleAdd}
-                        className={`h-[51px] border border-[#00000080] font-bold rounded-full transition-all duration-300 ${
-                          added
-                            ? "bg-[#077D40] text-white"
-                            : "hover:bg-[#077D40] hover:text-white"
-                        }`}
+                        onClick={decreaseQuantity}
+                        disabled={quantity <= 1}
+                        className="p-2 rounded-md disabled:opacity-50"
+                        aria-label="Decrease quantity"
                       >
-                        {added ? "Added to your Cart ✅" : "Add to your cart"}
+                        <Minus size={16} />
                       </button>
                     </div>
 
-                    <div className="w-[332px] h-[51px] bg-[#077D40] text-white font-bold">
-                      <button className="h-[51px] border border-[#00000080] font-bold rounded-full transition-all duration-300">
-                        Buy It Now
+                    <div className="min-w-3 text-center font-bold">
+                      {quantity}
+                    </div>
+
+                    <div className="bg-[#C3C3C1] rounded-md w-[35px] h-[30px]">
+                      <button
+                        onClick={increaseQuantity}
+                        className="p-2 rounded-md"
+                        aria-label="Increase quantity"
+                      >
+                        <Plus size={16} />
                       </button>
-                    </div>
-                  </div>
-
-                  {/* Accepted Payments: */}
-                  <div className="flex items-end justify-between w-[366px] h-[50px]">
-                    <div className="text-[16px] text-[#00000080]">
-                      <p>Accepted Payments:</p>
-                    </div>
-
-                    <div className="flex items-center justify-between w-[185px] h-[25px]">
-                      <img
-                        src="/assets/images/shop/Credit card1.png"
-                        alt="Accepted Payments"
-                      />
-                      <img
-                        src="/assets/images/shop/Credit card3.png"
-                        alt="Accepted Payments"
-                      />
-                      <img
-                        src="/assets/images/shop/Credit card.png"
-                        alt="Accepted Payments"
-                      />
-                      <img
-                        src="/assets/images/shop/Credit card2.png"
-                        alt="Accepted Payments"
-                      />
                     </div>
                   </div>
                 </div>
               </div>
             </div>
+
+            {/* BUTTONS */}
+            <div className="md:flex lg:block xl:flex w-full gap-4">
+              <div className="md:w-[332px]">
+                <button
+                  onClick={handleAdd}
+                  className={`w-full px-4 py-3 font-bold transition ${
+                    added
+                      ? "bg-[#077D40] text-white"
+                      : "border border-gray-800 hover:bg-[#077D40] hover:text-white"
+                  }`}
+                  aria-pressed={added}
+                >
+                  {added ? "Added to your Cart ✅" : "Add to your cart"}
+                </button>
+              </div>
+
+              <div className="md:w-[332px] mt-4 lg:mt-4 xl:mt-0 md:mt-0">
+                <button
+                  onClick={() => {
+                    // quick "Buy it now" flow: add to cart then navigate to checkout (example)
+                    handleAdd();
+                    router.push("/checkout");
+                  }}
+                  className="w-full px-4 py-3 bg-[#077D40] text-white font-bold"
+                >
+                  Buy It Now
+                </button>
+              </div>
+            </div>
+
+            {/* Accepted payments */}
+            <div className="mt-6 flex items-center justify-between max-w-sm">
+              <div className="text-sm text-gray-600">Accepted Payments:</div>
+              <div className="flex items-center gap-2">
+                <img
+                  src="/assets/images/shop/Credit card1.png"
+                  className="h-6"
+                  alt="card"
+                />
+                <img
+                  src="/assets/images/shop/Credit card3.png"
+                  className="h-6"
+                  alt="card"
+                />
+                <img
+                  src="/assets/images/shop/Credit card.png"
+                  className="h-6"
+                  alt="card"
+                />
+                <img
+                  src="/assets/images/shop/Credit card2.png"
+                  className="h-6"
+                  alt="card"
+                />
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Tabs */}
-        <div className="w-full">
-          <nav className="flex border-b max-w-[1730px] h-20 border-gray-200">
-            <div className="flex gap-10 h-20 items-center justify-center w-[350px] text-[20px]">
-              {tabs.map((tab) => (
+        {/* TABS */}
+        <div>      
+          <div className="mt-8">
+            <div className="flex gap-10 border-b-2 border-[#D2D0D0]">
+              {["tab1", "tab2"].map((tab) => (
                 <div className="">
                   <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`font-semibold text-base transition-all duration-300 border-b-4 ${
-                      activeTab === tab.id
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`py-3 font-semibold transition border-b-4 ${
+                      activeTab === tab
                         ? "text-green-600 border-green-500"
-                        : "text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300"
+                        : "text-gray-500 border-transparent"
                     }`}
                   >
-                    {tab.label}
+                    {tab === "tab1" ? "Product Details" : "Specifications"}
                   </button>
                 </div>
               ))}
             </div>
-          </nav>
 
-          <div className="mt-8">
-            {activeTab === "tab1" && (
-              <p className="text-[#00000080] font-bold text-[16px]">
-                At <span className="text-black font-bold">Dadu Fresh</span>, a
-                brand by{" "}
-                <span className="text-black font-bold">
-                  CSC Kalavad Farmer Producer Company Limited
-                </span>
-                , we proudly bring you{" "}
-                <span className="text-black font-bold">Organic Soyabeans</span>{" "}
-                – rich in plant-based protein and essential nutrients.
-              </p>
-            )}
-            {activeTab === "tab2" && (
-              <p className="text-[#00000080] font-bold text-[16px]">
-                Organic Soyabeans are grown naturally without chemicals and are
-                perfect for health-conscious families.
-              </p>
-            )}
+            <div className="mt-4 text-gray-700">
+              {activeTab === "tab1" && (
+                <p>
+                  <strong>Dadu Fresh</strong> brings you fresh, organic farm
+                  products.
+                </p>
+              )}
+
+              {activeTab === "tab2" && (
+                <p className="text-gray-600">
+                  High-quality soyabeans, grown naturally without chemicals.
+                </p>
+              )}
+            </div>
           </div>
         </div>
       </div>
-
-      {/* ✅ Show Related Products Dynamically */}
-      {/* {React.createElement(RelatedProduct as any, {
-        products: relatedProducts,
-        title: "Related Products",
-      })} */}
 
       <div className="mt-[100px]">
         <FooterTwo />

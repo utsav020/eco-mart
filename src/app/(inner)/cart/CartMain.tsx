@@ -4,6 +4,7 @@ import { useCart } from "@/components/header/CartContext";
 import { ChevronDown, ChevronUp, Trash2, X } from "lucide-react";
 import Cart from "@/components/header/Cart";
 import CheckOutMain from "../checkout/CheckOutMain";
+import router from "next/router";
 
 interface CartItem {
   regularPrice: any;
@@ -25,7 +26,27 @@ const CartMain = () => {
   const [couponMessage, setCouponMessage] = useState("");
   const [subtotal, setSubtotal] = useState(0);
   const [showCheckout, setShowCheckout] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+  // Check login status on page load
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    setIsLoggedIn(!!token);
+  }, []);
+
+  const handleCheckout = () => {
+    const token = localStorage.getItem("token");
+
+    // If user NOT logged in → redirect to login page
+    if (!token) {
+      router.push("/login?redirect=checkout");
+      return;
+    }
+
+    // If logged in → show checkout
+    setShowCheckout(true);
+    router.push("/checkout");
+  };
   const [specialInstructions, setSpecialInstructions] = useState("");
 
   useEffect(() => {
@@ -234,9 +255,9 @@ const CartMain = () => {
           </p>
 
           {/* Checkout Button */}
-          <div className="">
+          <div>
             <button
-              onClick={() => setShowCheckout(true)}
+              onClick={handleCheckout}
               className="w-full mt-6 bg-[#018F45] text-white py-3 text-lg rounded-md shadow-md"
             >
               Proceed to Checkout
