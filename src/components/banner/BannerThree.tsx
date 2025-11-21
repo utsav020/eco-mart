@@ -30,7 +30,7 @@ const BannerThreeSwiper = () => {
     <div className="relative w-full 2xl:mt-[140px] mt-[110px] md:mt-[150px] max-w-[1920px] mx-auto h-[90vh] md:h-[120vh] lg:h-[130vh] xl:h-[165vh] 2xl:h-[1027px] overflow-hidden bg-white">
       <Swiper
         modules={[Navigation, EffectFade, Autoplay]}
-        slidesPerView={1}
+        slidesPerView={1} 
         loop
         speed={800}
         effect="fade"
