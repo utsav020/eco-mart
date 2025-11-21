@@ -13,7 +13,7 @@ export default function Home() {
       </div>
 
       {/* Breadcrumb */}
-      <div className="md:px-[20px]">
+      <div className="md:px-5 mt-[130px]">
         <div className="py-6">
           <div className="max-w-[1430px] mx-auto flex items-center text-[20px] text-gray-600">
             <a href="/" className="hover:text-blue-600 transition">

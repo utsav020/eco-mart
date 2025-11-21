@@ -4,7 +4,17 @@ import { ArrowLeft, Check } from "lucide-react";
 export default function AboutBanner() {
   return (
     <>
-      <div className="max-w-[1430px] w-full mx-auto">
+      <div className="max-w-[1430px] mt-[110px] w-full mx-auto">
+
+        <div className="py-6 mt-[130px]">
+        <div className="max-w-[1430px] px-5 2xl:px-0 mx-auto flex items-center text-[20px] text-gray-600">
+          <a href="/" className="hover:text-green-700 transition">
+            Home
+          </a>
+          <span className="mx-2 text-gray-400">{"/"}</span>
+          <span className="font-semibold text-gray-800">Blog Grid</span>
+        </div>
+      </div>
         {/* Intro Section */}
         <div className="flex flex-col lg:flex-row justify-between items-start xl:items-center px-6 xl:px-0">
           <div className="w-full lg:w-[957px]">

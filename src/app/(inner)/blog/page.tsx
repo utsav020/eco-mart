@@ -31,9 +31,9 @@ export default function BlogGridPage() {
       <HeaderThree />
 
       {/* Breadcrumb */}
-      <div className="py-6">
-        <div className="max-w-[1430px] px-5 mx-auto flex items-center text-[20px] text-gray-600">
-          <a href="/" className="hover:text-blue-600 transition">
+      <div className="py-6 mt-[130px]">
+        <div className="max-w-[1430px] px-5 2xl:px-0 mx-auto flex items-center text-[20px] text-gray-600">
+          <a href="/" className="hover:text-green-700 transition">
             Home
           </a>
           <span className="mx-2 text-gray-400">{"/"}</span>
@@ -42,7 +42,7 @@ export default function BlogGridPage() {
       </div>
 
       {/* Hero Banner Section - 1 */}
-      <section className="relative mt-[100px] w-full max-w-[1430px] mx-auto px-4 md:px-6 lg:px-8 2xl:px-0 mb-12">
+      <section className="relative w-full max-w-[1430px] mx-auto px-4 md:px-6 lg:px-8 2xl:px-0 mb-12">
         {/* Background Image */}
         <div className="overflow-hidden rounded-[15px]">
           <img

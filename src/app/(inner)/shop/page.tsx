@@ -176,7 +176,7 @@ export default function BlogGridMain() {
         <HeaderThree />
       </div>
 
-      <div className="max-w-[1430px] px-5 mx-auto">
+      <div className="max-w-[1430px] mt-[180px] px-5 2xl:px-0 mx-auto">
         {/* ✅ Filter Bar */}
         <div className="w-full xl:px-0 bg-[#F5F5F5] max-w-[1730px] h-[280px] md:h-20 md:rounded-[200px] mx-auto py-2 px-4 items-center justify-between gap-3 mt-4">
           <div className="md:flex block items-center ml-auto max-w-full w-[203px] md:w-[570px] mx-auto md:ml-5 lg:mt-3.5 mt-5 gap-4 text-[16px] font-medium text-gray-700 overflow-x-auto">
