@@ -18,17 +18,7 @@ const SaleStatistics: React.FC = () => {
     },
     xaxis: {
       type: "category",
-      categories: [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-      ],
+      categories: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep"],
       axisBorder: { show: true },
       axisTicks: { show: true },
       crosshairs: { show: true },
@@ -64,17 +54,22 @@ const SaleStatistics: React.FC = () => {
           dataPointIndex: number;
           w: { globals: { series: number[][]; seriesNames: string[] } };
         };
-        return `<div class="custom-tooltip">
-          <span class="custom-tooltip__title">${w.globals.series[seriesIndex][dataPointIndex]} Sales</span>
-          <span class="custom-tooltip__subtitle">From ${w.globals.seriesNames[seriesIndex]}</span>
-        </div>`;
+        return `
+          <div class="bg-white px-3 py-2 rounded shadow text-sm">
+            <span class="font-bold">
+              ${w.globals.series[seriesIndex][dataPointIndex]} Sales
+            </span>
+            <br />
+            <span class="text-gray-500">
+              From ${w.globals.seriesNames[seriesIndex]}
+            </span>
+          </div>`;
       },
     },
     grid: {
       show: true,
       xaxis: { lines: { show: true } },
       yaxis: { lines: { show: false } },
-      column: { opacity: 0.2 },
     },
     dataLabels: { enabled: false },
   };
@@ -86,7 +81,7 @@ const SaleStatistics: React.FC = () => {
         { name: "Visitors", data: [30, 25, 36, 30, 45, 35, 64, 52, 59] },
         { name: "Products", data: [15, 35, 15, 45, 35, 65, 10, 44, 5] },
       ],
-      options: { ...baseOptions, chart: { ...baseOptions.chart, height: 430 } },
+      options: baseOptions,
     },
     month: {
       series: [
@@ -94,7 +89,7 @@ const SaleStatistics: React.FC = () => {
         { name: "Visitors", data: [40, 35, 46, 40, 55, 45, 74, 62, 69] },
         { name: "Products", data: [25, 45, 25, 55, 45, 75, 20, 54, 15] },
       ],
-      options: { ...baseOptions, chart: { ...baseOptions.chart, height: 430 } },
+      options: baseOptions,
     },
     year: {
       series: [
@@ -102,43 +97,48 @@ const SaleStatistics: React.FC = () => {
         { name: "Visitors", data: [45, 65, 60, 35, 45, 62, 32, 24, 60] },
         { name: "Products", data: [25, 60, 55, 65, 60, 20, 70, 20, 60] },
       ],
-      options: { ...baseOptions, chart: { ...baseOptions.chart, height: 430 } },
+      options: baseOptions,
     },
   };
 
   return (
-    <div className="col-xl-7 col-lg-12">
-      <div className="apex-xhart-area-one">
-        <div className="apex-chart-top-area-banner mb--20">
-          <div className="left-area">
-            <h1 className="title-top mb--10">Sale Statistics</h1>
-            <span>Top traffic channels metrics.</span>
-          </div>
-          <div className="right-area sale-statictics-button">
-            <ul className="nav nav-tabs" role="tablist">
-              {(["week", "month", "year"] as const).map((type) => (
-                <li className="nav-item" key={type}>
-                  <button
-                    className={`nav-link ${activeTab === type ? "active" : ""}`}
-                    onClick={() => setActiveTab(type)}
-                    type="button"
-                  >
-                    {type.charAt(0).toUpperCase() + type.slice(1)}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
+    <div className="w-full bg-white shadow rounded-lg p-5">
+      
+      {/* Header */}
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
+        <div>
+          <h3 className="text-xl font-semibold text-gray-800">Sale Statistics</h3>
+          <p className="text-gray-500 text-sm">Top traffic channels metrics.</p>
         </div>
 
-        <div className="tab-content">
-          <Chart
-            options={chartData[activeTab].options}
-            series={chartData[activeTab].series}
-            type="line"
-            height={chartData[activeTab].options.chart?.height ?? 430}
-          />
+        {/* Tabs */}
+        <div className="flex space-x-3 mt-4 md:mt-0">
+          {(["week", "month", "year"] as const).map((type) => (
+            <button
+              key={type}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition 
+                ${
+                  activeTab === type
+                    ? "bg-blue-600 text-white shadow"
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                }
+              `}
+              onClick={() => setActiveTab(type)}
+            >
+              {type.charAt(0).toUpperCase() + type.slice(1)}
+            </button>
+          ))}
         </div>
+      </div>
+
+      {/* Chart */}
+      <div className="w-full">
+        <Chart
+          options={chartData[activeTab].options}
+          series={chartData[activeTab].series}
+          type="line"
+          height={430}
+        />
       </div>
     </div>
   );

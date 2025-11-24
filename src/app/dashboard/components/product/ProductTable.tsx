@@ -186,7 +186,9 @@ const ProductTable = () => {
       cell: (row) => (
         <span className="text-gray-600 text-md font-medium">
           {row.regularPrice
-            ? `₹${parseFloat(row.regularPrice as string).toLocaleString("en-IN")}`
+            ? `₹${parseFloat(row.regularPrice as string).toLocaleString(
+                "en-IN"
+              )}`
             : "-"}
         </span>
       ),
@@ -239,9 +241,18 @@ const ProductTable = () => {
       sortable: true,
       cell: (row) => {
         const statusConfig = {
-          "in-stock": { label: "In Stock", class: "bg-green-100 text-green-800" },
-          "low-stock": { label: "Low Stock", class: "bg-yellow-100 text-yellow-800" },
-          "out-of-stock": { label: "Out of Stock", class: "bg-red-100 text-red-800" },
+          "in-stock": {
+            label: "In Stock",
+            class: "bg-green-100 text-green-800",
+          },
+          "low-stock": {
+            label: "Low Stock",
+            class: "bg-yellow-100 text-yellow-800",
+          },
+          "out-of-stock": {
+            label: "Out of Stock",
+            class: "bg-red-100 text-red-800",
+          },
         };
         const config = statusConfig[row.status as keyof typeof statusConfig];
         return (
@@ -272,7 +283,9 @@ const ProductTable = () => {
             <button
               className="p-2 hover:bg-green-50 rounded-lg transition-colors duration-200"
               title="Edit Product"
-              onClick={() => router.push(`/dashboard/edit-product/${productId}`)}
+              onClick={() =>
+                router.push(`/dashboard/edit-product/${productId}`)
+              }
             >
               <SquarePen className="text-green-600" size={24} />
             </button>
@@ -313,20 +326,20 @@ const ProductTable = () => {
       : filteredItems.filter((item) => item.status === selectedStatus);
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="p-6 min-h-screen">
       {/* Header Section */}
       <div className="mb-8">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Products</h1>
+            <p className="text-[40px] font-bold text-gray-900 mb-2">Products</p>
             <p className="text-gray-600">
               Manage your product inventory and variants
             </p>
           </div>
-          <div className="">
+          <div className="w-[200px] h-[50px] bg-[#629d23] text-white flex items-center rounded-lg">
             <button
               onClick={() => router.push("/dashboard/add-product")}
-              className="bg-blue-600 hover:bg-blue-700 text-black px-6 py-3 rounded-lg font-semibold transition-colors duration-200 flex items-center space-x-2 mt-4 lg:mt-0"
+              className=" px-6 py-3 rounded-lg font-semibold transition-colors duration-200 flex items-center space-x-2 mt-4 lg:mt-0"
             >
               <Plus size={20} />
               <span>Add New Product</span>
@@ -343,7 +356,11 @@ const ProductTable = () => {
                   Total Products
                 </p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {products.length + products.reduce((acc, p) => acc + (p.variants?.length || 0), 0)}
+                  {products.length +
+                    products.reduce(
+                      (acc, p) => acc + (p.variants?.length || 0),
+                      0
+                    )}
                 </p>
               </div>
               <div className="bg-blue-100 p-3 rounded-lg">
@@ -415,17 +432,19 @@ const ProductTable = () => {
             <label className="block text-md font-medium text-gray-700 mb-2">
               Product Status
             </label>
-            <div className="relative">
-              <select
-                value={selectedStatus}
-                onChange={(e) => setSelectedStatus(e.target.value)}
-                className="w-full appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2.5 pr-10 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 cursor-pointer"
-              >
-                <option value="all">All Products</option>
-                <option value="in-stock">In Stock</option>
-                <option value="low-stock">Low Stock</option>
-                <option value="out-of-stock">Out of Stock</option>
-              </select>
+            <div className="relative border flex items-center h-[50px] border-gray-300 rounded-lg cursor-pointer">
+              <div className="w-[300px] bg-white px-4 py-2.5 pr-10 duration-200 ">
+                <select
+                  value={selectedStatus}
+                  onChange={(e) => setSelectedStatus(e.target.value)}
+                  className="appearance-none cursor-pointer"
+                >
+                  <option value="all">All Products</option>
+                  <option value="in-stock">In Stock</option>
+                  <option value="low-stock">Low Stock</option>
+                  <option value="out-of-stock">Out of Stock</option>
+                </select>
+              </div>
               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
                 <svg
                   className="h-10 w-10 mr-5"
@@ -443,38 +462,6 @@ const ProductTable = () => {
               </div>
             </div>
           </div>
-
-          {/* Sort Dropdown */}
-          {/* <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Sort By
-            </label>
-            <div className="relative">
-              <select className="w-full appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2.5 pr-10 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 cursor-pointer">
-                <option>Newest First</option>
-                <option>Oldest First</option>
-                <option>Name A-Z</option>
-                <option>Name Z-A</option>
-                <option>Price: Low to High</option>
-                <option>Price: High to Low</option>
-              </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
-                <svg
-                  className="h-4 w-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </div>
-            </div>
-          </div> */}
 
           {/* Search Input */}
           <div className="">
@@ -526,14 +513,16 @@ const ProductTable = () => {
       {/* Data Table */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <DataTable
-        columns={columns}
-        data={statusFilteredItems}
-        pagination
-        paginationPerPage={10}
-        highlightOnHover
-        progressPending={isLoading}
-        noDataComponent={<div className="p-10 text-gray-600">No products found</div>}
-      />
+          columns={columns}
+          data={statusFilteredItems}
+          pagination
+          paginationPerPage={10}
+          highlightOnHover
+          progressPending={isLoading}
+          noDataComponent={
+            <div className="p-10 text-gray-600">No products found</div>
+          }
+        />
       </div>
 
       {viewProduct && (

@@ -29,7 +29,7 @@ export default function BlogGridPage() {
     <div className="text-gray-900">
       {/* Header */}
       <HeaderThree />
-
+    
       {/* Breadcrumb */}
       <div className="py-6 mt-[130px]">
         <div className="max-w-[1430px] px-5 2xl:px-0 mx-auto flex items-center text-[20px] text-gray-600">

@@ -4,7 +4,7 @@ import React from "react";
 import dynamic from "next/dynamic";
 import type { ApexOptions } from "apexcharts";
 
-// Client‑only Chart import (SSR disabled)
+// Client-only Chart import (SSR disabled)
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 const StackedBarChart: React.FC = () => {
@@ -51,31 +51,34 @@ const StackedBarChart: React.FC = () => {
   };
 
   return (
-    <div className="col-xl-5 col-lg-12">
-      <div className="apex-xhart-area-one">
-        <div className="apex-chart-top-area-banner mb--20">
-          <div className="left-area">
-            <h1 className="title-top mb--10">Earnings</h1>
-            <span>Top traffic channels metrics.</span>
-          </div>
-          <div className="single-select">
-            <select className="nice-select">
-              <option>Week</option>
-              <option>Month</option>
-              <option>Year</option>
-              <option>6 Month</option>
-            </select>
-          </div>
+    <div className="w-full bg-white rounded-lg shadow p-5">
+      
+      {/* Header */}
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
+        <div>
+          <h3 className="text-xl font-semibold text-gray-800">Earnings</h3>
+          <p className="text-gray-500 text-sm">Top traffic channels metrics.</p>
         </div>
 
-        <div id="stack-chart">
-          <Chart
-            options={options}
-            series={options.series!}
-            type="bar"
-            height={options.chart?.height}
-          />
-        </div>
+        {/* Select Dropdown */}
+       <div className="border px-3 py-2 rounded-md text-md bg-white">
+         <select className="mt-3 md:mt-0 px-4 py-2 border rounded-md bg-white text-gray-700 text-sm focus:ring-2 focus:ring-blue-500">
+          <option>Week</option>
+          <option>Month</option>
+          <option>Year</option>
+          <option>6 Month</option>
+        </select>
+       </div>
+      </div>
+
+      {/* Chart */}
+      <div>
+        <Chart
+          options={options}
+          series={options.series!}
+          type="bar"
+          height={options.chart?.height}
+        />
       </div>
     </div>
   );

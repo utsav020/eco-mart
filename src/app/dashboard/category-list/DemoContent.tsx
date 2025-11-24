@@ -211,7 +211,7 @@ const CategoryDashboard: React.FC = () => {
     {
       name: "ACTIONS",
       cell: (row) => (
-        <div className="flex space-x-2">
+        <div className="flex gap-4">
           <button
             onClick={() => handleView(row.category_id)}
             className="p-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-600 transition-all duration-200 hover:scale-105"
@@ -282,7 +282,7 @@ const CategoryDashboard: React.FC = () => {
           <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm font-medium">
+                <p className="text-gray-600 text-md font-medium">
                   Total Categories
                 </p>
                 <p className="text-3xl font-bold text-gray-900 mt-2">
@@ -298,7 +298,7 @@ const CategoryDashboard: React.FC = () => {
           <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm font-medium">
+                <p className="text-gray-600 text-md font-medium">
                   New This Week
                 </p>
                 <p className="text-3xl font-bold text-gray-900 mt-2">
@@ -314,7 +314,7 @@ const CategoryDashboard: React.FC = () => {
           <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm font-medium">
+                <p className="text-gray-600 text-md font-medium">
                   Active Products
                 </p>
                 <p className="text-3xl font-bold text-gray-900 mt-2">
@@ -433,12 +433,14 @@ const CategoryDashboard: React.FC = () => {
               <h3 className="text-lg font-bold text-gray-600">
                 Category Details
               </h3>
-              <button
+              <div className="">
+                <button
                 onClick={() => setViewCategory(null)}
                 className="p-2 hover:bg-gray-100 rounded-full"
               >
                 <X />
               </button>
+              </div>
             </div>
 
             {/* Content */}
@@ -499,17 +501,17 @@ const CategoryDashboard: React.FC = () => {
 
             {/* Footer Actions */}
             <div className="flex gap-4 justify-start space-x-3 p-6 border-t border-gray-100 bg-gray-50 rounded-b-2xl">
-              <div className="button-area-botton-wrapper-p-list">
+              <div className="border w-[150px] border-[#629d23] flex items-center hover:bg-[#629d23] rounded-md hover:text-white font-bold text-[18px]">
                 <button
                   onClick={() => setViewCategory(null)}
-                  className="rts-btn btn-primary bg-transparent"
+                  className="bg-transparent"
                 >
                   Close
                 </button>
               </div>
-              <div className="button-area-botton-wrapper-p-list">
+              <div className="bg-[#629d23] font-bold text-[18px] text-white h-[50px] w-[180px] flex items-center rounded-md">
                 <button
-                  className="rts-btn btn-primary bg-transparent"
+                  className="bg-transparent"
                   onClick={() => {
                     setViewCategory(null);
                     handleEdit(viewCategory.category_id);
@@ -536,7 +538,7 @@ const CategoryDashboard: React.FC = () => {
                       {viewCategory?.categoryName}
                     </h3>
                   </div>
-                  <div className="mt-[10px]">
+                  <div className="mt-2.5">
                     <button
                       onClick={() => setShowProductsModal(false)}
                       className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
@@ -579,7 +581,7 @@ const CategoryDashboard: React.FC = () => {
 
                       <div className="">
                         {/* Product Image Placeholder */}
-                        <div className="bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl w-full h-52 mb-4 flex items-center justify-center">
+                        <div className="bg-linear-to-br from-gray-100 to-gray-200 rounded-xl w-full h-52 mb-4 flex items-center justify-center">
                           <Package className="w-8 h-8 text-gray-400" />
                         </div>
                       </div>
@@ -589,7 +591,7 @@ const CategoryDashboard: React.FC = () => {
                         <div className="grid grid-cols-3 gap-3">
                           {/* Weight */}
                           <div className="group cursor-pointer">
-                            <div className="border-2 h-100 bg-emerald-50 border-green-200 rounded-lg p-4 hover:border-emerald-500 hover:bg-emerald-50 transition-all duration-200">
+                            <div className="border-2 h-50 bg-emerald-50 border-green-200 rounded-lg p-4 hover:border-emerald-500 hover:bg-emerald-50 transition-all duration-200">
                               <div className="text-center space-y-2">
                                 <div className="text-[14px] font-semibold text-gray-500 uppercase tracking-wider">
                                   Weight
@@ -613,7 +615,7 @@ const CategoryDashboard: React.FC = () => {
                           {/* Stock */}
                           <div className="group cursor-pointer">
                             <div
-                              className={`border-2 bg-emerald-50 h-100 rounded-lg p-4 transition-all duration-200 ${
+                              className={`border-2 bg-emerald-50 h-50 rounded-lg p-4 transition-all duration-200 ${
                                 product.quantity
                                   ? "border-green-200 hover:border-emerald-500 hover:bg-green-50"
                                   : product.quantity
@@ -662,7 +664,7 @@ const CategoryDashboard: React.FC = () => {
 
                           {/* Price */}
                           <div className="group cursor-pointer">
-                            <div className="border-2 border-green-200 h-100 rounded-lg p-4 hover:border-emerald-500 hover:bg-emerald-50 bg-emerald-50 transition-all duration-200">
+                            <div className="border-2 border-green-200 h-50 rounded-lg p-4 hover:border-emerald-500 hover:bg-emerald-50 bg-emerald-50 transition-all duration-200">
                               <div className="text-center space-y-2">
                                 <div className="text-[14px] font-semibold text-gray-500 uppercase tracking-wider">
                                   Price
@@ -730,7 +732,7 @@ const CategoryDashboard: React.FC = () => {
                 </div>
               ) : (
                 <div className="text-center py-16">
-                  <div className="bg-gradient-to-br from-gray-100 to-gray-200 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <div className="bg-linear-to-br from-gray-100 to-gray-200 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6">
                     <Package className="w-10 h-10 text-gray-400" />
                   </div>
                   <h3 className="text-2xl font-bold text-gray-700 mb-3">

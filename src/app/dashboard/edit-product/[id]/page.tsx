@@ -220,7 +220,6 @@ export default function EditProductPage() {
           image_id: Date.now(),
           image_url: imageUrl,
           is_main: 1,
-          url: ""
         };
 
         return {
@@ -257,7 +256,6 @@ export default function EditProductPage() {
           image_id: Date.now() + Math.random(),
           image_url: imageUrl,
           is_main: 0,
-          url: ""
         });
 
         setUploadingImages((prev) => prev.filter((name) => name !== fileName));

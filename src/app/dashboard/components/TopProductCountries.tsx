@@ -2,410 +2,143 @@ import React from "react";
 
 function MyComponent() {
   return (
-    <div>
-      <div className="row mt--10 g-5">
-        <div className="col-xl-8 col-lg-12">
-          <div className="top-product-wrapper-scroll">
-            <div className="top-product-area-start">
-              <div className="between-area-top">
-                <div className="left-area">
-                  <h4 className="title">Top Products</h4>
-                  <span>Top Products List</span>
-                </div>
-              </div>
-              <div className="product-top-area-single">
-                <div className="image-area">
-                  <a href="#" className="thumbnail">
-                    <img
-                      src="/assets/images-dashboard/grocery/08.jpg"
-                      alt="grocery"
-                    />
-                  </a>
-                  <div className="information">
-                    <p>Quaker Oats Healthy Meal...</p>
-                    <span>500 Items</span>
-                  </div>
-                </div>
-                <div className="coupon-code flex-direction-column">
-                  <p>Coupon Code</p>
-                  <span className="d-block">2415</span>
-                </div>
-                <div className="logo">
-                  <img
-                    src="/assets/images-dashboard/brand/01.png"
-                    alt="ekomart"
-                  />
-                </div>
-                <div className="indec">
-                  <div className="left">
-                    <p>5.29%</p>
-                    <span>$79.00</span>
-                  </div>
-                  <img
-                    src="/assets/images-dashboard/brand/arrow-m.png"
-                    alt="ekomart"
-                  />
-                </div>
-              </div>
-              <div className="product-top-area-single">
-                <div className="image-area">
-                  <a href="#" className="thumbnail">
-                    <img
-                      src="/assets/images-dashboard/grocery/09.jpg"
-                      alt="grocery"
-                    />
-                  </a>
-                  <div className="information">
-                    <p>Quaker Oats Healthy Meal...</p>
-                    <span>500 Items</span>
-                  </div>
-                </div>
-                <div className="coupon-code flex-direction-column">
-                  <p>Coupon Code</p>
-                  <span className="d-block">2415</span>
-                </div>
-                <div className="logo">
-                  <img
-                    src="/assets/images-dashboard/brand/08.png"
-                    alt="ekomart"
-                  />
-                </div>
-                <div className="indec">
-                  <div className="left">
-                    <p>5.29%</p>
-                    <span>$79.00</span>
-                  </div>
-                  <img
-                    src="/assets/images-dashboard/brand/arrow-m.png"
-                    alt="ekomart"
-                  />
-                </div>
-              </div>
-              <div className="product-top-area-single">
-                <div className="image-area">
-                  <a href="#" className="thumbnail">
-                    <img
-                      src="/assets/images-dashboard/grocery/10.jpg"
-                      alt="grocery"
-                    />
-                  </a>
-                  <div className="information">
-                    <p>Quaker Oats Healthy Meal...</p>
-                    <span>500 Items</span>
-                  </div>
-                </div>
-                <div className="coupon-code flex-direction-column">
-                  <p>Coupon Code</p>
-                  <span className="d-block">2415</span>
-                </div>
-                <div className="logo">
-                  <img
-                    src="/assets/images-dashboard/brand/01.png"
-                    alt="ekomart"
-                  />
-                </div>
-                <div className="indec">
-                  <div className="left">
-                    <p>5.29%</p>
-                    <span>$79.00</span>
-                  </div>
-                  <img
-                    src="/assets/images-dashboard/brand/arrow-m.png"
-                    alt="ekomart"
-                  />
-                </div>
-              </div>
-              <div className="product-top-area-single">
-                <div className="image-area">
-                  <a href="#" className="thumbnail">
-                    <img
-                      src="/assets/images-dashboard/grocery/11.jpg"
-                      alt="grocery"
-                    />
-                  </a>
-                  <div className="information">
-                    <p>Quaker Oats Healthy Meal...</p>
-                    <span>500 Items</span>
-                  </div>
-                </div>
-                <div className="coupon-code flex-direction-column">
-                  <p>Coupon Code</p>
-                  <span className="d-block">2415</span>
-                </div>
-                <div className="logo">
-                  <img
-                    src="/assets/images-dashboard/brand/09.png"
-                    alt="ekomart"
-                  />
-                </div>
-                <div className="indec">
-                  <div className="left">
-                    <p>5.29%</p>
-                    <span>$79.00</span>
-                  </div>
-                  <img
-                    src="/assets/images-dashboard/brand/arrow-m.png"
-                    alt="ekomart"
-                  />
-                </div>
-              </div>
-              <div className="product-top-area-single">
-                <div className="image-area">
-                  <a href="#" className="thumbnail">
-                    <img
-                      src="/assets/images-dashboard/grocery/11.jpg"
-                      alt="grocery"
-                    />
-                  </a>
-                  <div className="information">
-                    <p>Quaker Oats Healthy Meal...</p>
-                    <span>500 Items</span>
-                  </div>
-                </div>
-                <div className="coupon-code flex-direction-column">
-                  <p>Coupon Code</p>
-                  <span className="d-block">2415</span>
-                </div>
-                <div className="logo">
-                  <img
-                    src="/assets/images-dashboard/brand/10.png"
-                    alt="ekomart"
-                  />
-                </div>
-                <div className="indec">
-                  <div className="left">
-                    <p>5.29%</p>
-                    <span>$79.00</span>
-                  </div>
-                  <img
-                    src="/assets/images-dashboard/brand/arrow-m.png"
-                    alt="ekomart"
-                  />
-                </div>
-              </div>
+    <div className="w-full px-4 md:px-6 lg:px-8">
+      <div className="grid grid-cols-1 gap-6">
+
+        {/* ======================= LEFT SECTION ======================= */}
+        <div className="lg:col-span-2 bg-white rounded-lg shadow p-5 max-h-[600px] overflow-y-auto">
+          <div className="flex items-start justify-between mb-5">
+            <div>
+              <h4 className="text-xl font-semibold text-gray-800">Top Products</h4>
+              <p className="text-sm text-gray-500">Top Products List</p>
             </div>
           </div>
-        </div>
-        <div className="col-xl-4 col-lg-12">
-          <div className="rop-product-right">
-            <div className="top-product-area-start">
-              <div className="between-area-top">
-                <div className="left-area">
-                  <h4 className="title">Top Countries Sales</h4>
-                  <span>Top Products List</span>
-                </div>
-                <div className="single-select">
-                  <select className="nice-select">
-                    <option>Week</option>
-                    <option>Month</option>
-                    <option>Year</option>
-                    <option>6 Month</option>
-                  </select>
-                </div>
-              </div>
-              <div className="product-top-area-single">
-                <div className="image-area">
-                  <a href="#" className="thumbnail">
-                    <img
-                      src="/assets/images-dashboard/brand/02.png"
-                      alt="grocery"
-                    />
-                  </a>
-                  <div className="information">
-                    <p className="mb--0">USA</p>
+
+          {/* PRODUCT LIST ITEMS */}
+          <div className="space-y-5">
+
+            {/* ITEM */}
+            {[
+              { img: "08.jpg", brand: "01.png" },
+              { img: "09.jpg", brand: "08.png" },
+              { img: "10.jpg", brand: "01.png" },
+              { img: "11.jpg", brand: "09.png" },
+              { img: "11.jpg", brand: "10.png" },
+            ].map((item, index) => (
+              <div
+                className="flex items-center justify-between bg-gray-50 p-4 rounded-lg"
+                key={index}
+              >
+                {/* Image + Name */}
+                <div className="flex items-center space-x-3">
+                  <img
+                    src={`/assets/images-dashboard/grocery/${item.img}`}
+                    className="w-14 h-14 rounded-md object-cover"
+                    alt="product"
+                  />
+                  <div>
+                    <p className="text-gray-700 font-semibold">
+                      Quaker Oats Healthy Meal...
+                    </p>
+                    <span className="text-sm text-gray-500">500 Items</span>
                   </div>
                 </div>
-                <div className="coupon-code">
-                  <img
-                    src="/assets/images-dashboard/brand/arrow-m.png"
-                    alt="ekomart"
-                  />
+
+                {/* Coupon */}
+                <div className="text-center">
+                  <p className="text-gray-500 text-sm">Coupon Code</p>
+                  <span className="text-lg font-semibold">2415</span>
                 </div>
-                <div className="coupon-code">
-                  <p>6,546</p>
-                </div>
-                <div className="indec mr--0">
-                  <p>04 Jul 2024</p>
-                </div>
-              </div>
-              <div className="product-top-area-single">
-                <div className="image-area">
-                  <a href="#" className="thumbnail">
-                    <img
-                      src="/assets/images-dashboard/brand/02.png"
-                      alt="grocery"
-                    />
-                  </a>
-                  <div className="information">
-                    <p className="mb--0">Fracnh</p>
+
+                {/* Brand Logo */}
+                <img
+                  src={`/assets/images-dashboard/brand/${item.brand}`}
+                  className="w-10 h-10 object-contain"
+                  alt="brand"
+                />
+
+                {/* Price & Graph */}
+                <div className="flex items-center space-x-2">
+                  <div>
+                    <p className="text-green-600 font-semibold text-sm">5.29%</p>
+                    <span className="text-gray-800 font-bold">$79.00</span>
                   </div>
-                </div>
-                <div className="coupon-code">
                   <img
                     src="/assets/images-dashboard/brand/arrow-m.png"
-                    alt="ekomart"
+                    className="w-5 h-5"
+                    alt="arrow"
                   />
                 </div>
-                <div className="coupon-code">
-                  <p>6,546</p>
-                </div>
-                <div className="indec mr--0">
-                  <p>04 Jul 2024</p>
-                </div>
               </div>
-              <div className="product-top-area-single">
-                <div className="image-area">
-                  <a href="#" className="thumbnail">
-                    <img
-                      src="/assets/images-dashboard/brand/03.png"
-                      alt="grocery"
-                    />
-                  </a>
-                  <div className="information">
-                    <p className="mb--0">India</p>
-                  </div>
-                </div>
-                <div className="coupon-code">
-                  <img
-                    src="/assets/images-dashboard/brand/arrow-m.png"
-                    alt="ekomart"
-                  />
-                </div>
-                <div className="coupon-code">
-                  <p>6,546</p>
-                </div>
-                <div className="indec mr--0">
-                  <p>04 Jul 2024</p>
-                </div>
-              </div>
-              <div className="product-top-area-single">
-                <div className="image-area">
-                  <a href="#" className="thumbnail">
-                    <img
-                      src="/assets/images-dashboard/brand/04.png"
-                      alt="grocery"
-                    />
-                  </a>
-                  <div className="information">
-                    <p className="mb--0">italy</p>
-                  </div>
-                </div>
-                <div className="coupon-code">
-                  <img
-                    src="/assets/images-dashboard/brand/arrow-m.png"
-                    alt="ekomart"
-                  />
-                </div>
-                <div className="coupon-code">
-                  <p>6,546</p>
-                </div>
-                <div className="indec mr--0">
-                  <p>04 Jul 2024</p>
-                </div>
-              </div>
-              <div className="product-top-area-single">
-                <div className="image-area">
-                  <a href="#" className="thumbnail">
-                    <img
-                      src="/assets/images-dashboard/brand/05.png"
-                      alt="grocery"
-                    />
-                  </a>
-                  <div className="information">
-                    <p className="mb--0">japan</p>
-                  </div>
-                </div>
-                <div className="coupon-code">
-                  <img
-                    src="/assets/images-dashboard/brand/arrow-m.png"
-                    alt="ekomart"
-                  />
-                </div>
-                <div className="coupon-code">
-                  <p>6,546</p>
-                </div>
-                <div className="indec mr--0">
-                  <p>04 Jul 2024</p>
-                </div>
-              </div>
-              <div className="product-top-area-single">
-                <div className="image-area">
-                  <a href="#" className="thumbnail">
-                    <img
-                      src="/assets/images-dashboard/brand/06.png"
-                      alt="grocery"
-                    />
-                  </a>
-                  <div className="information">
-                    <p className="mb--0">Koria</p>
-                  </div>
-                </div>
-                <div className="coupon-code">
-                  <img
-                    src="/assets/images-dashboard/brand/arrow-m.png"
-                    alt="ekomart"
-                  />
-                </div>
-                <div className="coupon-code">
-                  <p>6,546</p>
-                </div>
-                <div className="indec mr--0">
-                  <p>04 Jul 2024</p>
-                </div>
-              </div>
-              <div className="product-top-area-single">
-                <div className="image-area">
-                  <a href="#" className="thumbnail">
-                    <img
-                      src="/assets/images-dashboard/brand/07.png"
-                      alt="grocery"
-                    />
-                  </a>
-                  <div className="information">
-                    <p className="mb--0">Indor</p>
-                  </div>
-                </div>
-                <div className="coupon-code">
-                  <img
-                    src="/assets/images-dashboard/brand/arrow-m.png"
-                    alt="ekomart"
-                  />
-                </div>
-                <div className="coupon-code">
-                  <p>6,546</p>
-                </div>
-                <div className="indec mr--0">
-                  <p>04 Jul 2024</p>
-                </div>
-              </div>
-              <div className="product-top-area-single">
-                <div className="image-area">
-                  <a href="#" className="thumbnail">
-                    <img
-                      src="/assets/images-dashboard/brand/05.png"
-                      alt="grocery"
-                    />
-                  </a>
-                  <div className="information">
-                    <p className="mb--0">Vutan</p>
-                  </div>
-                </div>
-                <div className="coupon-code">
-                  <img
-                    src="/assets/images-dashboard/brand/arrow-m.png"
-                    alt="ekomart"
-                  />
-                </div>
-                <div className="coupon-code">
-                  <p>6,546</p>
-                </div>
-                <div className="indec mr--0">
-                  <p>04 Jul 2024</p>
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
+
+        {/* ======================= RIGHT SECTION ======================= */}
+        <div className="lg:col-span-2 bg-white rounded-lg shadow p-5 max-h-[600px] overflow-y-auto scrollbar-hide">
+          <div className="flex items-center justify-between mb-5">
+            <div>
+              <h4 className="text-xl font-semibold text-gray-800">
+                Top Countries Sales
+              </h4>
+              <p className="text-sm text-gray-500">Top Products List</p>
+            </div>
+
+            {/* Dropdown */}
+            <div className="">
+              <select className="border px-3 py-2 rounded-md text-sm">
+              <option>Week</option>
+              <option>Month</option>
+              <option>Year</option>
+              <option>6 Month</option>
+            </select>
+            </div>
+          </div>
+
+          {/* COUNTRY LIST */}
+          <div className="space-y-4">
+
+            {[
+              { name: "USA", img: "02.png" },
+              { name: "France", img: "02.png" },
+              { name: "India", img: "03.png" },
+              { name: "Italy", img: "04.png" },
+              { name: "Japan", img: "05.png" },
+              { name: "Koria", img: "06.png" },
+              { name: "Indor", img: "07.png" },
+              { name: "Vutan", img: "05.png" },
+            ].map((country, index) => (
+              <div
+                key={index}
+                className="flex items-center justify-between bg-gray-50 p-4 rounded-lg"
+              >
+                {/* Flag + Name */}
+                <div className="flex items-center space-x-3">
+                  <img
+                    src={`/assets/images-dashboard/brand/${country.img}`}
+                    className="w-10 h-10"
+                    alt={country.name}
+                  />
+                  <p className="font-semibold text-gray-700">{country.name}</p>
+                </div>
+
+                {/* Arrow */}
+                <img
+                  src="/assets/images-dashboard/brand/arrow-m.png"
+                  className="w-5 h-5"
+                  alt="arrow"
+                />
+
+                {/* Sales */}
+                <p className="font-semibold text-gray-800">6,546</p>
+
+                {/* Date */}
+                <p className="text-gray-500 text-sm">04 Jul 2024</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
       </div>
     </div>
   );

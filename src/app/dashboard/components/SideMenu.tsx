@@ -34,9 +34,7 @@ const menuItems: MenuItem[] = [
       { title: "Product List", href: "/dashboard/product-list" },
       { title: "Add Product", href: "/dashboard/add-product" },
     ],
-    // children: [{ title: "Add Product", href: "/dashboard/add-product" }],
   },
-
   {
     title: "Categories",
     icon: "/assets/images-dashboard/icons/02.svg",
@@ -44,9 +42,7 @@ const menuItems: MenuItem[] = [
       { title: "Categories List", href: "/dashboard/category-list" },
       { title: "Add Categories", href: "/dashboard/category-add" },
     ],
-    // children: [{ title: "Add Product", href: "/dashboard/add-product" }],
   },
-
   {
     title: "Vendor",
     icon: "/assets/images-dashboard/icons/04.svg",
@@ -77,6 +73,7 @@ const menuItems: MenuItem[] = [
     icon: "/assets/images-dashboard/icons/17.svg",
     href: "/dashboard/payment",
   },
+
   {
     title: "User Profile",
     icon: "/assets/images-dashboard/icons/05.svg",
@@ -88,87 +85,102 @@ const menuItems: MenuItem[] = [
   },
 ];
 
-const SidebarMenu = () => {
-  const [openIndex, setOpenIndex] = useState<number | null>(0); // 0 means Dashboard open by default
+export default function SidebarMenu() {
   const pathname = usePathname();
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   useEffect(() => {
-    // Find the index of the menu item that has a child matching the current path
-    const activeIndex = menuItems.findIndex((item) => {
-      return item.children?.some((child) => {
-        return (
-          pathname === child.href ||
-          (child.title === "Main Demo" && pathname === "/index")
-        );
-      });
-    });
-
-    if (activeIndex !== -1) {
-      setOpenIndex(activeIndex);
-    }
+    const activeIndex = menuItems.findIndex((item) =>
+      item.children?.some((child) => pathname === child.href)
+    );
+    if (activeIndex !== -1) setOpenIndex(activeIndex);
   }, [pathname]);
 
-  const handleToggle = (index: number) => {
-    setOpenIndex((prev) => (prev === index ? null : index));
-  };
+  const toggle = (i: number) => setOpenIndex(openIndex === i ? null : i);
 
   return (
-    <ul className="rts-side-nav-area-left menu-active-parent">
-      {menuItems.map((item, index) => {
-        const hasSubmenu = !!item.children?.length;
-        const isOpen = openIndex === index;
+    <div className="w-full">
+      {menuItems.map((item, i) => {
+        const hasSub = !!item.children?.length;
+        const open = openIndex === i;
 
         return (
-          <li className="single-menu-item" key={index}>
-            {hasSubmenu ? (
-              <Link
-                href="#"
-                className={`with-plus ${isOpen ? "active" : ""}`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleToggle(index);
-                }}
+          <div key={i} className="">
+            {/* Parent Menu */}
+            {hasSub ? (
+              <button
+                onClick={() => toggle(i)}
+                className={`flex items-center hover:bg-[#629d23] hover:text-white justify-between w-full h-[46px] px-6 text-[#2D3B29] transition-all`}
               >
-                <img src={item.icon} alt="icon" className="icon" />
-                <p>{item.title}</p>
-              </Link>
+                <div className="flex gap-4">
+                  <div className="">
+                    <img
+                      src={item.icon}
+                      className="w-8 mr-3 hover:text-white"
+                    />
+                  </div>
+                  <div className="">
+                    <p className="flex-1 text-left font-medium">{item.title}</p>
+                  </div>
+                </div>
+
+                <div className="">
+                  <i
+                    className={`fa-solid fa-chevron-down text-sm transition-transform duration-300
+                    ${open ? "rotate-180" : ""}
+                `}
+                  ></i>
+                </div>
+              </button>
             ) : (
-              <Link href={item.href || "#"}>
-                <img src={item.icon} alt="icon" className="icon" />
-                <p>{item.title}</p>
+              <Link
+                href={item.href!}
+                className={`flex items-center hover:bg-[#629d23] hover:text-white w-full gap-4 h-[46px] px-6 text-[#2D3B29] transition-all
+                  ${pathname === item.href ? "text-black" : ""}
+                `}
+              >
+                <div className="hover:text-white">
+                  <img src={item.icon} className="w-8 mr-3 " />
+                </div>
+
+                <div className="">
+                  <span className="text-left">{item.title}</span>
+                </div>
               </Link>
             )}
 
-            {hasSubmenu && (
-              <ul
-                className={`submenu mm-collapse parent-nav ${
-                  isOpen ? "mm-show" : ""
-                }`}
+            {/* Submenu */}
+            {hasSub && (
+              <div
+                className={`overflow-hidden transition-all duration-300
+                ${open ? "max-h-96" : "max-h-0"}
+              `}
               >
-                {item.children!.map((sub, subIndex) => {
-                  const isActive =
-                    pathname === sub.href ||
-                    (sub.title === "Main Demo" && pathname === "/index");
+                {item.children!.map((sub, j) => {
+                  const active = pathname === sub.href;
+
                   return (
-                    <li key={subIndex}>
+                    <div key={j} className="h-[50px]">
                       <Link
                         href={sub.href}
-                        className={`mobile-menu-link ${
-                          isActive ? "active" : ""
-                        }`}
+                        className={`py-2 h-[50px] w-[230px] items-center pl-10 flex ml-auto text-center text-[16px] transition-all
+                          ${
+                            active
+                              ? "text-white bg-[#629d23] font-medium"
+                              : "text-gray-600 hover:text-white hover:bg-[#629d23]"
+                          }
+                        `}
                       >
                         {sub.title}
                       </Link>
-                    </li>
+                    </div>
                   );
                 })}
-              </ul>
+              </div>
             )}
-          </li>
+          </div>
         );
       })}
-    </ul>
+    </div>
   );
-};
-
-export default SidebarMenu;
+}
