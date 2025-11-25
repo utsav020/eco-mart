@@ -36,7 +36,7 @@ const router = useRouter();
               onClick={handleShopClick}
               className="cursor-pointer hover:bg-[#A3C526] hover:text-white flex items-center justify-center w-[207px] h-[62px] border border-[#CDCBC0]"
             >
-              <div className="w-[127px] text-[14px]">View More</div>
+              <div className="w-[127px] text-[17px]">View More</div>
               <div>
                 <ArrowRight className="w-6 h-6 text-[20px] flex items-center justify-center" />
               </div>
