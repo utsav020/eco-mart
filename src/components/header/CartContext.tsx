@@ -1,35 +1,23 @@
-'use client';
+"use client";
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from "react";
 
 export interface CartItem {
-  regularPrice: any;
-  productImage: string;
-  id: number;
-  image: string;
-  title: string;
-  productName: string;
-  description?: string;
-  price: number;
-  quantity: number;
-  active: boolean; // true = cart, false = wishlist
-}
-
-export interface CartItem1 {
-  regularPrice: any;
-  productImage: string;
-  id: number;
-  image: string;
-  title: string;
+  description: string;
+  id: number; // product_id
+  product_variant_id?: number | null;
   productName: string;
   price: number;
+  regularPrice: any;
+  productImage: string;
+  image: string;
   quantity: number;
   active: boolean; // true = cart, false = wishlist
 }
 
 interface CartContextProps {
   cartItems: CartItem[];
-  addToCart: (item: CartItem) => void;
+  addToCart: (item: CartItem, userId: number) => Promise<void>;
   addToWishlist: (item: CartItem) => void;
   removeFromCart: (id: number) => void;
   updateItemQuantity: (id: number, quantity: number) => void;
@@ -40,7 +28,7 @@ const CartContext = createContext<CartContextProps | undefined>(undefined);
 
 export const useCart = () => {
   const context = useContext(CartContext);
-  if (!context) throw new Error('useCart must be used within a CartProvider');
+  if (!context) throw new Error("useCart must be used within a CartProvider");
   return context;
 };
 
@@ -48,58 +36,72 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isCartLoaded, setIsCartLoaded] = useState(false);
 
-  // Load from localStorage on first mount
+  // ✅ Load cart from localStorage
   useEffect(() => {
-    const storedCart = localStorage.getItem('cart');
+    const storedCart = localStorage.getItem("cart");
     if (storedCart) {
       try {
         setCartItems(JSON.parse(storedCart));
       } catch (error) {
-        console.error('Failed to parse cart from localStorage:', error);
-        localStorage.removeItem('cart');
+        console.error("Failed to parse cart:", error);
+        localStorage.removeItem("cart");
       }
     }
     setIsCartLoaded(true);
   }, []);
 
-  // Save to localStorage whenever cart changes
+  // ✅ Save cart to localStorage
   useEffect(() => {
     if (isCartLoaded) {
-      localStorage.setItem('cart', JSON.stringify(cartItems));
+      localStorage.setItem("cart", JSON.stringify(cartItems));
     }
   }, [cartItems, isCartLoaded]);
 
-  // ✅ Add item to cart (active: true) + call backend API
-  const addToCart = async (item: CartItem) => {
+  // ✅ ADD TO CART (Backend + Local)
+  const addToCart = async (item: CartItem, userId: number) => {
     try {
-      // 1️⃣ Make backend API call
-      const response = await fetch('https://ekomart-backend.onrender.com/api/cart/addcart', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          // Authorization: `Bearer ${token}`, // optional if you use JWT
-        },
-        body: JSON.stringify({
-          productId: item.id, // assuming 'id' is product ID
-          quantity: item.quantity,
-          price: item.price,
-        }),
-      });
+      const response = await fetch(
+        "https://ekomart-backend.onrender.com/api/cart/addcart",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            user_id: userId,
+            items: [
+              {
+                product_id: item.id,
+                product_variant_id: item.product_variant_id || null,
+                quantity: item.quantity,
+              },
+            ],
+          }),
+        }
+      );  
 
       const data = await response.json();
 
       if (!response.ok) {
-        console.error('Failed to add to backend cart:', data);
-      } else {
-        console.log('✅ Added to backend cart:', data);
+        console.error("❌ Backend Cart Error:", data);
+        return;
       }
 
-      // 2️⃣ Update local state
+      console.log("✅ Backend Cart Updated:", data);
+
+      // ✅ Update local cart
       setCartItems((prev) => {
-        const existing = prev.find((i) => i.id === item.id && i.active === true);
+        const existing = prev.find(
+          (i) =>
+            i.id === item.id &&
+            i.product_variant_id === item.product_variant_id &&
+            i.active === true
+        );
+
         if (existing) {
           return prev.map((i) =>
-            i.id === item.id && i.active === true
+            i.id === item.id &&
+            i.product_variant_id === item.product_variant_id
               ? { ...i, quantity: i.quantity + item.quantity }
               : i
           );
@@ -108,11 +110,11 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         }
       });
     } catch (error) {
-      console.error('Error adding to cart:', error);
+      console.error("❌ Add to cart failed:", error);
     }
   };
 
-  // Add item to wishlist (active: false)
+  // ✅ ADD TO WISHLIST
   const addToWishlist = (item: CartItem) => {
     setCartItems((prev) => {
       const existing = prev.find((i) => i.id === item.id && i.active === false);
@@ -128,12 +130,12 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     });
   };
 
-  // Remove item by ID
+  // ✅ REMOVE FROM CART
   const removeFromCart = (id: number) => {
     setCartItems((prev) => prev.filter((item) => item.id !== id));
   };
 
-  // Update quantity (cart or wishlist)
+  // ✅ UPDATE QUANTITY
   const updateItemQuantity = (id: number, quantity: number) => {
     setCartItems((prev) =>
       prev.map((item) =>

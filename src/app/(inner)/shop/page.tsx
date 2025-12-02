@@ -24,6 +24,7 @@ interface ProductType {
   has_variants?: boolean | number;
   productImages?: ProductImage[];
   image?: string;
+  product_variant_id?: number | null;
   [key: string]: any;
 }
 
@@ -37,11 +38,9 @@ export default function BlogGridMain() {
   const router = useRouter();
   const { setSelectedProduct } = useProduct();
   const { setSelectedCategory } = useCategory();
-
   const { addToWishlist, wishlistItems } = useWishlist();
-  const [addedProductId, setAddedProductId] = useState<string | number | null>(
-    null
-  );
+
+  const [addedProductId, setAddedProductId] = useState<number | null>(null);
 
   const defaultImages = [
     "/Soyabean.png",
@@ -58,10 +57,11 @@ export default function BlogGridMain() {
     "Grains & Cereals": 4,
   };
 
-  // ✅ Fetch products by category
+  // ✅ FETCH PRODUCTS
   const fetchProductsByCategory = async (categoryId?: number) => {
     setLoading(true);
     setError("");
+
     try {
       const url = categoryId
         ? `https://ekomart-backend.onrender.com/api/product/getproductbycategory/${categoryId}`
@@ -77,8 +77,7 @@ export default function BlogGridMain() {
         setProducts(data);
       }
     } catch (err) {
-      console.error("Error fetching products:", err);
-      setError("Failed to load products. Please try again later.");
+      setError("Failed to load products.");
     } finally {
       setLoading(false);
     }
@@ -88,71 +87,71 @@ export default function BlogGridMain() {
     fetchProductsByCategory();
   }, []);
 
-  // ✅ Category switch
   const handleCategoryClick = (category: string) => {
     setActiveCategory(category);
-    if (category === "All Products") {
-      fetchProductsByCategory();
-    } else {
-      fetchProductsByCategory(categoryMap[category]);
-    }
+    category === "All Products"
+      ? fetchProductsByCategory()
+      : fetchProductsByCategory(categoryMap[category]);
   };
 
-  // ✅ Resolve product image
   const getImage = (product: ProductType, index: number) => {
-    if (product.productImages?.length) {
+    if (product.productImages?.length)
       return product.productImages[0].image_url;
-    }
-    if (product.image && product.image.trim() !== "") {
-      return product.image;
-    }
+    if (product.image?.trim()) return product.image;
     return defaultImages[index % defaultImages.length];
   };
 
-  // ✅ Add to Cart
+  // ✅ ✅ ✅ ADD TO CART (100% BACKEND SYNCED)
   const handleAdd = (product: ProductType, index: number) => {
-    addToCart({
-      id: product._id ? Number(product._id) : Date.now(),
-      image: getImage(product, index),
-      title: product.productName || "Organic Product",
-      price: parseFloat(product.regularPrice?.toString() ?? "0"),
-      quantity: 1,
-      active: true,
-      productName: product.productName ?? "Default Product Title",
-      regularPrice: product.regularPrice,
-      productImage: product.image || "",
-      description: product.discription ?? "No description available",
-    });
-    setAddedProductId(product._id || index);
-    setTimeout(() => setAddedProductId(null), 4000);
+    const productId =
+      product.product_id ??
+      (product._id ? parseInt(product._id) : Date.now());
+
+    addToCart(
+      {
+        id: productId, // ✅ Must be numeric
+        product_variant_id: product.product_variant_id || null, // ✅ required
+        productName: product.productName,
+        price: Number(product.regularPrice || 0),
+        regularPrice: product.regularPrice,
+        productImage: getImage(product, index),
+        image: getImage(product, index),
+        quantity: 1,
+        active: true,
+        description: ""
+      },
+      3 // ✅ user_id
+    );
+
+    setAddedProductId(productId);
+    setTimeout(() => setAddedProductId(null), 2000);
     toast.success("✅ Product added to cart!");
   };
 
-  // ✅ Add to Wishlist
-  const handleWishlist = (product: ProductType) => {
-    const productIdNumber =
+  // ✅ WISHLIST
+  const handleWishlist = (product: ProductType, index: number) => {
+    const productId =
       product.product_id ??
-      (product._id ? Number(product._id) : undefined) ??
-      Date.now();
+      (product._id ? parseInt(product._id) : Date.now());
 
-    const isInWishlist = wishlistItems.some(
-      (item) => String(item.id) === String(productIdNumber)
-    );
-    if (isInWishlist) {
+    const exists = wishlistItems.some((i) => i.id === productId);
+
+    if (exists) {
       toast.info("❤️ Already in wishlist!");
       return;
     }
+
     addToWishlist({
-      id: productIdNumber,
-      image: getImage(product, 0),
-      title: product.productName || "Product",
-      price: parseFloat(product.regularPrice?.toString() ?? "0"),
+      id: productId,
+      image: getImage(product, index),
+      title: product.productName,
+      price: Number(product.regularPrice || 0),
       quantity: 1,
     });
+
     toast.success("💖 Added to wishlist!");
   };
 
-  // ✅ Navigate to product detail
   const handleProductClick = (product: ProductType) => {
     setSelectedProduct(product);
     router.push(`/product/${product._id}`);
@@ -160,7 +159,7 @@ export default function BlogGridMain() {
 
   useEffect(() => {
     setSelectedCategory(activeCategory);
-  }, [activeCategory, setSelectedCategory]);
+  }, [activeCategory]);
 
   const categories = [
     "All Products",
@@ -171,136 +170,85 @@ export default function BlogGridMain() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#ffffff]">
-      <div className="border-2">
-        <HeaderThree />
-      </div>
+    <div className="min-h-screen bg-white">
+      <HeaderThree />
 
-      <div className="max-w-[1430px] mt-[180px] px-5 2xl:px-0 mx-auto">
-        {/* ✅ Filter Bar */}
-        <div className="w-full xl:px-0 bg-[#F5F5F5] max-w-[1730px] h-[280px] md:h-20 md:rounded-[200px] mx-auto py-2 px-4 items-center justify-between gap-3 mt-4">
-          <div className="md:flex block items-center ml-auto max-w-full w-[203px] md:w-[570px] mx-auto md:ml-5 lg:mt-3.5 mt-5 gap-4 text-[16px] font-medium text-gray-700 overflow-x-auto">
-            {categories.map((category) => (
-              <div className="max-w-full mx-auto">
-                <button
-                  key={category}
-                  // style={{ borderRadius: "200px" }}
-                  onClick={() => handleCategoryClick(category)}
-                  className={`px-4 py-1.5 h-9 rounded-full max-w-[600px] w-[200px] mx-auto md:w-full whitespace-nowrap transition-all duration-200 ${
-                    activeCategory === category
-                      ? "text-white shadow-sm bg-[#8CC63F] rounded-full"
-                      : "hover:text-[#8CC63F] text-gray-700 rounded-full"
-                  }`}
-                >
-                  {category}
-                </button>
-              </div>
-            ))}
-          </div>
+      <div className="max-w-[1430px] mt-[180px] px-5 mx-auto">
+        {/* ✅ CATEGORY BAR */}
+        <div className="bg-[#F5F5F5] h-[280px] md:h-20 rounded-[200px] flex items-center justify-center gap-4">
+          {categories.map((category) => (
+            <button
+              key={category}
+              onClick={() => handleCategoryClick(category)}
+              className={`px-5 py-2 rounded-full ${
+                activeCategory === category
+                  ? "bg-[#8CC63F] text-white"
+                  : "text-gray-700"
+              }`}
+            >
+              {category}
+            </button>
+          ))}
         </div>
 
-        {/* ✅ Product List */}
-        <div className="bg-white max-w-[1430px] w-full mt-5 mx-auto">
+        {/* ✅ PRODUCT GRID */}
+        <div className="mt-10">
           {loading ? (
-            <div className="">
-              <LogoLineLoader /> 
-            </div>
+            <LogoLineLoader />
           ) : error ? (
-            <p className="text-center text-gray-500 py-10">{error}</p>
+            <p className="text-center text-gray-500">{error}</p>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
               {products.map((product, index) => (
                 <div
-                  key={product._id || index}
-                  className="relative h-[450px] w-[332px] max-w-[1430px] mx-auto transition duration-300 group cursor-pointer"
+                  key={index}
+                  className="w-[332px] h-[450px] mx-auto cursor-pointer"
                   onClick={() => handleProductClick(product)}
                 >
-                  {/* Discount badge */}
-                  <div className="absolute top-4 right-4 bg-[#077D40] text-white text-[15px] px-3 py-1 rounded-full z-10">
-                    Save 20%
+                  <img
+                    src={getImage(product, index)}
+                    className="w-full h-72 object-cover"
+                  />
+
+                  <div className="p-4">
+                    <p className="font-bold">
+                      {product.productName || "Product"}
+                    </p>
+
+                    <p className="text-gray-600 mt-2">
+                      ₹{product.regularPrice || 95}
+                    </p>
+
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleAdd(product, index);
+                      }}
+                      className={`mt-5 w-full h-[45px] border rounded ${
+                        addedProductId ===
+                        (product.product_id ||
+                          (product._id ? parseInt(product._id) : -1))
+                          ? "bg-[#077D40] text-white"
+                          : "hover:bg-[#077D40] hover:text-white"
+                      }`}
+                    >
+                      {addedProductId ===
+                      (product.product_id ||
+                        (product._id ? parseInt(product._id) : -1))
+                        ? "Added ✅"
+                        : "Add to Cart"}
+                    </button>
                   </div>
 
-                  {/* Image section */}
-                  <div className="relative flex justify-center items-center">
-                    <div className="h-72">
-                      <img
-                        src={
-                          getImage(product, index) ||
-                          "/assets/images/products/Oats.png"
-                        }
-                        alt={product.productName}
-                        className="w-[331.75px] h-72 object-cover"
-                      />
-                    </div>
-
-                    {/* Wishlist icon */}
-                    <div className="absolute bottom-1 right-0">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleWishlist(product);
-                        }}
-                        className={`p-2 rounded-full transition ${wishlistItems.some(
-                          (item) => String(item.id) === String(product._id)
-                        )}`}
-                      >
-                        <Heart
-                          className={`w-6 h-6 ${
-                            wishlistItems.some(
-                              (item) => String(item.id) === String(product._id)
-                            )
-                              ? "fill-[#077D40] text-[#077D40]"
-                              : "text-[#333333]"
-                          }`}
-                        />
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* ✅ Product Details */}
-                  <div className="pb-3 mt-[13px]">
-                    <div className="flex items-center justify-between h-6">
-                      <div className="">
-                        <p className="text-[14px] font-bold text-[#000000] truncate">
-                          {product.productName || "Organic Product"}
-                        </p>
-                      </div>
-                      <div className="flex text-[16px]">★★★★★</div>
-                    </div>
-
-                    <div className="flex items-center mt-[15px] justify-between">
-                      <div className="">
-                        <p className="text-gray-600 text-[14px]">
-                          {product.regularPrice
-                            ? `₹${product.regularPrice}`
-                            : "₹95.00"}
-                        </p>
-                      </div>
-                      <div className="">
-                        <p className="text-[12px] text-[#3333338C]/55">
-                          4.86 (887k Reviews)
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="mt-[25px] w-[332px] hover:text-white text-[14px] h-[51px]">
-                      <button
-                        className={`w-full h-[51px] border border-black rounded hover:bg-[#077D40] hover:text-white transition ${
-                          addedProductId === (product._id || index)
-                            ? "bg-[#077D40] text-white"
-                            : ""
-                        }`}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleAdd(product, index);
-                        }}
-                      >
-                        {addedProductId === (product._id || index)
-                          ? "Added ✅"
-                          : "Add to your Cart"}
-                      </button>
-                    </div>
-                  </div>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleWishlist(product, index);
+                    }}
+                    className="absolute top-4 right-4"
+                  >
+                    <Heart className="w-6 h-6" />
+                  </button>
                 </div>
               ))}
             </div>
@@ -308,21 +256,9 @@ export default function BlogGridMain() {
         </div>
       </div>
 
-      <div className="mt-[100px] mb-0.5">
-        <FooterTwo />
-      </div>
+      <FooterTwo />
 
-      {/* ✅ Toast Container */}
-      <ToastContainer
-        position="top-right"
-        autoClose={2000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        pauseOnHover
-        draggable
-        theme="colored"
-      />
+      <ToastContainer position="top-right" autoClose={2000} theme="colored" />
     </div>
   );
 }

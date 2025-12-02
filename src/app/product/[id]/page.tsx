@@ -142,21 +142,31 @@ const CompareElements: React.FC = () => {
     }
   }, [product?.product_id]);
 
+  // ✅ Cart Add (BACKEND SYNCED)
   const handleAdd = () => {
     if (!product) return;
 
-    addToCart({
-      id: product._id ? Number(product._id) : Date.now(),
-      image: product.image || activeImage,
-      productName: product.productName,
-      price: displayPrice || Number(product.regularPrice),
-      quantity,
-      active: true,
-      regularPrice: product.regularPrice,
-      productImage: product.image || activeImage || "",
-      title: product.productName,
-      description: product.discription ?? "No description available",
-    });
+    const productId =
+      product.product_id ??
+      (product._id ? Number(product._id) : Date.now());
+
+    addToCart(
+      {
+        id: productId, // ✅ BACKEND product_id
+        product_variant_id: product.product_variant_id || null,
+        productName: product.productName,
+        price: selectedWeight === "1kg"
+          ? Number(displayPrice || product.salePrice || product.regularPrice)
+          : Number(displayPrice || product.salePrice || product.regularPrice),
+        quantity, // ✅ BACKEND quantity
+        active: true,
+        regularPrice: product.regularPrice,
+        productImage: product.image || activeImage || "",
+        image: product.image || activeImage,
+        description: ""
+      },
+      3 // ✅ BACKEND user_id
+    );
 
     setAdded(true);
     toast.success("🎉 Successfully Added To Cart!");
