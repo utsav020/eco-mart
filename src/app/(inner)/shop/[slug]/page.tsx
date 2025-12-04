@@ -98,18 +98,19 @@ const CompareElements: React.FC = () => {
   const handleAdd = () => {
     if (!product) return;
 
+    // Replace 1 with the actual user ID from your auth context or state
     addToCart({
       id: Date.now(),
       image: product.productImages?.[0]?.image_url ?? "",
-      title: product.productName ?? "Default Product Title",
+      productName: product.productName ?? "Default Product Title",
       price: product.salePrice ?? product.regularPrice ?? 0,
       quantity: quantity,
       active: true,
       regularPrice: undefined,
       productImage: "",
-      productName: "",
-      description: product.discription ?? "No description available"
-    });
+      description: product.discription ?? "No description available",
+      title: undefined
+    }, 1);
 
     setAdded(true);
     toast.success("🎉 Successfully Added To Cart!");

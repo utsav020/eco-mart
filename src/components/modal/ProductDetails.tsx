@@ -47,7 +47,7 @@ const ProductDetails: React.FC<ModalProps> = ({
       active: true,
     };
 
-    addToCart(item);
+    // addToCart(item);
     addcart();
   };
 

@@ -71,21 +71,21 @@ const BlogGridMain: React.FC<BlogGridMainProps & ProductType> = ({
     });
   };
 
-  const handleAdd = (product?: any, index?: any) => {
-    addToCart({
-      id: Date.now(),
-      image: `/assets/images/grocery/${ProductImage}`,
-      title: ProductTitle ?? "Default Product Title",
-      price: parseFloat(Price ?? "0"),
-      quantity: 1,
-      active: true,
-      regularPrice: regularPrice ?? "0",
-      productImage: "",
-      productName: "",
-    });
-    setAdded(true);
-    notify("🛒 Added to Cart!", "success");
-  };
+  // const handleAdd = (product?: any, index?: any) => {
+  //   addToCart({
+  //     id: Date.now(),
+  //     image: `/assets/images/grocery/${ProductImage}`,
+  //     title: ProductTitle ?? "Default Product Title",
+  //     price: parseFloat(Price ?? "0"),
+  //     quantity: 1,
+  //     active: true,
+  //     regularPrice: regularPrice ?? "0",
+  //     productImage: "",
+  //     productName: "",
+  //   });
+  //   setAdded(true);
+  //   notify("🛒 Added to Cart!", "success");
+  // };
 
   const handleWishlist = (p0: any) => {
     addToWishlist({
@@ -155,6 +155,10 @@ const BlogGridMain: React.FC<BlogGridMainProps & ProductType> = ({
       );
     };
   }, []);
+
+  function handleAdd() {
+    throw new Error("Function not implemented.");
+  }
 
   return (
     <div className="">

@@ -118,7 +118,8 @@ export default function BlogGridMain() {
         image: getImage(product, index),
         quantity: 1,
         active: true,
-        description: ""
+        description: "",
+        title: undefined
       },
       3 // ✅ user_id
     );

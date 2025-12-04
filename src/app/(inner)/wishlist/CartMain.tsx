@@ -71,15 +71,16 @@ const WishlistMain = () => {
   const handleAdd = (product: ProductType, index: number) => {
     addToCart({
       id: Date.now(),
-      image: getImage(product, index),
-      title: product.title ?? "Default Product",
-      price: parseFloat(product.price ?? "0"),
-      quantity: product.quantity ?? 1,
+      image: `/assets/images/grocery/${product.ProductImage}`,
+      price: parseFloat(product.Price ?? "0"),
+      quantity: 1,
       active: true,
-      regularPrice: product.regularPrice ?? "",
-      productImage: product.productImage ?? "",
-      productName: product.productName ?? "",
-    });
+      regularPrice: undefined,
+      productImage: "",
+      productName: "",
+      description: "",
+      title: undefined
+    }, 0); // Pass userId as second argument
 
     // Remove from wishlist when moved to cart
     removeFromWishlist(product.id);

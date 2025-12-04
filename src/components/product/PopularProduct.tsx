@@ -90,23 +90,23 @@ const PopularProducts: React.FC = () => {
     null
   );
 
-  const handleAdd = (product: ProductType, index: number) => {
-    addToCart({
-      id: product._id ? Number(product._id) : Date.now(),
-      image: getImage(product.image, index),
-      title: product.productName ?? "Organic Product",
-      price: parseFloat(product.regularPrice?.toString() ?? "0"),
-      quantity: 1,
-      active: true,
-      productName: product.productName ?? "Organic Product",
-      regularPrice: product.regularPrice,
-      productImage: product.image || "",
-    });
+  // const handleAdd = (product: ProductType, index: number) => {
+  //   addToCart({
+  //     id: product._id ? Number(product._id) : Date.now(),
+  //     image: getImage(product.image, index),
+  //     title: product.productName ?? "Organic Product",
+  //     price: parseFloat(product.regularPrice?.toString() ?? "0"),
+  //     quantity: 1,
+  //     active: true,
+  //     productName: product.productName ?? "Organic Product",
+  //     regularPrice: product.regularPrice,
+  //     productImage: product.image || "",
+  //   });
 
-    setAddedProductId(product._id || index);
-    setTimeout(() => setAddedProductId(null), 4000);
-    toast.success("Added to cart!");
-  };
+  //   setAddedProductId(product._id || index);
+  //   setTimeout(() => setAddedProductId(null), 4000);
+  //   toast.success("Added to cart!");
+  // };
 
   // ✅ Add / Remove Wishlist (toggle)
   const handleWishlist = (product: ProductType, index: number) => {
@@ -167,6 +167,10 @@ const PopularProducts: React.FC = () => {
             const isInWishlist = wishlistItems.some(
               (item) => String(item.id) === String(productIdNumber)
             );
+
+            function handleAdd(product: ProductType, index: number) {
+              throw new Error("Function not implemented.");
+            }
 
             return (
               <div

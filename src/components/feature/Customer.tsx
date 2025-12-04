@@ -105,7 +105,7 @@ export default function Customer() {
             <SwiperSlide key={t.id}>
               <div className="flex flex-col md:flex-row bg-white shadow-xl rounded-3xl overflow-hidden max-w-full mx-auto">
                 
-                {/* ✅ TEXT SECTION */}
+                {/* ✅ TEXT SECTION */} 
                 <div className="w-full md:w-[60%] p-6 md:p-10 flex flex-col justify-between">
                   <p className="text-[50px] md:text-[60px] text-[#F39C33] leading-none">“</p>
 

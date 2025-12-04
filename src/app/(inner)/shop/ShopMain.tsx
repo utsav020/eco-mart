@@ -74,14 +74,15 @@ const BlogGridMain: React.FC<BlogGridMainProps> = ({
     addToCart({
       id: Date.now(),
       image: `/assets/images/grocery/${ProductImage}`,
-      title: ProductTitle ?? "Default Product Title",
       price: parseFloat(Price ?? "0"),
       quantity: 1,
       active: true,
       regularPrice: undefined,
       productImage: "",
       productName: "",
-    });
+      description: "",
+      title: undefined
+    }, 0); // Pass userId as second argument
 
     setAdded(true);
     setTimeout(() => setAdded(false), 2000); // Reset back to normal after 2 seconds

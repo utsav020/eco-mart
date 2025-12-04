@@ -163,7 +163,8 @@ const CompareElements: React.FC = () => {
         regularPrice: product.regularPrice,
         productImage: product.image || activeImage || "",
         image: product.image || activeImage,
-        description: ""
+        description: "",
+        title: undefined
       },
       3 // ✅ BACKEND user_id
     );
