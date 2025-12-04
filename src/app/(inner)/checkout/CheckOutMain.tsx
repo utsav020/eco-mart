@@ -164,7 +164,7 @@ export default function CheckOutMain() {
      ================================================================ */
   return (
     <div className="w-full min-h-screen flex items-center justify-center px-4 py-10">
-      <div className="w-full max-w-[640px] rounded-md">
+      <div className="w-full max-w-[640px] mt-22 md:mt-0 rounded-md">
 
         <form onSubmit={handleOrderSubmit} className="space-y-8 bg-transparent">
 

@@ -138,7 +138,7 @@ const PopularProducts: React.FC = () => {
   return (
     <div className="bg-white max-w-[1430px] px-0 2xl:px-0 w-full mt-[100px] mx-auto">
       {/* ✅ Title */}
-      <div className="mb-10 lg:pl-0 px-[15px] md:px-5 lg:px-0">
+      <div className="mb-10 lg:pl-0 pl-7 px-[15px] md:px-5 lg:px-0">
         <p className="md:text-[35px] text-[30px] font-bold text-[#2D2D2D] mb-2">
           Best Sellers
         </p>

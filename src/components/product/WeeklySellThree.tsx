@@ -37,7 +37,7 @@ const AboutPage: React.FC = () => {
       <div className="mx-auto max-w-[1430px] mt-[100px]">
         {/* Header Section */}
         <div className="text-center mb-16">
-          <p className="text-[5px] md:text-6xl font-bold text-[#077D40] mb-6">
+          <p className="text-[25px] md:text-6xl font-bold text-[#077D40] mb-6">
             Why are we different?
           </p>
         </div>

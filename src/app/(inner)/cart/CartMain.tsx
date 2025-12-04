@@ -138,7 +138,8 @@ const CartMain = () => {
                 <div className="flex justify-between items-center mt-4">
                   {/* Quantity */}
                   <div className="flex items-center gap-3">
-                    <button
+                    <div className="">
+                      <button
                       onClick={() =>
                         item.quantity > 1 &&
                         updateItemQuantity(item.id, item.quantity - 1)
@@ -147,10 +148,12 @@ const CartMain = () => {
                     >
                       <ChevronDown size={16} />
                     </button>
+                    </div>
 
                     <span className="font-medium">{item.quantity}</span>
 
-                    <button
+                    <div className="">
+                      <button
                       onClick={() =>
                         updateItemQuantity(item.id, item.quantity + 1)
                       }
@@ -158,6 +161,7 @@ const CartMain = () => {
                     >
                       <ChevronUp size={16} />
                     </button>
+                    </div>
                   </div>
 
                   <p className="font-semibold text-lg">

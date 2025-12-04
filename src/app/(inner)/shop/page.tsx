@@ -104,8 +104,7 @@ export default function BlogGridMain() {
   // ✅ ✅ ✅ ADD TO CART (100% BACKEND SYNCED)
   const handleAdd = (product: ProductType, index: number) => {
     const productId =
-      product.product_id ??
-      (product._id ? parseInt(product._id) : Date.now());
+      product.product_id ?? (product._id ? parseInt(product._id) : Date.now());
 
     addToCart(
       {
@@ -119,7 +118,7 @@ export default function BlogGridMain() {
         quantity: 1,
         active: true,
         description: "",
-        title: undefined
+        title: undefined,
       },
       3 // ✅ user_id
     );
@@ -132,8 +131,7 @@ export default function BlogGridMain() {
   // ✅ WISHLIST
   const handleWishlist = (product: ProductType, index: number) => {
     const productId =
-      product.product_id ??
-      (product._id ? parseInt(product._id) : Date.now());
+      product.product_id ?? (product._id ? parseInt(product._id) : Date.now());
 
     const exists = wishlistItems.some((i) => i.id === productId);
 
@@ -176,19 +174,21 @@ export default function BlogGridMain() {
 
       <div className="max-w-[1430px] mt-[180px] px-5 mx-auto">
         {/* ✅ CATEGORY BAR */}
-        <div className="bg-[#F5F5F5] h-[280px] md:h-20 rounded-[200px] flex items-center justify-center gap-4">
+        <div className="bg-[#F5F5F5] h-[230px] md:h-20 pt-5 rounded-2xl md:rounded-[200px] md:flex md:items-center md:justify-center gap-4">
           {categories.map((category) => (
-            <button
-              key={category}
-              onClick={() => handleCategoryClick(category)}
-              className={`px-5 py-2 rounded-full ${
-                activeCategory === category
-                  ? "bg-[#8CC63F] text-white"
-                  : "text-gray-700"
-              }`}
-            >
-              {category}
-            </button>
+            <div className="max-w-[200px] text-center mx-auto">
+              <button
+                key={category}
+                onClick={() => handleCategoryClick(category)}
+                className={`px-5 py-2 rounded-full ${
+                  activeCategory === category
+                    ? "bg-[#8CC63F] text-white"
+                    : "text-gray-700"
+                }`}
+              >
+                {category}
+              </button>
+            </div>
           ))}
         </div>
 
@@ -211,34 +211,38 @@ export default function BlogGridMain() {
                     className="w-full h-72 object-cover"
                   />
 
-                  <div className="p-4">
-                    <p className="font-bold">
-                      {product.productName || "Product"}
-                    </p>
+                  <div className="pt-3">
+                    <div className="">
+                      <p className="font-bold">
+                        {product.productName || "Product"}
+                      </p>
 
-                    <p className="text-gray-600 mt-2">
-                      ₹{product.regularPrice || 95}
-                    </p>
+                      <p className="text-gray-600 mt-2">
+                        ₹{product.regularPrice || 95}
+                      </p>
+                    </div>
 
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleAdd(product, index);
-                      }}
-                      className={`mt-5 w-full h-[45px] border rounded ${
-                        addedProductId ===
+                    <div className="">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleAdd(product, index);
+                        }}
+                        className={`mt-5 w-full h-[45px] border rounded ${
+                          addedProductId ===
+                          (product.product_id ||
+                            (product._id ? parseInt(product._id) : -1))
+                            ? "bg-[#077D40] text-white"
+                            : "hover:bg-[#077D40] hover:text-white"
+                        }`}
+                      >
+                        {addedProductId ===
                         (product.product_id ||
                           (product._id ? parseInt(product._id) : -1))
-                          ? "bg-[#077D40] text-white"
-                          : "hover:bg-[#077D40] hover:text-white"
-                      }`}
-                    >
-                      {addedProductId ===
-                      (product.product_id ||
-                        (product._id ? parseInt(product._id) : -1))
-                        ? "Added ✅"
-                        : "Add to Cart"}
-                    </button>
+                          ? "Added ✅"
+                          : "Add to Cart"}
+                      </button>
+                    </div>
                   </div>
 
                   <button
