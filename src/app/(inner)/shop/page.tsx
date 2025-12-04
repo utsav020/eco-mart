@@ -170,13 +170,15 @@ export default function BlogGridMain() {
 
   return (
     <div className="min-h-screen bg-white">
-      <HeaderThree />
+      <div className="border-2">
+        <HeaderThree />
+      </div>
 
       <div className="max-w-[1430px] mt-[180px] px-5 mx-auto">
         {/* ✅ CATEGORY BAR */}
-        <div className="bg-[#F5F5F5] h-[230px] md:h-20 pt-5 rounded-2xl md:rounded-[200px] md:flex md:items-center md:justify-center gap-4">
+        <div className="bg-[#F5F5F5] h-[230px] md:h-20 pt-5 md:pt-0 md:pl-5 rounded-2xl md:rounded-[200px] block md:flex items-center justify-center md:justify-start gap-4">
           {categories.map((category) => (
-            <div className="max-w-[200px] text-center mx-auto">
+            <div className="">
               <button
                 key={category}
                 onClick={() => handleCategoryClick(category)}
