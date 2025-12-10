@@ -1,6 +1,9 @@
 "use client";
-import React, { useState } from "react";
+
+import React, { useState, useEffect } from "react";
 import { useCart } from "@/components/header/CartContext";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
 type Billing = {
   firstName: string;
@@ -14,13 +17,16 @@ type Billing = {
 };
 
 export default function CheckOutMain() {
-  const { cartItems } = useCart();
+  const { cartItems } = useCart(); // ALL CART ITEMS
+  const router = useRouter();
 
   const [paymentMethod, setPaymentMethod] = useState<"card" | "cod">("card");
   const [cardNumber, setCardNumber] = useState("");
   const [cardType, setCardType] = useState("");
   const [expiry, setExpiry] = useState("");
   const [cvv, setCvv] = useState("");
+
+  const [userId, setUserId] = useState<string | null>(null);
 
   const [billingInfo, setBillingInfo] = useState<Billing>({
     firstName: "",
@@ -34,25 +40,32 @@ export default function CheckOutMain() {
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(false);
 
-  /* ------------------ Card Type Detection ------------------ */
-  const detectCardType = (number: string) => {
-    const cleaned = number.replace(/\s+/g, "");
-    if (/^4/.test(cleaned)) return "visa";
-    if (/^5[1-5]/.test(cleaned)) return "mastercard";
-    if (/^3[47]/.test(cleaned)) return "amex";
-    if (/^6/.test(cleaned)) return "discover";
+  /* ---------------- Load user_id from localStorage ---------------- */
+  useEffect(() => {
+    const uid = localStorage.getItem("user_id");
+    setUserId(uid);
+  }, []);
+
+  /* ---------------- Card Type Detect ---------------- */
+  const detectCardType = (num: string) => {
+    const n = num.replace(/\s+/g, "");
+    if (/^4/.test(n)) return "visa";
+    if (/^5[1-5]/.test(n)) return "mastercard";
+    if (/^3[47]/.test(n)) return "amex";
+    if (/^6/.test(n)) return "discover";
     return "";
   };
 
-  /* ------------------ Luhn Algorithm ------------------ */
+  /* ---------------- Luhn Algorithm ---------------- */
   const luhnCheck = (num: string) => {
     const digits = num.replace(/\s+/g, "");
-    let sum = 0;
-    let dbl = false;
+    let sum = 0,
+      dbl = false;
 
     for (let i = digits.length - 1; i >= 0; i--) {
-      let d = parseInt(digits[i], 10);
+      let d = parseInt(digits[i]);
       if (dbl) {
         d *= 2;
         if (d > 9) d -= 9;
@@ -60,314 +73,195 @@ export default function CheckOutMain() {
       sum += d;
       dbl = !dbl;
     }
-
     return sum % 10 === 0;
   };
 
-  /* ------------------ Card Input Formatting ------------------ */
-  const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  /* ---------------- Input Handlers ---------------- */
+  const handleCardNumberChange = (e: any) => {
     let val = e.target.value.replace(/\D/g, "").substring(0, 16);
     const formatted = val.replace(/(.{4})/g, "$1 ").trim();
-
     setCardNumber(formatted);
     setCardType(detectCardType(formatted));
-    setErrors((s) => ({ ...s, cardNumber: "", cvv: "" }));
+    setErrors((s) => ({ ...s, cardNumber: "" }));
   };
 
-  /* ------------------ Expiry Formatting ------------------ */
-  const handleExpiryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value.replace(/\D/g, "").substring(0, 4);
-    if (value.length >= 3) value = `${value.slice(0, 2)}/${value.slice(2)}`;
-    setExpiry(value);
+  const handleExpiryChange = (e: any) => {
+    let v = e.target.value.replace(/\D/g, "").substring(0, 4);
+    if (v.length >= 3) v = v.slice(0, 2) + "/" + v.slice(2);
+    setExpiry(v);
     setErrors((s) => ({ ...s, expiry: "" }));
   };
 
-  /* ------------------ CVV Formatting ------------------ */
-  const handleCvvChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let digits = e.target.value.replace(/\D/g, "");
+  const handleCvvChange = (e: any) => {
     const max = cardType === "amex" ? 4 : 3;
-    setCvv(digits.substring(0, max));
+    setCvv(e.target.value.replace(/\D/g, "").substring(0, max));
     setErrors((s) => ({ ...s, cvv: "" }));
   };
 
-  /* ------------------ Billing Input Handler ------------------ */
-  const handleInputChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
-  ) => {
+  const handleInputChange = (e: any) => {
     const { id, value } = e.target;
     setBillingInfo({ ...billingInfo, [id]: value });
     setErrors((s) => ({ ...s, [id]: "" }));
   };
 
+  /* ---------------- Valid Expiry ---------------- */
   const validateExpiry = (v: string) => {
     if (!/^\d{2}\/\d{2}$/.test(v)) return false;
-
     const [mm, yy] = v.split("/").map(Number);
+    const now = new Date();
+
     if (mm < 1 || mm > 12) return false;
 
-    const now = new Date();
-    const cm = now.getMonth() + 1;
     const cy = now.getFullYear() % 100;
+    const cm = now.getMonth() + 1;
 
-    if (yy < cy) return false;
-    if (yy === cy && mm < cm) return false;
-
-    return true;
+    return !(yy < cy || (yy === cy && mm < cm));
   };
 
-  /* ------------------ On Submit ------------------ */
-  const handleOrderSubmit = (e: React.FormEvent) => {
+  /* ---------------- Submit Order to Backend ---------------- */
+  const handleOrderSubmit = async (e: any) => {
     e.preventDefault();
+
     const newErrors: Record<string, string> = {};
 
-    if (!billingInfo.firstName) newErrors.firstName = "Required";
-    if (!billingInfo.lastName) newErrors.lastName = "Required";
-    if (!billingInfo.email) newErrors.email = "Required";
-    if (!billingInfo.address) newErrors.address = "Required";
+    // Billing validation
+    ["firstName", "lastName", "email", "address"].forEach((f) => {
+      if (!billingInfo[f as keyof Billing]) newErrors[f] = "Required";
+    });
 
+    // Card validation
     if (paymentMethod === "card") {
       const digits = cardNumber.replace(/\s+/g, "");
 
-      if (!digits) {
-        newErrors.cardNumber = "Card number required";
-      } else {
-        if (cardType === "amex" && digits.length !== 15)
-          newErrors.cardNumber = "AMEX must be 15 digits";
-
-        if (cardType !== "amex" && digits.length < 13)
-          newErrors.cardNumber = "Invalid card number";
-
-        if (!luhnCheck(digits))
-          newErrors.cardNumber = "Invalid card number";
-      }
-
-      if (!expiry) newErrors.expiry = "Required";
-      else if (!validateExpiry(expiry)) newErrors.expiry = "Invalid date";
-
-      const cvvLen = cardType === "amex" ? 4 : 3;
-      if (!cvv) newErrors.cvv = "Required";
-      else if (cvv.length !== cvvLen)
-        newErrors.cvv = `CVV must be ${cvvLen} digits`;
+      if (!luhnCheck(digits)) newErrors.cardNumber = "Invalid card number";
+      if (!validateExpiry(expiry)) newErrors.expiry = "Invalid expiry";
+      if (cvv.length !== (cardType === "amex" ? 4 : 3))
+        newErrors.cvv = "Invalid CVV";
     }
 
     setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) return;
 
-    if (Object.keys(newErrors).length === 0) {
-      alert("Order completed successfully!");
+    if (!userId) {
+      alert("User not logged in");
+      router.push("/login");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await axios.post(
+        "https://ekomart-backend.onrender.com/api/cart/checkoutcart",
+        {
+          user_id: userId,
+          payment_method: paymentMethod === "cod" ? "COD" : "CARD",
+          billing: billingInfo,
+          items: cartItems,
+        }
+      );
+
+      console.log("ORDER SUCCESS:", response.data);
+
+      localStorage.setItem("lastOrder", JSON.stringify(response.data));
+      router.push("/order-success");
+
+      setLoading(false);
+    } catch (error: any) {
+      console.log("Checkout Error", error);
+      alert("Checkout failed. Try again.");
+      setLoading(false);
     }
   };
 
-  /* ================================================================
-     RESPONSIVE MOBILE (FULL-WIDTH CLEAN LAYOUT)
-     ================================================================ */
+  /* ---------------- UI ---------------- */
   return (
-    <div className="w-full min-h-screen flex items-center justify-center px-4 py-10">
-      <div className="w-full max-w-[640px] mt-22 md:mt-0 rounded-md">
+    <div className="w-full min-h-screen flex justify-center px-4 py-10">
+      <div className="w-full max-w-[640px]">
 
-        <form onSubmit={handleOrderSubmit} className="space-y-8 bg-transparent">
+        <form onSubmit={handleOrderSubmit} className="space-y-8">
 
-          {/* ------------------ Billing Address Box ------------------ */}
-          <div className="shadow-md p-6 bg-white rounded-md">
-            <h2 className="text-xl font-semibold mb-4">Billing Address</h2>
-
-            {/* First + Last Name */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input
-                id="firstName"
-                label="First Name"
-                value={billingInfo.firstName}
-                onChange={handleInputChange}
-                error={errors.firstName}
-                placeholder="Alex"
-              />
-
-              <Input
-                id="lastName"
-                label="Last Name"
-                value={billingInfo.lastName}
-                onChange={handleInputChange}
-                error={errors.lastName}
-                placeholder="Driver"
-              />
-            </div>
-
-            <Input
-              id="email"
-              label="Email Address"
-              value={billingInfo.email}
-              onChange={handleInputChange}
-              error={errors.email}
-              placeholder="username@gmail.com"
-            />
-
-            <Input
-              id="address"
-              label="Street Address"
-              value={billingInfo.address}
-              onChange={handleInputChange}
-              error={errors.address}
-              placeholder="123 Street Name"
-            />
-
-            <Input
-              id="city"
-              label="City"
-              value={billingInfo.city}
-              onChange={handleInputChange}
-              placeholder="San Diego"
-            />
+          {/* Billing Address */}
+          <div className="shadow p-6 bg-white rounded-md">
+            <h2 className="text-xl font-semibold mb-4">Billing Information</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Select
-                id="state"
-                label="State/Province"
-                value={billingInfo.state}
-                onChange={handleInputChange}
-                options={["California", "Texas", "New York"]}
-              />
-
-              <Input
-                id="zip"
-                label="Zip Code"
-                value={billingInfo.zip}
-                onChange={handleInputChange}
-                placeholder="22434"
-              />
+              <Input id="firstName" label="First Name" value={billingInfo.firstName} onChange={handleInputChange} error={errors.firstName} />
+              <Input id="lastName" label="Last Name" value={billingInfo.lastName} onChange={handleInputChange} error={errors.lastName} />
             </div>
 
-            <Input
-              id="phone"
-              label="Phone Number"
-              value={billingInfo.phone}
-              onChange={handleInputChange}
-              placeholder="+123 456 789"
-            />
+            <Input id="email" label="Email Address" value={billingInfo.email} onChange={handleInputChange} error={errors.email} />
+            <Input id="address" label="Street Address" value={billingInfo.address} onChange={handleInputChange} error={errors.address} />
+            <Input id="city" label="City" value={billingInfo.city} onChange={handleInputChange} />
+            <Input id="state" label="State" value={billingInfo.state} onChange={handleInputChange} />
+            <Input id="zip" label="Zip Code" value={billingInfo.zip} onChange={handleInputChange} />
+            <Input id="phone" label="Phone Number" value={billingInfo.phone} onChange={handleInputChange} />
           </div>
 
-          {/* =========================================================
-               Payment Section (FULLY RESPONSIVE)
-          ========================================================== */}
-          <div className="shadow-md bg-white p-6 rounded-md">
+          {/* Payment Section */}
+          <div className="shadow p-6 bg-white rounded-md">
             <h3 className="text-lg font-semibold">Payment Method</h3>
 
             {/* COD */}
-            <div className="mt-4 border rounded-md p-3 flex items-center gap-3">
+            <div className="mt-4 flex items-center gap-3 border p-3 rounded-md">
               <input
                 type="radio"
-                name="payment"
-                value="cod"
                 checked={paymentMethod === "cod"}
                 onChange={() => setPaymentMethod("cod")}
               />
-              <p className="font-medium text-gray-800">Cash on Delivery (COD)</p>
+              <span>Cash on Delivery (COD)</span>
             </div>
 
-            {/* Card */}
-            <div
-              className={`mt-4 border rounded-md p-4 ${
-                paymentMethod === "card"
-                  ? "border-blue-600 bg-blue-50"
-                  : "border-gray-300"
-              }`}
-            >
+            {/* CARD */}
+            <div className="mt-4 border p-4 rounded-md">
               <div className="flex items-center gap-3">
                 <input
                   type="radio"
-                  name="payment"
-                  value="card"
                   checked={paymentMethod === "card"}
                   onChange={() => setPaymentMethod("card")}
                 />
-                <p className="font-medium">Pay with Credit Card</p>
+                <span>Pay with Credit / Debit Card</span>
               </div>
 
               {paymentMethod === "card" && (
                 <>
-                  <Input
-                    id="cardNumber"
-                    label="Card Number"
-                    value={cardNumber}
-                    onChange={handleCardNumberChange}
-                    error={errors.cardNumber}
-                    placeholder="1234 5678 9101 3456"
-                  />
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Input
-                      id="expiry"
-                      label="Expiration Date"
-                      value={expiry}
-                      onChange={handleExpiryChange}
-                      error={errors.expiry}
-                      placeholder="MM/YY"
-                    />
-
-                    <Input
-                      id="cvv"
-                      label="Card Security Code"
-                      value={cvv}
-                      onChange={handleCvvChange}
-                      error={errors.cvv}
-                      placeholder={cardType === "amex" ? "4 digits" : "3 digits"}
-                    />
+                  <Input id="cardNumber" label="Card Number" value={cardNumber} onChange={handleCardNumberChange} error={errors.cardNumber} />
+                  <div className="grid grid-cols-2 gap-4">
+                    <Input id="expiry" label="Expiry (MM/YY)" value={expiry} onChange={handleExpiryChange} error={errors.expiry} />
+                    <Input id="cvv" label="CVV" value={cvv} onChange={handleCvvChange} error={errors.cvv} />
                   </div>
                 </>
               )}
             </div>
           </div>
 
-          {/* Submit Button */}
           <button
             type="submit"
-            className="w-full py-3 bg-green-600 text-white rounded-md font-semibold"
+            disabled={loading}
+            className="w-full py-3 bg-green-600 hover:bg-green-700 text-white rounded-md text-lg font-semibold"
           >
-            Complete Order
+            {loading ? "Processing..." : "Complete Order"}
           </button>
-
         </form>
       </div>
     </div>
   );
 }
 
-/* ---------- Reusable Inputs (Auto responsive) ---------- */
-function Input({ id, label, value, onChange, placeholder, error }: any) {
+/* ---------------- Reusable Input Component ---------------- */
+function Input({ id, label, value, onChange, error }: any) {
   return (
-    <div className="mt-4">
-      <label className="block text-sm font-medium">{label}</label>
+    <div>
+      <label className="block mb-1 text-sm font-medium">{label}</label>
       <input
         id={id}
         value={value}
         onChange={onChange}
-        placeholder={placeholder}
-        className={`mt-1 w-full h-11 px-3 border rounded-md outline-none ${
+        className={`w-full h-11 px-3 border rounded-md ${
           error ? "border-red-500" : "border-gray-300"
         }`}
       />
-      {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
-    </div>
-  );
-}
-
-function Select({ id, label, value, onChange, options }: any) {
-  return (
-    <div className="mt-4">
-      <label className="block text-sm font-medium">{label}</label>
-      <select
-        id={id}
-        value={value}
-        onChange={onChange}
-        className="mt-1 w-full h-11 px-3 border border-gray-300 rounded-md outline-none"
-      >
-        <option value="">Select Option</option>
-        {options.map((o: string) => (
-          <option key={o} value={o}>
-            {o}
-          </option>
-        ))}
-      </select>
+      {error && <p className="text-red-500 text-xs">{error}</p>}
     </div>
   );
 }

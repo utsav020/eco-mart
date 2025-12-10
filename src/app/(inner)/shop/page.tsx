@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import HeaderThree from "@/components/header/HeaderThree";
 import { useWishlist } from "@/components/header/WishlistContext";
 import { Heart } from "lucide-react";
-import { useCart } from "@/components/header/CartContext";
+// import { useCart } from "@/components/header/CartContext";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import FooterTwo from "@/components/footer/FooterTwo";
@@ -34,7 +34,7 @@ export default function BlogGridMain() {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
 
-  const { addToCart } = useCart();
+  // const { addToCart } = useCart();
   const router = useRouter();
   const { setSelectedProduct } = useProduct();
   const { setSelectedCategory } = useCategory();
@@ -57,7 +57,6 @@ export default function BlogGridMain() {
     "Grains & Cereals": 4,
   };
 
-  // ✅ FETCH PRODUCTS
   const fetchProductsByCategory = async (categoryId?: number) => {
     setLoading(true);
     setError("");
@@ -101,34 +100,73 @@ export default function BlogGridMain() {
     return defaultImages[index % defaultImages.length];
   };
 
-  // ✅ ✅ ✅ ADD TO CART (100% BACKEND SYNCED)
-  const handleAdd = (product: ProductType, index: number) => {
-    const productId =
-      product.product_id ?? (product._id ? parseInt(product._id) : Date.now());
+  // ⭐ UPDATED ADD TO CART — 100% FIXED (Only ONE API call)
 
-    addToCart(
-      {
-        id: productId, // ✅ Must be numeric
-        product_variant_id: product.product_variant_id || null, // ✅ required
-        productName: product.productName,
-        price: Number(product.regularPrice || 0),
-        regularPrice: product.regularPrice,
-        productImage: getImage(product, index),
-        image: getImage(product, index),
-        quantity: 1,
-        active: true,
-        description: "",
-        title: undefined,
-      },
-      3 // ✅ user_id
-    );
+  // ⭐ Add To Cart (FINAL FIXED)
+  const handleAdd = async (product: ProductType, index: number) => {
+    const userId = Number(localStorage.getItem("user_id"));
 
-    setAddedProductId(productId);
-    setTimeout(() => setAddedProductId(null), 2000);
-    toast.success("✅ Product added to cart!");
+    if (!userId || isNaN(userId)) {
+      toast.error("User not logged in. Please login first.");
+      return;
+    }
+
+    const token = localStorage.getItem("token") || "";
+
+    // ⭐ Correct product_id mapping
+    const productId = product.product_id
+      ? product.product_id
+      : product._id
+      ? Number(product._id)
+      : null;
+
+    if (!productId) {
+      toast.error("Invalid product id.");
+      return;
+    }
+
+    // ⭐ Correct payload format
+    const payload = {
+      user_id: userId,
+      items: [
+        {
+          product_id: productId,
+          product_variant_id: product.product_variant_id || null,
+          quantity: 1,
+        },
+      ],
+    };
+
+    try {
+      const res = await fetch(
+        "https://ekomart-backend.onrender.com/api/cart/addcart",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token ? `Bearer ${token}` : "",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data.message || "Unable to add to cart");
+        return;
+      }
+
+      // ⭐ UI Local update (NO second API CALL)
+      toast.success("Product added to cart!");
+
+      setAddedProductId(productId);
+      setTimeout(() => setAddedProductId(null), 1500);
+    } catch (error) {
+      toast.error("Server Error: Unable to add to cart");
+    }
   };
 
-  // ✅ WISHLIST
   const handleWishlist = (product: ProductType, index: number) => {
     const productId =
       product.product_id ?? (product._id ? parseInt(product._id) : Date.now());
@@ -136,7 +174,7 @@ export default function BlogGridMain() {
     const exists = wishlistItems.some((i) => i.id === productId);
 
     if (exists) {
-      toast.info("❤️ Already in wishlist!");
+      toast.info("Already in wishlist!");
       return;
     }
 
@@ -148,7 +186,7 @@ export default function BlogGridMain() {
       quantity: 1,
     });
 
-    toast.success("💖 Added to wishlist!");
+    toast.success("Added to wishlist!");
   };
 
   const handleProductClick = (product: ProductType) => {
@@ -175,26 +213,27 @@ export default function BlogGridMain() {
       </div>
 
       <div className="max-w-[1430px] mt-[180px] px-5 mx-auto">
-        {/* ✅ CATEGORY BAR */}
-        <div className="bg-[#F5F5F5] h-[230px] md:h-20 pt-5 md:pt-0 md:pl-5 rounded-2xl md:rounded-[200px] block md:flex items-center justify-center md:justify-start gap-4">
+        {/* CATEGORY BAR */}
+        <div
+          className="bg-[#F5F5F5] h-[230px] md:h-20 pt-5 md:pt-0 md:pl-5 rounded-2xl md:rounded-[200px] 
+                        block md:flex items-center justify-center md:justify-start gap-4"
+        >
           {categories.map((category) => (
-            <div className="">
-              <button
-                key={category}
-                onClick={() => handleCategoryClick(category)}
-                className={`px-5 py-2 rounded-full ${
-                  activeCategory === category
-                    ? "bg-[#8CC63F] text-white"
-                    : "text-gray-700"
-                }`}
-              >
-                {category}
-              </button>
-            </div>
+            <button
+              key={category}
+              onClick={() => handleCategoryClick(category)}
+              className={`px-5 py-2 rounded-full ${
+                activeCategory === category
+                  ? "bg-[#8CC63F] text-white"
+                  : "text-gray-700"
+              }`}
+            >
+              {category}
+            </button>
           ))}
         </div>
 
-        {/* ✅ PRODUCT GRID */}
+        {/* PRODUCT GRID */}
         <div className="mt-10">
           {loading ? (
             <LogoLineLoader />
@@ -202,62 +241,59 @@ export default function BlogGridMain() {
             <p className="text-center text-gray-500">{error}</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-              {products.map((product, index) => (
-                <div
-                  key={index}
-                  className="w-[332px] h-[450px] mx-auto cursor-pointer"
-                  onClick={() => handleProductClick(product)}
-                >
-                  <img
-                    src={getImage(product, index)}
-                    className="w-full h-72 object-cover"
-                  />
+              {products.map((product, index) => {
+                const displayId =
+                  product.product_id ??
+                  (product._id ? parseInt(product._id) : -1);
 
-                  <div className="pt-3">
-                    <div className="">
+                return (
+                  <div
+                    key={index}
+                    className="w-[332px] h-[450px] mx-auto relative cursor-pointer"
+                    onClick={() => handleProductClick(product)}
+                  >
+                    <img
+                      src={getImage(product, index) || "/assets/images/products/Oats.png"}
+                      className="w-full h-72 object-cover"
+                    />
+
+                    <div className="pt-3">
                       <p className="font-bold">
                         {product.productName || "Product"}
                       </p>
-
                       <p className="text-gray-600 mt-2">
                         ₹{product.regularPrice || 95}
                       </p>
-                    </div>
 
-                    <div className="">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           handleAdd(product, index);
                         }}
                         className={`mt-5 w-full h-[45px] border rounded ${
-                          addedProductId ===
-                          (product.product_id ||
-                            (product._id ? parseInt(product._id) : -1))
+                          addedProductId === displayId
                             ? "bg-[#077D40] text-white"
                             : "hover:bg-[#077D40] hover:text-white"
                         }`}
                       >
-                        {addedProductId ===
-                        (product.product_id ||
-                          (product._id ? parseInt(product._id) : -1))
-                          ? "Added ✅"
+                        {addedProductId === displayId
+                          ? "Added ✓"
                           : "Add to Cart"}
                       </button>
                     </div>
-                  </div>
 
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleWishlist(product, index);
-                    }}
-                    className="absolute top-4 right-4"
-                  >
-                    <Heart className="w-6 h-6" />
-                  </button>
-                </div>
-              ))}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleWishlist(product, index);
+                      }}
+                      className="absolute top-4 right-4"
+                    >
+                      <Heart className="w-6 h-6" />
+                    </button>
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>
@@ -268,4 +304,22 @@ export default function BlogGridMain() {
       <ToastContainer position="top-right" autoClose={2000} theme="colored" />
     </div>
   );
+}
+function addToCart(
+  arg0: {
+    id: number;
+    product_variant_id: number | null;
+    productName: string;
+    price: number;
+    regularPrice: number | null | undefined;
+    productImage: string;
+    image: string;
+    quantity: number;
+    active: boolean;
+    description: string;
+    title: undefined;
+  },
+  userId: number
+) {
+  throw new Error("Function not implemented.");
 }

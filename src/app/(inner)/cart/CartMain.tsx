@@ -1,34 +1,112 @@
 "use client";
+
 import React, { useState, useEffect } from "react";
-import { useCart } from "@/components/header/CartContext";
 import { ChevronDown, ChevronUp, Trash2, X } from "lucide-react";
-import Cart from "@/components/header/Cart";
-import CheckOutMain from "../checkout/CheckOutMain";
 import router from "next/router";
+import axios from "axios";
+import { useRouter } from "next/navigation"; // ✅ FIXED
 
 interface CartItem {
-  regularPrice: any;
-  productImage: string;
-  id: string | number;
-  image: string;
-  title: string;
+  cart_id: number;
   productName: string;
   price: number;
   quantity: number;
-  active: boolean;
+  image_url: string | null;
 }
 
 const CartMain = () => {
-  const { cartItems, removeFromCart, updateItemQuantity } = useCart();
-
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [subtotal, setSubtotal] = useState(0);
   const [coupon, setCoupon] = useState("");
   const [discount, setDiscount] = useState(0);
   const [couponMessage, setCouponMessage] = useState("");
-  const [subtotal, setSubtotal] = useState(0);
   const [showCheckout, setShowCheckout] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [specialInstructions, setSpecialInstructions] = useState("");
+  const router = useRouter(); // ✅ FIXED
+  
 
-  // Check login status on page load
+  const user_id = 2; // STATIC as you required
+
+  // ================================
+  // Fetch Cart From Backend
+  // ================================
+  const fetchCart = async () => {
+    try {
+      const res = await axios.get(
+        `https://ekomart-backend.onrender.com/api/cart/getusercart/${user_id}`
+      );
+
+      const data = Array.isArray(res.data) ? res.data : [res.data];
+
+      setCartItems(
+        data.map((item: any) => ({
+          cart_id: item.cart_id,
+          productName: item.productName,
+          price: item.salePrice ?? 0,
+          quantity: item.quantity,
+          image_url: item.image_url,
+        }))
+      );
+    } catch (err) {
+      console.log("Fetch Cart Error:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchCart();
+  }, []);
+
+  // Subtotal Calculation
+  useEffect(() => {
+    const total = cartItems.reduce(
+      (acc, item) => acc + item.price * (item.quantity || 1),
+      0
+    );
+    setSubtotal(total);
+  }, [cartItems]);
+
+  // ================================
+  // UPDATE QUANTITY API
+  // ================================
+  const updateQuantity = async (cart_id: number, quantity: number) => {
+    try {
+      await axios.put(
+        `https://ekomart-backend.onrender.com/api/cart/updatecart/${cart_id}`,
+        {
+          cart_id,
+          quantity,
+        }
+      );
+      fetchCart();
+    } catch (err) {
+      console.log("Update Quantity Error:", err);
+    }
+  };
+
+  // ================================
+  // REMOVE ITEM API
+  // ================================
+  const removeItem = async (cart_id: number) => {
+    try {
+      await axios.delete(
+        `https://ekomart-backend.onrender.com/api/cart/removecartitem/${cart_id}`,
+        {
+          data: {
+            cart_id,
+          },
+        }
+      );
+
+      fetchCart();
+    } catch (err) {
+      console.log("Delete Item Error:", err);
+    }
+  };
+
+  // ================================
+  // CHECK LOGIN + REDIRECT
+  // ================================
   useEffect(() => {
     const token = localStorage.getItem("token");
     setIsLoggedIn(!!token);
@@ -37,43 +115,14 @@ const CartMain = () => {
   const handleCheckout = () => {
     const token = localStorage.getItem("token");
 
-    // If user NOT logged in → redirect to login page
     if (!token) {
       router.push("/login?redirect=checkout");
       return;
     }
 
-    // If logged in → show checkout
-    setShowCheckout(true);
-    router.push("/checkout");
+    // setShowCheckout(true);
+    router.push("/cart-summary");
   };
-  const [specialInstructions, setSpecialInstructions] = useState("");
-
-  useEffect(() => {
-    const total = cartItems.reduce((acc, item) => {
-      const price = item.price;
-      const quantity = item.quantity || 1;
-      return acc + (isNaN(price) ? 0 : price * quantity);
-    }, 0);
-    setSubtotal(total);
-  }, [cartItems]);
-
-  // const applyCoupon = (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   if (coupon === "12345") {
-  //     setDiscount(0.25);
-  //     setCouponMessage("Coupon applied -25% successfully");
-  //   } else {
-  //     setDiscount(0);
-  //     setCouponMessage("Coupon code is incorrect");
-  //   }
-  // };
-
-  // const clearCart = () => {
-  //   cartItems.forEach((item) => removeFromCart(item.id));
-  //   setCoupon("");
-  //   setDiscount(0);
-  // };
 
   const finalTotal = subtotal - subtotal * discount;
 
@@ -82,9 +131,7 @@ const CartMain = () => {
       <div className="flex flex-col xl:flex-row gap-10">
         {/* ======================== CART SECTION ======================== */}
         <div className="w-full xl:max-w-[800px] mx-auto bg-white p-6 rounded-lg">
-          {/* Header */}
           <div className="flex items-center gap-4">
-            <Cart />
             <h1 className="text-2xl md:text-3xl font-semibold">
               Shopping Cart
             </h1>
@@ -94,7 +141,6 @@ const CartMain = () => {
             You have {cartItems.length} items in your cart
           </p>
 
-          {/* ======================== CART ITEMS ======================== */}
           {cartItems.length === 0 && (
             <div className="text-center py-8 text-gray-500">
               Your cart is empty.
@@ -103,65 +149,51 @@ const CartMain = () => {
 
           {cartItems.map((item) => (
             <div
-              key={item.id}
+              key={item.cart_id}
               className="bg-white shadow-md rounded-lg mb-4 mt-3 p-4"
             >
               {/* MOBILE LAYOUT */}
               <div className="md:hidden block">
                 <img
-                  src="/assets/images/products/Oats.png"
+                  src={item.image_url ?? "/assets/images/products/Oats.png"}
                   className="w-full h-72 object-cover rounded-md"
                 />
 
                 <div className="mt-3 flex items-center justify-between">
-                  <div className="">
-                    <p className="text-lg font-semibold">
-                      {item.productName || "Product Name"}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      {item.description || "Product Details"}
-                    </p>
+                  <div>
+                    <p className="text-lg font-semibold">{item.productName}</p>
                   </div>
 
-                  <div className="">
-                    {/* Delete Button Mobile */}
-                    <button
-                      onClick={() => removeFromCart(item.id)}
-                      className="mt-4 text-red-500 flex items-center gap-2"
-                    >
-                      <Trash2 size={18} /> Remove
-                    </button>
-                  </div>
+                  <button
+                    onClick={() => removeItem(item.cart_id)}
+                    className="mt-4 text-red-500 flex items-center gap-2"
+                  >
+                    <Trash2 size={18} /> Remove
+                  </button>
                 </div>
 
-                {/* Quantity + Price */}
                 <div className="flex justify-between items-center mt-4">
-                  {/* Quantity */}
                   <div className="flex items-center gap-3">
-                    <div className="">
-                      <button
+                    <button
                       onClick={() =>
                         item.quantity > 1 &&
-                        updateItemQuantity(item.id, item.quantity - 1)
+                        updateQuantity(item.cart_id, item.quantity - 1)
                       }
                       className="w-7 h-7 flex justify-center items-center border rounded-md"
                     >
                       <ChevronDown size={16} />
                     </button>
-                    </div>
 
                     <span className="font-medium">{item.quantity}</span>
 
-                    <div className="">
-                      <button
+                    <button
                       onClick={() =>
-                        updateItemQuantity(item.id, item.quantity + 1)
+                        updateQuantity(item.cart_id, item.quantity + 1)
                       }
                       className="w-7 h-7 flex justify-center items-center border rounded-md"
                     >
                       <ChevronUp size={16} />
                     </button>
-                    </div>
                   </div>
 
                   <p className="font-semibold text-lg">
@@ -170,10 +202,10 @@ const CartMain = () => {
                 </div>
               </div>
 
-              {/* ================= DESKTOP/TABLET layout (Unchanged) ================= */}
+              {/* DESKTOP VIEW */}
               <div className="hidden md:grid grid-cols-4 gap-4 items-center">
                 <img
-                  src="/assets/images/products/Oats.png"
+                  src={item.image_url ?? "/assets/images/products/Oats.png"}
                   className="w-[110px] h-[90px] object-cover rounded-md"
                 />
 
@@ -182,11 +214,10 @@ const CartMain = () => {
                   <p className="text-sm text-gray-600">Product Details</p>
                 </div>
 
-                {/* Quantity */}
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() =>
-                      updateItemQuantity(item.id, item.quantity + 1)
+                      updateQuantity(item.cart_id, item.quantity + 1)
                     }
                     className="text-gray-600"
                   >
@@ -196,7 +227,7 @@ const CartMain = () => {
                   <button
                     onClick={() =>
                       item.quantity > 1 &&
-                      updateItemQuantity(item.id, item.quantity - 1)
+                      updateQuantity(item.cart_id, item.quantity - 1)
                     }
                     className="text-gray-600"
                   >
@@ -204,14 +235,13 @@ const CartMain = () => {
                   </button>
                 </div>
 
-                {/* Price + Delete */}
                 <div className="flex items-center justify-end gap-4">
                   <p className="font-semibold">
                     Rs. {(item.price * item.quantity).toFixed(2)}
                   </p>
                   <button
                     className="text-red-500"
-                    onClick={() => removeFromCart(item.id)}
+                    onClick={() => removeItem(item.cart_id)}
                   >
                     <Trash2 />
                   </button>
@@ -222,11 +252,13 @@ const CartMain = () => {
 
           {/* Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 mt-6">
-            <button className="border border-black py-3 w-full hover:bg-gray-200">
+            <button 
+              onClick={() => router.push('/shop')}
+              className="border border-black cursor-pointer py-3 w-full hover:bg-gray-200">
               Continue Shopping
             </button>
 
-            <button className="bg-[#077D40] text-white py-3 w-full hover:bg-[#065d30]">
+            <button className="bg-[#077D40] cursor-pointer text-white py-3 w-full hover:bg-[#065d30]">
               Update Cart
             </button>
           </div>
@@ -241,31 +273,29 @@ const CartMain = () => {
             <span className="font-bold">Rs. {subtotal.toFixed(2)}</span>
           </div>
 
-          {/* Instructions */}
           <div className="mb-6">
             <p className="text-lg font-medium">
               Special instructions for seller
             </p>
-
             <textarea
               className="w-full border border-green-600 rounded-lg p-3 mt-3 h-40"
-              placeholder=""
               onChange={(e) => setSpecialInstructions(e.target.value)}
-            ></textarea>
+            />
           </div>
 
           <p className="text-center text-sm text-gray-500">
             Shipping, taxes, and discounts will be calculated at checkout.
           </p>
 
-          {/* Checkout Button */}
-          <div>
-            <button
-              onClick={handleCheckout}
-              className="w-full mt-6 bg-[#018F45] text-white py-3 text-lg rounded-md shadow-md"
-            >
-              Proceed to Checkout
-            </button>
+          <div className="cursor-pointer">
+            <a href="/cart-summary">
+              <button
+                onClick={handleCheckout}
+                className="w-full mt-6 bg-[#018F45] text-white py-3 text-lg rounded-md shadow-md"
+              >
+                Proceed to Checkout
+              </button>
+            </a>
           </div>
 
           {/* Country / State */}
@@ -273,30 +303,22 @@ const CartMain = () => {
             <div>
               <p className="text-lg mb-2">Country</p>
               <select className="w-full border rounded-lg py-3 px-3 text-sm">
-                <option value="">Select Country</option>
-                <option value="india">India</option>
-                <option value="usa">USA</option>
-                <option value="uk">UK</option>
+                <option>Select Country</option>
               </select>
             </div>
 
             <div>
               <p className="text-lg mb-2">State</p>
               <select className="w-full border rounded-lg py-3 px-3 text-sm">
-                <option value="">Select State</option>
-                <option value="maharashtra">Maharashtra</option>
-                <option value="california">California</option>
-                <option value="texas">Texas</option>
+                <option>Select State</option>
               </select>
             </div>
           </div>
 
-          {/* ZIP */}
           <div className="mt-6">
             <p className="text-lg mb-2">Zip / Postal Code</p>
             <input
               type="text"
-              placeholder="Enter Zip Code"
               className="w-full border rounded-lg px-3 py-3 text-sm"
             />
           </div>
@@ -304,22 +326,18 @@ const CartMain = () => {
       </div>
 
       {/* ======================== CHECKOUT MODAL ======================== */}
-      {showCheckout && (
-        <div className="fixed inset-0 bg-black/30 bg-opacity-60 backdrop-blur-sm flex justify-center items-center z-50">
-          <div className="relative w-full scrollbar-hide max-w-[570px] max-h-[90vh] overflow-y-auto rounded-lg p-4">
-            <div className="fixed top-4 xl:top-9 right-26 xl:right-160">
-              <button
-                onClick={() => setShowCheckout(false)}
-                className="absolute top-4 md:right-3 right-7 text-gray-600"
-              >
-                <X size={28} />
-              </button>
-            </div>
-
-            <CheckOutMain />
+      {/* {showCheckout && (
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex justify-center items-center z-50">
+          <div className="relative w-full max-w-[570px] max-h-[90vh] overflow-y-auto rounded-lg p-4">
+            <button
+              onClick={() => setShowCheckout(false)}
+              className="absolute top-4 right-4 text-gray-600"
+            >
+              <X size={28} />
+            </button>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 };

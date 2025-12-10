@@ -2,11 +2,22 @@
 
 import { API_BASE_URL } from "@/lib/api";
 import axios from "axios";
-import { Eye, SquarePen, Trash2, Search, Plus, Filter } from "lucide-react";
+import {
+  Eye,
+  SquarePen,
+  Trash2,
+  Search,
+  Plus,
+  Filter,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
 import DataTable, { TableColumn } from "react-data-table-component";
 import ProductViewModal from "./ProductViewModal";
+
+// ⭐ Toastify
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 interface Variant {
   product_variant_id: number;
@@ -68,7 +79,7 @@ const ProductTable = () => {
     fetchAllProducts();
   }, []);
 
-  // View single product or variant
+  // View Product or Variant
   const handleView = (row: TableRow) => {
     if (row.isVariant) {
       const parentProduct = products.find(
@@ -93,17 +104,25 @@ const ProductTable = () => {
   // Delete product
   const handleDelete = async (row: TableRow) => {
     const id = parseInt(row.id.replace("p-", "").replace("v-", ""));
-    if (window.confirm("Are you sure you want to delete this product?")) {
-      try {
-        await axios.delete(`${API_BASE_URL}/api/product/deleteproduct/${id}`);
-        fetchAllProducts();
-      } catch (err) {
-        console.error("Error deleting product:", err);
-      }
+
+    if (!window.confirm("Are you sure you want to delete this product?")) {
+      return;
+    }
+
+    try {
+      await axios.delete(`${API_BASE_URL}/api/product/deleteProduct/${id}`);
+      fetchAllProducts();
+
+      // ⭐ Toastify Notification
+     toast.success("Product deleted successfully!");
+    } catch (err) {
+      console.error("Delete error:", err);
+      
+      toast.error("Failed to delete product!");
     }
   };
 
-  // Get stock status
+  // Stock status
   const getStatus = (quantity: string | number | null): string => {
     const qty = parseInt(quantity as string) || 0;
     if (qty === 0) return "out-of-stock";
@@ -111,7 +130,7 @@ const ProductTable = () => {
     return "in-stock";
   };
 
-  // Flatten products and variants for table
+  // Table rows
   const getTableData = (): TableRow[] => {
     const rows: TableRow[] = [];
 
@@ -268,7 +287,7 @@ const ProductTable = () => {
       name: "ACTIONS",
       cell: (row) => {
         const productId = row.isVariant
-          ? row.categoryId // if variant, edit parent product
+          ? row.categoryId
           : parseInt(row.id.replace("p-", ""));
 
         return (
@@ -299,7 +318,6 @@ const ProductTable = () => {
           </div>
         );
       },
-      // minWidth: "150px",
     },
   ];
 
@@ -327,6 +345,7 @@ const ProductTable = () => {
 
   return (
     <div className="p-6 min-h-screen">
+
       {/* Header Section */}
       <div className="mb-8">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6">
@@ -339,7 +358,7 @@ const ProductTable = () => {
           <div className="w-[200px] h-[50px] bg-[#629d23] text-white flex items-center rounded-lg">
             <button
               onClick={() => router.push("/dashboard/add-product")}
-              className=" px-6 py-3 rounded-lg font-semibold transition-colors duration-200 flex items-center space-x-2 mt-4 lg:mt-0"
+              className="px-6 py-3 rounded-lg font-semibold transition-colors duration-200 flex items-center space-x-2 mt-4 lg:mt-0"
             >
               <Plus size={20} />
               <span>Add New Product</span>
@@ -370,64 +389,32 @@ const ProductTable = () => {
           </div>
 
           <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-md font-medium text-gray-600">In Stock</p>
-                <p className="text-2xl font-bold text-green-600">
-                  {
-                    tableData.filter((item) => item.status === "in-stock")
-                      .length
-                  }
-                </p>
-              </div>
-              <div className="bg-green-100 p-3 rounded-lg">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              </div>
-            </div>
+            <p className="text-md font-medium text-gray-600">In Stock</p>
+            <p className="text-2xl font-bold text-green-600">
+              {tableData.filter((i) => i.status === "in-stock").length}
+            </p>
           </div>
 
           <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-md font-medium text-gray-600">Low Stock</p>
-                <p className="text-2xl font-bold text-yellow-600">
-                  {
-                    tableData.filter((item) => item.status === "low-stock")
-                      .length
-                  }
-                </p>
-              </div>
-              <div className="bg-yellow-100 p-3 rounded-lg">
-                <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-              </div>
-            </div>
+            <p className="text-md font-medium text-gray-600">Low Stock</p>
+            <p className="text-2xl font-bold text-yellow-600">
+              {tableData.filter((i) => i.status === "low-stock").length}
+            </p>
           </div>
 
           <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-md font-medium text-gray-600">
-                  Out of Stock
-                </p>
-                <p className="text-2xl font-bold text-red-600">
-                  {
-                    tableData.filter((item) => item.status === "out-of-stock")
-                      .length
-                  }
-                </p>
-              </div>
-              <div className="bg-red-100 p-3 rounded-lg">
-                <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-              </div>
-            </div>
+            <p className="text-md font-medium text-gray-600">Out of Stock</p>
+            <p className="text-2xl font-bold text-red-600">
+              {tableData.filter((i) => i.status === "out-of-stock").length}
+            </p>
           </div>
         </div>
       </div>
 
-      {/* Filters and Search Section - Compact */}
+      {/* Filters */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          {/* Status Filter Dropdown */}
+          {/* Status Filter */}
           <div>
             <label className="block text-md font-medium text-gray-700 mb-2">
               Product Status
@@ -464,47 +451,38 @@ const ProductTable = () => {
           </div>
 
           {/* Search Input */}
-          <div className="">
+          <div>
             <label className="block text-md font-medium text-gray-700 mb-2">
               Search Products
             </label>
-            <div className="border h-[50px] pl-5 flex items-center border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200">
-              <div className="">
-                <Search className="text-gray-400" size={20} />
-              </div>
-              <div className="">
-                <input
-                  type="text"
-                  placeholder="Search by name, price..."
-                  value={filterText}
-                  onChange={(e) => setFilterText(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 "
-                />
-              </div>
+            <div className="border h-[50px] pl-5 flex items-center border-gray-300 rounded-lg">
+              <Search className="text-gray-400" size={20} />
+              <input
+                type="text"
+                placeholder="Search by name, price..."
+                value={filterText}
+                onChange={(e) => setFilterText(e.target.value)}
+                className="w-full pl-3 pr-4 py-2.5"
+              />
             </div>
           </div>
         </div>
 
-        {/* Active Filter Display */}
+        {/* Active Filter Tag */}
         {selectedStatus !== "all" && (
           <div className="flex items-center gap-2 mt-4">
-            <div className="">
-              <span className="text-md text-gray-600">Active filter:</span>
-            </div>
+            <span className="text-md text-gray-600">Active filter:</span>
             <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-md font-medium flex items-center gap-2">
-              <div className="flex gap-3 w-full">
-                {selectedStatus === "in-stock" && "In Stock"}
-                {selectedStatus === "low-stock" && "Low Stock"}
-                {selectedStatus === "out-of-stock" && "Out of Stock"}
-                <div className="">
-                  <button
-                    onClick={() => setSelectedStatus("all")}
-                    className="hover:text-blue-600 transition-colors"
-                  >
-                    ×
-                  </button>
-                </div>
-              </div>
+              {selectedStatus === "in-stock" && "In Stock"}
+              {selectedStatus === "low-stock" && "Low Stock"}
+              {selectedStatus === "out-of-stock" && "Out of Stock"}
+
+              <button
+                onClick={() => setSelectedStatus("all")}
+                className="hover:text-blue-600"
+              >
+                ×
+              </button>
             </div>
           </div>
         )}
@@ -531,6 +509,9 @@ const ProductTable = () => {
           onClose={() => setViewProduct(null)}
         />
       )}
+
+      {/* ⭐ Toast Container */}
+      <ToastContainer position="top-right" autoClose={2000} theme="colored" />
     </div>
   );
 };

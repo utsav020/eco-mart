@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import Cart from "./Cart";
+// import Cart from "./Cart";
 import Link from "next/link";
 
 export default function HeaderThree() {
@@ -66,7 +66,7 @@ export default function HeaderThree() {
                   <img src="/assets/images/navbar/User.png" alt="User" />
                 </Link>
                 <img src="/assets/images/navbar/Heart.png" alt="Wishlist" />
-                <Link className="cursor-pointer h-5 w-5" href={"/cart"}><Cart /></Link>
+                <Link className="cursor-pointer h-5 w-5" href={"/cart"}></Link>
               </div>
             </div>
           </div>

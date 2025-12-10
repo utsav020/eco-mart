@@ -1,19 +1,15 @@
 "use client";
 
 import { useState, useEffect, ChangeEvent, FormEvent } from "react";
+import { api } from "@/lib/api";
+import { getUserId, logoutUser } from "../../../lib/auth";
 
 const AccountTabs = () => {
-  // Use a safe source for userId (for example, from localStorage after login).
-  // This avoids referencing an undefined `id`. Update this to use auth/session when available.
-  const userId = typeof window !== "undefined" ? (localStorage.getItem("userId") ?? "") : "";
+  const userId = getUserId(); // 🔥 GET USER LOGIN STATUS
 
   const [activeTab, setActiveTab] = useState("account");
   const [loading, setLoading] = useState(false);
-
-  const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
-  const [previewImage, setPreviewImage] = useState<string | null>(null);
-
-  const [showEditModal, setShowEditModal] = useState(false);
+  const [profileImage, setProfileImage] = useState<string | null>(null);
 
   const [profile, setProfile] = useState({
     firstName: "",
@@ -24,45 +20,57 @@ const AccountTabs = () => {
     cityName: "",
     pinCode: "",
     phoneNo: "",
-    profileImage: "",
   });
 
-  const [editData, setEditData] = useState(profile);
+  // ⭐ IF USER NOT LOGGED IN → SHOW LOGIN UI
+  if (!userId) {
+    return (
+      <div className="min-h-screen flex flex-col justify-center items-center bg-gray-100">
+        <h1 className="text-3xl font-bold mb-2">You are not logged in</h1>
+        <p className="text-gray-600 mb-6">Please login to access your account</p>
 
-  // ✅ Fetch User Data from API
+        <div className="flex gap-4">
+          <a
+            href="/login"
+            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
+          >
+            Login
+          </a>
+          <a
+            href="/signup"
+            className="bg-gray-800 text-white px-6 py-2 rounded-lg hover:bg-gray-900"
+          >
+            Sign Up
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  // ⭐ FETCH PROFILE DETAILS
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         setLoading(true);
-        const res = await fetch(
-          `https://ekomart-backend.onrender.com/api/user/profile/${userId}`
-        );
-        if (!res.ok) throw new Error("Failed to fetch profile");
 
+        const res = await fetch(api.getProfile(userId));
         const data = await res.json();
 
-        const user = data.user;
-
-        const formatted = {
-          firstName: user.firstName || "",
-          lastName: user.lastName || "",
-          displayName: `${user.firstName || ""} ${user.lastName || ""}`.trim(),
-          email: user.email || "",
-          address: user.address || "",
-          cityName: user.cityName || "",
-          pinCode: user.pinCode || "",
-          phoneNo: user.phoneNo || "",
-          profileImage: user.profileImage || "",
-        };
-
-        setProfile(formatted);
-        setEditData(formatted);
-
-        if (user.profileImage) {
-          setPreviewImage(user.profileImage);
+        if (data.user) {
+          setProfile({
+            firstName: data.user.firstName || "",
+            lastName: data.user.lastName || "",
+            displayName:
+              (data.user.firstName || "") + " " + (data.user.lastName || ""),
+            email: data.user.email || "",
+            address: data.user.address || "",
+            cityName: data.user.cityName || "",
+            pinCode: data.user.pinCode?.toString() || "",
+            phoneNo: data.user.phoneNo || "",
+          });
         }
       } catch (error) {
-        console.error("Error:", error);
+        console.error("Profile fetch error:", error);
       } finally {
         setLoading(false);
       }
@@ -71,263 +79,213 @@ const AccountTabs = () => {
     fetchProfile();
   }, [userId]);
 
-  // Handle edit form input
-  const handleEditChange = (e: ChangeEvent<HTMLInputElement>) => {
+  // ⭐ INPUT HANDLER
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setEditData((prev) => ({ ...prev, [name]: value }));
+    setProfile((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Handle image upload (File)
-  const handleImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
+  // ⭐ IMAGE PREVIEW HANDLER
+  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      setProfileImageFile(file);
-      setPreviewImage(URL.createObjectURL(file));
-    }
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onloadend = () => setProfileImage(reader.result as string);
+    reader.readAsDataURL(file);
   };
 
-  // Open Edit Modal
-  const openEditModal = () => {
-    setEditData(profile);
-    setProfileImageFile(null);
-    setShowEditModal(true);
-  };
-
-  // Submit edit data
-  const handleEditSubmit = async (e: FormEvent) => {
+  // ⭐ SAVE PROFILE
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setLoading(true);
+
     try {
-      setLoading(true);
+      const res = await fetch(api.updateProfile(userId), {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(profile),
+      });
 
-      const formData = new FormData();
-      formData.append("firstName", editData.firstName);
-      formData.append("lastName", editData.lastName);
-      formData.append("address", editData.address);
-      formData.append("cityName", editData.cityName);
-      formData.append("pinCode", editData.pinCode);
-      formData.append("phoneNo", editData.phoneNo);
+      const result = await res.json();
 
-      if (profileImageFile) {
-        formData.append("profileImage", profileImageFile);
-      }
-
-      const response = await fetch(
-        `https://ekomart-backend.onrender.com/api/user/edit-profile/${userId}`,
-        {
-          method: "PUT",
-          body: formData,
-        }
-      );
-
-      const result = await response.json();
-
-      if (response.ok) {
-        alert("Profile updated successfully");
-
-        setProfile(editData);
-        setShowEditModal(false);
+      if (result.success) {
+        alert("Profile updated successfully!");
       } else {
-        alert(result.message || "Failed to update");
+        alert("Failed to update profile.");
       }
-    } catch (error) {
-      console.error("Update Error:", error);
-      alert("Something went wrong");
-    } finally {
-      setLoading(false);
+    } catch (err) {
+      console.error("Update error:", err);
+      alert("Something went wrong!");
     }
+
+    setLoading(false);
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10 text-[16px]">
-      <div className="max-w-[1430px] mx-auto px-4 md:px-8 lg:px-12">
+    <div className="min-h-screen mt-[150px] bg-gray-50 py-10">
+      <div className="container mx-auto px-4 md:px-8 lg:px-12">
         <div className="flex flex-col md:flex-row gap-8">
-          
+
           {/* LEFT SIDEBAR */}
           <div className="w-full md:w-1/4 bg-white shadow rounded-lg p-4">
-            <div className="flex flex-col space-y-5">
+            <div className="flex flex-col space-y-2">
 
-              {["dashboard", "order", "track", "address", "account"].map(
-                (tab) => (
-                  <button
-                    key={tab}
-                    onClick={() => setActiveTab(tab)}
-                    className={`px-4 py-2 rounded-md text-left ${
-                      activeTab === tab
-                        ? "bg-blue-600 text-white"
-                        : "hover:bg-gray-100"
-                    }`}
-                  >
-                    {tab === "dashboard" && "📊 Dashboard"}
-                    {tab === "order" && "🛍 Orders"}
-                    {tab === "track" && "🚚 Track Order"}
-                    {tab === "address" && "📍 Address"}
-                    {tab === "account" && "👤 Account Details"}
-                  </button>
-                )
-              )}
+              {["dashboard", "order", "track", "address", "account"].map((tab) => (
+                <button
+                  key={tab}
+                  className={`text-left px-4 py-2 rounded-md capitalize ${
+                    activeTab === tab ? "bg-blue-600 text-white" : "hover:bg-gray-100"
+                  }`}
+                  onClick={() => setActiveTab(tab)}
+                >
+                  {tab}
+                </button>
+              ))}
 
-              <a
-                href="/login"
-                className="px-4 py-2 hover:bg-red-500 hover:text-white rounded-md"
+              {/* LOGOUT BUTTON */}
+              <button
+                className="mt-4 px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+                onClick={() => {
+                  logoutUser();
+                  window.location.reload();
+                }}
               >
-                Logout
-              </a>
+                Log Out
+              </button>
             </div>
           </div>
 
-          {/* RIGHT CONTENT */}
+          {/* RIGHT SECTION */}
           <div className="w-full md:w-3/4 bg-white shadow rounded-lg p-6">
 
-            {/* ACCOUNT DETAILS TAB */}
-            {activeTab === "account" && (
-              <>
-                <div className="flex justify-between mb-4">
-                  <h2 className="text-2xl font-semibold">Account Details</h2>
-                  <button
-                    onClick={openEditModal}
-                    className="bg-blue-600 text-white px-4 py-2 rounded-lg"
-                  >
-                    Edit Profile
-                  </button>
-                </div>
+            {/* ⭐ DASHBOARD TAB */}
+            {activeTab === "dashboard" && (
+              <div>
+                <h2 className="text-2xl font-semibold mb-2">
+                  Welcome Back, {profile.firstName}!
+                </h2>
+                <p className="text-gray-600">
+                  From your account dashboard, you can view recent orders,
+                  manage your addresses, and update your profile details.
+                </p>
+              </div>
+            )}
 
-                {/* SHOW PROFILE DETAILS */}
-                <div className="flex flex-col items-center mb-4">
-                  <div className="w-40 h-40 rounded-full overflow-hidden bg-gray-200">
-                    {previewImage ? (
-                      <img
-                        src={previewImage}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="flex items-center justify-center h-full text-gray-400">
-                        <i className="fa-regular fa-user text-5xl" />
-                      </div>
-                    )}
+            {/* ⭐ ORDERS TAB */}
+            {activeTab === "order" && (
+              <div>
+                <h2 className="text-xl font-semibold mb-4">Your Orders</h2>
+                <p>No orders available.</p>
+              </div>
+            )}
+
+            {/* ⭐ TRACK ORDER TAB */}
+            {activeTab === "track" && (
+              <div>
+                <h2 className="text-xl font-semibold mb-4">Track Order</h2>
+                <p>Tracking feature coming soon...</p>
+              </div>
+            )}
+
+            {/* ⭐ ADDRESS TAB */}
+            {activeTab === "address" && (
+              <div>
+                <h2 className="text-xl font-semibold mb-4">Your Address</h2>
+
+                <p>{profile.address}</p>
+                <p>{profile.cityName}</p>
+                <p>{profile.pinCode}</p>
+
+                <p className="mt-4 text-blue-600 underline cursor-pointer">
+                  Edit Address
+                </p>
+              </div>
+            )}
+
+            {/* ⭐ ACCOUNT DETAILS TAB */}
+            {activeTab === "account" && (
+              <form onSubmit={handleSubmit} className="space-y-6">
+
+                {/* PROFILE IMAGE */}
+                <div className="flex flex-col items-center mb-6">
+                  <div className="relative">
+                    <img
+                      src={
+                        profileImage ||
+                        "https://cdn-icons-png.flaticon.com/512/149/149071.png"
+                      }
+                      className="w-28 h-28 rounded-full border-4 border-gray-200 object-cover"
+                    />
+
+                    <label
+                      htmlFor="profileImage"
+                      className="absolute bottom-1 right-1 bg-blue-600 text-white p-2 rounded-full cursor-pointer"
+                    >
+                      <i className="fa-solid fa-camera"></i>
+                    </label>
+
+                    <input
+                      type="file"
+                      id="profileImage"
+                      className="hidden"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                    />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <p className="border px-3 py-2">{profile.firstName}</p>
-                  <p className="border px-3 py-2">{profile.lastName}</p>
-                </div>
-
-                <p className="border px-3 py-2 mt-4">{profile.email}</p>
-                <p className="border px-3 py-2 mt-4">{profile.address}</p>
-                <p className="border px-3 py-2 mt-4">{profile.cityName}</p>
-                <p className="border px-3 py-2 mt-4">{profile.pinCode}</p>
-                <p className="border px-3 py-2 mt-4">{profile.phoneNo}</p>
-              </>
-            )}
-
-            {/* YOU CAN KEEP OTHER TABS SAME */}
-          </div>
-        </div>
-      </div>
-
-      {/* EDIT PROFILE MODAL */}
-      {showEditModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white w-full max-w-lg rounded-lg p-6">
-            <h2 className="text-xl font-semibold mb-4">Edit Profile</h2>
-
-            <form onSubmit={handleEditSubmit} className="space-y-4">
-
-              <div className="flex items-center gap-4">
-                <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-200">
-                  {previewImage ? (
-                    <img
-                      src={previewImage}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="flex items-center justify-center h-full text-gray-400">
-                      <i className="fa-regular fa-user text-5xl" />
-                    </div>
-                  )}
-                </div>
-
-                <label className="cursor-pointer bg-green-600 text-white px-4 py-2 rounded-lg">
-                  Upload
+                {/* FORM INPUTS */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <input
-                    type="file"
-                    className="hidden"
-                    accept="image/*"
-                    onChange={handleImageUpload}
+                    type="text"
+                    name="firstName"
+                    value={profile.firstName}
+                    onChange={handleChange}
+                    placeholder="First Name"
+                    className="border px-4 py-2 rounded-lg"
                   />
-                </label>
-              </div>
 
-              <div className="grid grid-cols-2 gap-4">
+                  <input
+                    type="text"
+                    name="lastName"
+                    value={profile.lastName}
+                    onChange={handleChange}
+                    placeholder="Last Name"
+                    className="border px-4 py-2 rounded-lg"
+                  />
+                </div>
+
                 <input
-                  name="firstName"
-                  value={editData.firstName}
-                  onChange={handleEditChange}
-                  className="border px-3 py-2 rounded"
-                  placeholder="First Name"
+                  type="email"
+                  name="email"
+                  value={profile.email}
+                  onChange={handleChange}
+                  placeholder="Email"
+                  className="border px-4 py-2 rounded-lg w-full"
                 />
+
                 <input
-                  name="lastName"
-                  value={editData.lastName}
-                  onChange={handleEditChange}
-                  className="border px-3 py-2 rounded"
-                  placeholder="Last Name"
+                  type="text"
+                  name="phoneNo"
+                  value={profile.phoneNo}
+                  onChange={handleChange}
+                  placeholder="Phone Number"
+                  className="border px-4 py-2 rounded-lg w-full"
                 />
-              </div>
-
-              <input
-                name="address"
-                value={editData.address}
-                onChange={handleEditChange}
-                className="border px-3 py-2 rounded w-full"
-                placeholder="Address"
-              />
-
-              <input
-                name="cityName"
-                value={editData.cityName}
-                onChange={handleEditChange}
-                className="border px-3 py-2 rounded w-full"
-                placeholder="City"
-              />
-
-              <input
-                name="pinCode"
-                value={editData.pinCode}
-                onChange={handleEditChange}
-                className="border px-3 py-2 rounded w-full"
-                placeholder="Pincode"
-              />
-
-              <input
-                name="phoneNo"
-                value={editData.phoneNo}
-                onChange={handleEditChange}
-                className="border px-3 py-2 rounded w-full"
-                placeholder="Phone No"
-              />
-
-              <div className="flex justify-end gap-3 mt-4">
-                <button
-                  type="button"
-                  onClick={() => setShowEditModal(false)}
-                  className="px-4 py-2 bg-red-600 text-white rounded"
-                >
-                  Cancel
-                </button>
 
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-blue-600 text-white rounded"
+                  className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
                 >
-                  {loading ? "Saving..." : "Save Changes"}
+                  Save Changes
                 </button>
-              </div>
+              </form>
+            )}
 
-            </form>
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 };

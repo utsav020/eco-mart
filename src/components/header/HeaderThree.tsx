@@ -10,7 +10,7 @@ export default function HeaderThree() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const navItems = [
-    { label: "Home", path: "/index-three" },
+    { label: "Home", path: "/" },
     { label: "Shop", path: "/shop" },
     { label: "About Us", path: "/about" },
     { label: "Blog", path: "/blog" },
@@ -59,7 +59,7 @@ export default function HeaderThree() {
             {/* Logo */}
             <div
               className="hidden lg:flex items-center gap-3 cursor-pointer"
-              onClick={() => handleNavClick("/index-three")}
+              onClick={() => handleNavClick("/")}
             >
               <img
                 src="/assets/images/logo/Dadu_Fresh_Logo 1.png"

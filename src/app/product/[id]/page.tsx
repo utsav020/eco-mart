@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import ShortService from "@/components/service/ShortService";
 import FooterTwo from "@/components/footer/FooterTwo";
 import { Minus, Plus } from "lucide-react";
-import { useCart } from "@/components/header/CartContext";
+// import { useCart } from "@/components/header/CartContext";
 import { ToastContainer, toast } from "react-toastify";
 import { useProduct } from "../../../components/context/page";
 import { useRouter, useParams } from "next/navigation";
@@ -45,7 +45,7 @@ const CompareElements: React.FC = () => {
   const router = useRouter();
   const params = useParams();
   const id = (params as { id?: string })?.id;
-  const { addToCart } = useCart();
+  // const { addToCart } = useCart();
 
   const [product, setProduct] = useState<ProductType | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<ProductType[]>([]);
@@ -56,6 +56,7 @@ const CompareElements: React.FC = () => {
   const [displayPrice, setDisplayPrice] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState("tab1");
   const [loading, setLoading] = useState<boolean>(true);
+  const [addedProductId, setAddedProductId] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -142,38 +143,70 @@ const CompareElements: React.FC = () => {
     }
   }, [product?.product_id]);
 
-  // ✅ Cart Add (BACKEND SYNCED)
-  const handleAdd = () => {
-    if (!product) return;
+  // ⭐ Add To Cart (FINAL FIXED)
+  const handleAdd = async (product: ProductType, index: number) => {
+    const userId = Number(localStorage.getItem("user_id"));
 
-    const productId =
-      product.product_id ??
-      (product._id ? Number(product._id) : Date.now());
+    if (!userId || isNaN(userId)) {
+      toast.error("User not logged in. Please login first.");
+      return;
+    }
 
-    addToCart(
-      {
-        id: productId, // ✅ BACKEND product_id
-        product_variant_id: product.product_variant_id || null,
-        productName: product.productName,
-        price: selectedWeight === "1kg"
-          ? Number(displayPrice || product.salePrice || product.regularPrice)
-          : Number(displayPrice || product.salePrice || product.regularPrice),
-        quantity, // ✅ BACKEND quantity
-        active: true,
-        regularPrice: product.regularPrice,
-        productImage: product.image || activeImage || "",
-        image: product.image || activeImage,
-        description: "",
-        title: undefined
-      },
-      3 // ✅ BACKEND user_id
-    );
+    const token = localStorage.getItem("token") || "";
 
-    setAdded(true);
-    toast.success("🎉 Successfully Added To Cart!");
-    setTimeout(() => setAdded(false), 3000);
+    // ⭐ Correct product_id mapping
+    const productId = product.product_id
+      ? product.product_id
+      : product._id
+      ? Number(product._id)
+      : null;
+
+    if (!productId) {
+      toast.error("Invalid product id.");
+      return;
+    }
+
+    // ⭐ Correct payload format
+    const payload = {
+      user_id: userId,
+      items: [
+        {
+          product_id: productId,
+          product_variant_id: product.product_variant_id || null,
+          quantity: 1,
+        },
+      ],
+    };
+
+    try {
+      const res = await fetch(
+        "https://ekomart-backend.onrender.com/api/cart/addcart",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token ? `Bearer ${token}` : "",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data.message || "Unable to add to cart");
+        return;
+      }
+
+      // ⭐ UI Local update (NO second API CALL)
+      toast.success("Product added to cart!");
+
+      setAddedProductId(productId);
+      setTimeout(() => setAddedProductId(null), 1500);
+    } catch (error) {
+      toast.error("Server Error: Unable to add to cart");
+    }
   };
-
   const thumbnails =
     product?.productImages && product.productImages.length > 0
       ? product.productImages
@@ -368,15 +401,19 @@ const CompareElements: React.FC = () => {
             <div className="md:flex lg:block xl:flex w-full gap-4">
               <div className="md:w-[332px]">
                 <button
-                  onClick={handleAdd}
-                  className={`w-full px-4 py-3 font-bold transition ${
-                    added
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleAdd(product, 0);
+                  }}
+                  className={`mt-5 w-full h-[45px] border rounded ${
+                    addedProductId === product.product_id
                       ? "bg-[#077D40] text-white"
-                      : "border border-gray-800 hover:bg-[#077D40] hover:text-white"
+                      : "hover:bg-[#077D40] hover:text-white"
                   }`}
-                  aria-pressed={added}
                 >
-                  {added ? "Added to your Cart ✅" : "Add to your cart"}
+                  {addedProductId === product.product_id
+                    ? "Added ✓"
+                    : "Add to Cart"}
                 </button>
               </div>
 
@@ -384,7 +421,7 @@ const CompareElements: React.FC = () => {
                 <button
                   onClick={() => {
                     // quick "Buy it now" flow: add to cart then navigate to checkout (example)
-                    handleAdd();
+                    handleAdd(product, 0);
                     router.push("/checkout");
                   }}
                   className="w-full px-4 py-3 bg-[#077D40] text-white font-bold"
@@ -424,7 +461,7 @@ const CompareElements: React.FC = () => {
         </div>
 
         {/* TABS */}
-        <div>      
+        <div>
           <div className="mt-8">
             <div className="flex gap-10 border-b-2 border-[#D2D0D0]">
               {["tab1", "tab2"].map((tab) => (
@@ -471,3 +508,25 @@ const CompareElements: React.FC = () => {
 };
 
 export default CompareElements;
+function getImage(product: ProductType, index: number): string {
+  throw new Error("Function not implemented.");
+}
+
+function addToCart(
+  arg0: {
+    id: number;
+    product_variant_id: any;
+    productName: string;
+    price: number;
+    regularPrice: number | null | undefined;
+    productImage: string;
+    image: string;
+    quantity: number;
+    active: boolean;
+    description: string;
+    title: undefined;
+  },
+  userId: number
+) {
+  throw new Error("Function not implemented.");
+}

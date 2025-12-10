@@ -8,8 +8,10 @@ export default function RequestReset() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
+  // 📌 Email Validation
   const validateEmail = (value: string) => /^\S+@\S+\.\S+$/.test(value);
 
+  // 📌 Submit Form
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -25,9 +27,7 @@ export default function RequestReset() {
         "https://ekomart-backend.onrender.com/api/user/request-reset",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email }),
         }
       );
@@ -48,7 +48,7 @@ export default function RequestReset() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 to-blue-100 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-indigo-50 to-blue-100 px-4">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
         <h1 className="text-2xl font-bold text-center text-gray-800">
           Forgot Password
@@ -57,21 +57,21 @@ export default function RequestReset() {
           Enter your email and we’ll send you reset instructions.
         </p>
 
-        {/* ✅ ERROR MESSAGE */}
+        {/* ❗ ERROR */}
         {error && (
           <div className="mb-4 rounded-lg bg-red-50 text-red-600 text-sm p-3">
             {error}
           </div>
         )}
 
-        {/* ✅ SUCCESS MESSAGE */}
+        {/* ✅ SUCCESS */}
         {success && (
           <div className="mb-4 rounded-lg bg-green-50 text-green-700 text-sm p-3">
             {success}
           </div>
         )}
 
-        {/* ✅ FORM */}
+        {/* FORM */}
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -80,9 +80,9 @@ export default function RequestReset() {
             <input
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
-              className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
               required
             />
           </div>
@@ -96,17 +96,16 @@ export default function RequestReset() {
           </button>
         </form>
 
-        {/* ✅ FOOTER LINKS */}
+        {/* FOOTER */}
         <div className="mt-6 flex justify-between text-sm">
           <a href="/signin" className="text-indigo-600 hover:underline">
-            Back to sign in
+            Back to Sign In
           </a>
           <a href="/signup" className="text-gray-500 hover:underline">
-            Create account
+            Create Account
           </a>
         </div>
 
-        {/* ✅ SECURITY NOTE */}
         <p className="mt-6 text-xs text-center text-gray-400">
           For security, we won’t confirm whether an email exists in our system.
         </p>

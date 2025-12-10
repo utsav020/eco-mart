@@ -1,13 +1,14 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useCart } from "../header/CartContext";
+// import { useCart } from "../header/CartContext";
 import { useWishlist } from "../header/WishlistContext";
 import { toast, ToastContainer } from "react-toastify";
 import { Heart } from "lucide-react";
 import LogoLineLoader from "../loader/LogoLineLoader";
 
 interface ProductType {
+  product_variant_id: null;
   product_id: number | undefined;
   _id?: string;
   slug?: string;
@@ -24,7 +25,7 @@ const PopularProducts: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
 
-  const { addToCart } = useCart();
+  // const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, wishlistItems } = useWishlist();
 
   // ✅ Default fallback images
@@ -90,23 +91,70 @@ const PopularProducts: React.FC = () => {
     null
   );
 
-  // const handleAdd = (product: ProductType, index: number) => {
-  //   addToCart({
-  //     id: product._id ? Number(product._id) : Date.now(),
-  //     image: getImage(product.image, index),
-  //     title: product.productName ?? "Organic Product",
-  //     price: parseFloat(product.regularPrice?.toString() ?? "0"),
-  //     quantity: 1,
-  //     active: true,
-  //     productName: product.productName ?? "Organic Product",
-  //     regularPrice: product.regularPrice,
-  //     productImage: product.image || "",
-  //   });
-
-  //   setAddedProductId(product._id || index);
-  //   setTimeout(() => setAddedProductId(null), 4000);
-  //   toast.success("Added to cart!");
-  // };
+  // ⭐ Add To Cart (FINAL FIXED)
+    const handleAdd = async (product: ProductType, index: number) => {
+      const userId = Number(localStorage.getItem("user_id"));
+  
+      if (!userId || isNaN(userId)) {
+        toast.error("User not logged in. Please login first.");
+        return;
+      }
+  
+      const token = localStorage.getItem("token") || "";
+  
+      // ⭐ Correct product_id mapping
+      const productId = product.product_id
+        ? product.product_id
+        : product._id
+        ? Number(product._id)
+        : null;
+  
+      if (!productId) {
+        toast.error("Invalid product id.");
+        return;
+      }
+  
+      // ⭐ Correct payload format
+      const payload = {
+        user_id: userId,
+        items: [
+          {
+            product_id: productId,
+            product_variant_id: product.product_variant_id || null,
+            quantity: 1,
+          },
+        ],
+      };
+  
+      try {
+        const res = await fetch(
+          "https://ekomart-backend.onrender.com/api/cart/addcart",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: token ? `Bearer ${token}` : "",
+            },
+            body: JSON.stringify(payload),
+          }
+        );
+  
+        const data = await res.json();
+  
+        if (!res.ok) {
+          toast.error(data.message || "Unable to add to cart");
+          return;
+        }
+  
+        // ⭐ UI Local update (NO second API CALL)
+        toast.success("Product added to cart!");
+  
+        setAddedProductId(productId);
+        setTimeout(() => setAddedProductId(null), 1500);
+      } catch (error) {
+        toast.error("Server Error: Unable to add to cart");
+      }
+    };
 
   // ✅ Add / Remove Wishlist (toggle)
   const handleWishlist = (product: ProductType, index: number) => {
@@ -168,10 +216,6 @@ const PopularProducts: React.FC = () => {
             const isInWishlist = wishlistItems.some(
               (item) => String(item.id) === String(productIdNumber)
             );
-
-            function handleAdd(product: ProductType, index: number) {
-              throw new Error("Function not implemented.");
-            }
 
             return (
               <div
@@ -280,3 +324,7 @@ const PopularProducts: React.FC = () => {
 };
 
 export default PopularProducts;
+function addToCart(arg0: { id: number; product_variant_id: null; productName: string | undefined; price: number; regularPrice: string | number | undefined; productImage: string; image: string; quantity: number; active: boolean; description: string; title: undefined; }, userId: number) {
+  throw new Error("Function not implemented.");
+}
+
