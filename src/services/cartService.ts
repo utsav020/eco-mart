@@ -1,8 +1,8 @@
-// import { api, apiRouts } from "@/lib/api";
+import { api, apiRouts } from "@/lib/api";
 
-// export const getCart = async (user_id: string) => {
-//   return apiRouts.get(`/cart/getcart`, { params: { user_id } });
-// };
+export const getCart = async (user_id: string) => {
+  return apiRouts.get(`/cart/getcart`, { params: { user_id } });
+};
 
 // export const checkoutCart = async (payload: any) => {
 //   return apiRouts.post(`/cart/checkoutcart`, payload);

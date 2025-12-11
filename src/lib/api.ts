@@ -1,3 +1,5 @@
+import axios from "axios";
+
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "https://ekomart-backend.onrender.com";
 
 export const api = {
@@ -16,6 +18,14 @@ export async function   apiGet(path: string) {
 
   return res.json();
 }
+
+// ---- AXIOS INSTANCE ----
+export const apiRouts = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
 
 // import axios from "axios";
 
@@ -39,13 +49,7 @@ export async function   apiGet(path: string) {
 //   },
 // };
 
-// // ---- AXIOS INSTANCE ----
-// export const apiRouts = axios.create({
-//   baseURL: API_BASE_URL,
-//   headers: {
-//     "Content-Type": "application/json",
-//   },
-// });
+
 
 // // ---- TOKEN INTERCEPTOR ----
 // apiRouts.interceptors.request.use(

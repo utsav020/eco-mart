@@ -26,7 +26,7 @@ const CartMain = () => {
   const router = useRouter(); // ✅ FIXED
   
 
-  const user_id = 2; // STATIC as you required
+  const user_id = Number(localStorage.getItem("user_id")); // STATIC as you required
 
   // ================================
   // Fetch Cart From Backend
