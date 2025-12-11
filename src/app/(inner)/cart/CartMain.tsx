@@ -5,6 +5,7 @@ import { ChevronDown, ChevronUp, Trash2, X } from "lucide-react";
 import router from "next/router";
 import axios from "axios";
 import { useRouter } from "next/navigation"; // ✅ FIXED
+import { getUserId } from "@/lib/auth";
 
 interface CartItem {
   cart_id: number;
@@ -26,7 +27,7 @@ const CartMain = () => {
   const router = useRouter(); // ✅ FIXED
   
 
-  const user_id = Number(localStorage.getItem("user_id")); // STATIC as you required
+  const user_id = getUserId(); // STATIC as you required
 
   // ================================
   // Fetch Cart From Backend
