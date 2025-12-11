@@ -9,18 +9,7 @@ export default function Home() {
     return (
         <div className="demo-one">
             <HeaderThree />
-
-            <>
-                
-
-
-            <Accordion/>
-
-                
-                
-            </>
-
-            <ShortService />
+            <Accordion/> 
             <FooterOne />
         </div>
     );
