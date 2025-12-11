@@ -5,7 +5,7 @@ import { api } from "@/lib/api";
 import { getUserId, logoutUser } from "../../../lib/auth";
 
 const AccountTabs = () => {
-  const userId = getUserId(); // 🔥 GET USER LOGIN STATUS
+  const user_id = getUserId(); // 🔥 GET USER LOGIN STATUS
 
   const [activeTab, setActiveTab] = useState("account");
   const [loading, setLoading] = useState(false);
@@ -23,7 +23,7 @@ const AccountTabs = () => {
   });
 
   // ⭐ IF USER NOT LOGGED IN → SHOW LOGIN UI
-  if (!userId) {
+  if (!user_id) {
     return (
       <div className="min-h-screen flex flex-col justify-center items-center bg-gray-100">
         <h1 className="text-3xl font-bold mb-2">You are not logged in</h1>
@@ -53,7 +53,7 @@ const AccountTabs = () => {
       try {
         setLoading(true);
 
-        const res = await fetch(api.getProfile(userId));
+        const res = await fetch(api.getProfile(user_id));
         const data = await res.json();
 
         if (data.user) {
@@ -77,7 +77,7 @@ const AccountTabs = () => {
     };
 
     fetchProfile();
-  }, [userId]);
+  }, [user_id]);
 
   // ⭐ INPUT HANDLER
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -101,7 +101,7 @@ const AccountTabs = () => {
     setLoading(true);
 
     try {
-      const res = await fetch(api.updateProfile(userId), {
+      const res = await fetch(api.updateProfile(user_id), {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(profile),

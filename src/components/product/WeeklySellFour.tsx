@@ -93,9 +93,9 @@ const PopularProducts: React.FC = () => {
 
   // ⭐ Add To Cart (FINAL FIXED)
     const handleAdd = async (product: ProductType, index: number) => {
-      const userId = Number(localStorage.getItem("user_id"));
+      const user_id = Number(localStorage.getItem("user_id"));
   
-      if (!userId || isNaN(userId)) {
+      if (!user_id || isNaN(user_id)) {
         toast.error("User not logged in. Please login first.");
         return;
       }
@@ -116,7 +116,7 @@ const PopularProducts: React.FC = () => {
   
       // ⭐ Correct payload format
       const payload = {
-        user_id: userId,
+        user_id: user_id,
         items: [
           {
             product_id: productId,
@@ -324,7 +324,7 @@ const PopularProducts: React.FC = () => {
 };
 
 export default PopularProducts;
-function addToCart(arg0: { id: number; product_variant_id: null; productName: string | undefined; price: number; regularPrice: string | number | undefined; productImage: string; image: string; quantity: number; active: boolean; description: string; title: undefined; }, userId: number) {
+function addToCart(arg0: { id: number; product_variant_id: null; productName: string | undefined; price: number; regularPrice: string | number | undefined; productImage: string; image: string; quantity: number; active: boolean; description: string; title: undefined; }, user_id: number) {
   throw new Error("Function not implemented.");
 }
 

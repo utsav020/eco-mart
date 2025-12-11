@@ -43,7 +43,7 @@ export default function Login() {
       if (response.ok) {
         // SAVE TOKEN + USER ID IN LOCAL STORAGE
         localStorage.setItem("token", data.token);
-        localStorage.setItem("userId", data.user_id.toString());
+        localStorage.setItem("user_id", data.user_id.toString());
 
         router.push("/");
       } else {

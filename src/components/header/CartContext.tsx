@@ -18,7 +18,7 @@ export interface CartItem {
 
 interface CartContextProps {
   cartItems: CartItem[];
-  addToCart: (item: CartItem, userId: number) => Promise<void>;
+  addToCart: (item: CartItem, user_id: number) => Promise<void>;
   addToWishlist: (item: CartItem) => void;
   removeFromCart: (id: number) => void;
   updateItemQuantity: (id: number, quantity: number) => void;
@@ -59,7 +59,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   }, [cartItems, isCartLoaded]);
 
   // ✅ ADD TO CART (Backend + Local)
-  const addToCart = async (item: CartItem, userId: number) => {
+  const addToCart = async (item: CartItem, user_id: number) => {
     try {
       const response = await fetch(
         "https://ekomart-backend.onrender.com/api/cart/addcart",
@@ -69,7 +69,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            user_id: userId,
+            user_id: user_id,
             items: [
               {
                 product_id: item.id,

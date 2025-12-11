@@ -82,7 +82,7 @@ const BlogGridMain: React.FC<BlogGridMainProps> = ({
       productName: "",
       description: "",
       title: undefined
-    }, 0); // Pass userId as second argument
+    }, 0); // Pass user_id as second argument
 
     setAdded(true);
     setTimeout(() => setAdded(false), 2000); // Reset back to normal after 2 seconds

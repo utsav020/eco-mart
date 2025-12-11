@@ -78,9 +78,9 @@ const PopularProducts: React.FC = () => {
 
   // ⭐ Add To Cart (FINAL FIXED)
     const handleAdd = async (product: ProductType, index: number) => {
-      const userId = Number(localStorage.getItem("user_id"));
+      const user_id = Number(localStorage.getItem("user_id"));
   
-      if (!userId || isNaN(userId)) {
+      if (!user_id || isNaN(user_id)) {
         toast.error("User not logged in. Please login first.");
         return;
       }
@@ -101,7 +101,7 @@ const PopularProducts: React.FC = () => {
   
       // ⭐ Correct payload format
       const payload = {
-        user_id: userId,
+        user_id: user_id,
         items: [
           {
             product_id: productId,

@@ -26,7 +26,7 @@ export default function CheckOutMain() {
   const [expiry, setExpiry] = useState("");
   const [cvv, setCvv] = useState("");
 
-  const [userId, setUserId] = useState<string | null>(null);
+  const [user_id, setuser_id] = useState<string | null>(null);
 
   const [billingInfo, setBillingInfo] = useState<Billing>({
     firstName: "",
@@ -45,7 +45,7 @@ export default function CheckOutMain() {
   /* ---------------- Load user_id from localStorage ---------------- */
   useEffect(() => {
     const uid = localStorage.getItem("user_id");
-    setUserId(uid);
+    setuser_id(uid);
   }, []);
 
   /* ---------------- Card Type Detect ---------------- */
@@ -142,7 +142,7 @@ export default function CheckOutMain() {
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
 
-    if (!userId) {
+    if (!user_id) {
       alert("User not logged in");
       router.push("/login");
       return;
@@ -154,7 +154,7 @@ export default function CheckOutMain() {
       const response = await axios.post(
         "https://ekomart-backend.onrender.com/api/cart/checkoutcart",
         {
-          user_id: userId,
+          user_id: user_id,
           payment_method: paymentMethod === "cod" ? "COD" : "CARD",
           billing: billingInfo,
           items: cartItems,

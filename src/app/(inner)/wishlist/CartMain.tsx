@@ -80,7 +80,7 @@ const WishlistMain = () => {
       productName: "",
       description: "",
       title: undefined
-    }, 0); // Pass userId as second argument
+    }, 0); // Pass user_id as second argument
 
     // Remove from wishlist when moved to cart
     removeFromWishlist(product.id);

@@ -7,7 +7,7 @@ import Link from "next/link";
 import { getUserId } from "@/lib/auth";
 
 export default function OrdersPage() {
-  const userId = getUserId();
+  const user_id = getUserId();
 
   const [orders, setOrders] = useState<OrderItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -16,7 +16,7 @@ export default function OrdersPage() {
     async function fetchOrders() {
       try {
         // ✅ Correct API path (remove /api)
-        const data = await apiGet(`/api/user/getuserorder/${userId}`);
+        const data = await apiGet(`/api/user/getuserorder/${user_id}`);
 
         console.log("Orders API Response:", data);
 
@@ -32,7 +32,7 @@ export default function OrdersPage() {
     }
 
     fetchOrders();
-  }, [userId]);
+  }, [user_id]);
 
   if (loading) {
     return <p className="text-center p-5">Loading orders...</p>;

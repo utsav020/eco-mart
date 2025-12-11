@@ -77,8 +77,8 @@ export default function Register() {
         setSuccess("Account created successfully!");
 
         // SAVE USER ID IN LOCAL STORAGE
-        if (data.userId) {
-          localStorage.setItem("userId", data.userId.toString());
+        if (data.user_id) {
+          localStorage.setItem("user_id", data.user_id.toString());
         }
 
         setTimeout(() => router.push("/login"), 1500);

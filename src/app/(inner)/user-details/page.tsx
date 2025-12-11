@@ -17,7 +17,7 @@
   import { useRouter } from "next/navigation"; // ✅ FIXED
 
   const AccountTabs = () => {
-    const userId = getUserId();
+    const user_id = getUserId();
     const router = useRouter(); // ✅ FIXED
 
     const [loading, setLoading] = useState(false);
@@ -36,14 +36,14 @@
     // ⭐ Fetch User Profile
     useEffect(() => {
       const fetchProfile = async () => {
-        if (!userId) {
+        if (!user_id) {
           setLoading(false);
           return;
         }
 
         try {
           setLoading(true);
-          const res = await fetch(api.getProfile(userId));
+          const res = await fetch(api.getProfile(user_id));
           const data = await res.json();
 
           if (data.user) {
@@ -67,7 +67,7 @@
       };
 
       fetchProfile();
-    }, [userId]);
+    }, [user_id]);
 
     // ⭐ Handle Input Change
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -77,7 +77,7 @@
 
     // ⭐ Save + Continue to Payment Page
     const handleContinue = async () => {
-      if (!userId) {
+      if (!user_id) {
         toast.error("User not logged in");
         return;
       }
@@ -85,7 +85,7 @@
       setSaving(true);
 
       try {
-        const res = await fetch(api.updateProfile(userId), {
+        const res = await fetch(api.updateProfile(user_id), {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(profile),

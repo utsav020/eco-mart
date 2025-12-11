@@ -15,9 +15,9 @@ export default function PaymentPage() {
 
     try {
       const token = localStorage.getItem("token");
-      const userId = localStorage.getItem("userId");
+      const user_id = localStorage.getItem("user_id");
 
-      if (!token || !userId) {
+      if (!token || !user_id) {
         toast.error("User not logged in");
         setLoading(false);
         return;
@@ -25,7 +25,7 @@ export default function PaymentPage() {
 
       // ⭐ CHECK CART IS EMPTY
       const cartResponse = await axios.get(
-        `${API_BASE_URL}/api/cart/getusercart/${userId}`,
+        `${API_BASE_URL}/api/cart/getusercart/${user_id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
