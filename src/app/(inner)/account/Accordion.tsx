@@ -55,8 +55,8 @@ export default function ProfilePage() {
 
   if (!user_id) {
     return (
-      <div className="min-h-screen">
-        <p className="text-lg">Please login to view your profile</p>
+      <div className="min-h-screen mt-[300px]">
+        <p className="text-lg text-center">Please login to view your profile</p>
         <div className="flex justify-center items-center gap-4">
           <a href="/login" className="mt-4 bg-black text-white px-5 py-2 rounded">
           Login
@@ -194,6 +194,7 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen max-w-[1420px] mt-[150px] mb-20 mx-auto px-4">
+      
       <h1 className="text-xl font-semibold mb-4">Home / Profile</h1>
 
       {/* TABS */}
