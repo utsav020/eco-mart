@@ -1,14 +1,13 @@
 import type { Metadata } from "next";
 import { Poltawski_Nowy } from "next/font/google";
 import "./globals.css";
-
-import { CartProvider } from "../components/header/CartContext";
 import { WishlistProvider } from "../components/header/WishlistContext";
 import { ProductProvider } from "../components/context/page";
 import { CategoryProvider } from "../components/context/CategoryContext"; // ✅ New Import
 
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
+import { CartProvider } from "@/components/header/CartContext";
 
   const poltawski = Poltawski_Nowy({
     subsets: ["latin"],

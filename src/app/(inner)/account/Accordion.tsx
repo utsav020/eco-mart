@@ -1,31 +1,43 @@
 "use client";
 
+import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { useState, useEffect } from "react";
 import { api, apiGet } from "@/lib/api";
 import { getUserId, logoutUser } from "../../../lib/auth";
-import { ChevronDown, ChevronUp, X } from "lucide-react";
-import router from "next/router";
+import {
+  ChevronDown,
+  ChevronUp,
+  LogOut,
+  PencilLine,
+  Settings,
+  X,
+} from "lucide-react";
 import Link from "next/link";
 
+interface OrderItem {
+  image_url: string;
+  productName: string;
+  product_description: string;
+}
+
+interface Order {
+  order_id: string;
+  items?: OrderItem[];
+  total_amount: number;
+  order_status: string;
+}
 
 export default function ProfilePage() {
   const user_id = getUserId();
-
+  const [cancelLoading, setCancelLoading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [openDropdown, setOpenDropdown] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
-  const [activeTab, setActiveTab] = useState("profile"); // ⭐ NEW — TAB SYSTEM ADDED
+  const [activeTab, setActiveTab] = useState("profile");
 
-  const [orders, setOrders] = useState<Array<{
-    order_id: string;
-    items: Array<{
-      image_url: string;
-      productName: string;
-      product_description: string;
-      price: number;
-    }>;
-    order_status: string;
-  }>>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
 
   const [profile, setProfile] = useState({
@@ -41,19 +53,23 @@ export default function ProfilePage() {
 
   const [editForm, setEditForm] = useState({ ...profile });
 
-  // ❤️ If user not logged in
   if (!user_id) {
     return (
-      <div className="min-h-screen flex flex-col justify-center items-center">
+      <div className="min-h-screen">
         <p className="text-lg">Please login to view your profile</p>
-        <a href="/login" className="mt-4 bg-black text-white px-5 py-2 rounded">
+        <div className="flex justify-center items-center gap-4">
+          <a href="/login" className="mt-4 bg-black text-white px-5 py-2 rounded">
           Login
         </a>
+
+        <a href="/register" className="mt-4 bg-black text-white px-5 py-2 rounded">
+          Sign Up
+        </a>
+        </div>
       </div>
     );
   }
 
-  // ⭐ Fetch profile
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -76,8 +92,6 @@ export default function ProfilePage() {
           setProfile(updatedProfile);
           setEditForm(updatedProfile);
         }
-      } catch (err) {
-        console.log("PROFILE ERROR:", err);
       } finally {
         setLoading(false);
       }
@@ -86,29 +100,66 @@ export default function ProfilePage() {
     fetchProfile();
   }, []);
 
-  // ⭐ Load Orders when My Orders tab is selected
   const loadOrders = async () => {
     try {
       setOrdersLoading(true);
-
       const data = await apiGet(`/api/user/getuserorder/${user_id}`);
-
       const orderList = Array.isArray(data) ? data : data.orders || [];
-
       setOrders(orderList);
-    } catch (err) {
-      console.error("Error fetching orders:", err);
     } finally {
       setOrdersLoading(false);
     }
   };
 
-  // ⭐ When activeTab changes to "orders", fetch orders
   useEffect(() => {
     if (activeTab === "orders") loadOrders();
   }, [activeTab]);
 
-  const handleEditChange = (e: { target: { name: any; value: any; }; }) => {
+  const handleCancelOrder = async (order_id: string) => {
+  if (!order_id) return;
+
+  const confirmCancel = window.confirm(
+    "Are you sure you want to cancel this order?"
+  );
+
+  if (!confirmCancel) return;
+
+  try {
+    setCancelLoading(true);
+
+    const token = localStorage.getItem("token");
+
+    await axios.put(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/user/cancelorder/${order_id}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    toast.success("Order cancelled successfully");
+
+    // 🔥 Update UI instantly
+    setOrders((prev: any) =>
+      prev.map((order: any) =>
+        order.order_id === order_id
+          ? { ...order, order_status: "Cancelled" }
+          : order
+      )
+    );
+  } catch (error: any) {
+    toast.error(
+      error?.response?.data?.message || "Failed to cancel order"
+    );
+  } finally {
+    setCancelLoading(false);
+  }
+};
+
+
+  const handleEditChange = (e: { target: { name: any; value: any } }) => {
     setEditForm({ ...editForm, [e.target.name]: e.target.value });
   };
 
@@ -135,191 +186,189 @@ export default function ProfilePage() {
   };
 
   if (loading)
-    return <div className="min-h-screen flex justify-center items-center text-lg">Loading profile...</div>;
+    return (
+      <div className="min-h-screen flex justify-center items-center text-lg">
+        Loading profile...
+      </div>
+    );
 
-  // ---------------------------------------------------------------------------------------------------
-  // ⭐ RETURN UI
-  // ---------------------------------------------------------------------------------------------------
   return (
-    <div className="min-h-screen max-w-[1420px] mt-[150px] mb-20 mx-auto">
-      <div className="max-w-[1430px] mx-auto px-4 lg:px-0">
-        <h1 className="text-xl font-semibold mb-4">Home / Profile</h1>
+    <div className="min-h-screen max-w-[1420px] mt-[150px] mb-20 mx-auto px-4">
+      <h1 className="text-xl font-semibold mb-4">Home / Profile</h1>
 
-        {/* ---------------------------------------------------------------------------------------------------
-            ⭐ TAB BUTTONS (SHOP | MY ORDERS)
-        --------------------------------------------------------------------------------------------------- */}
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex max-w-[220px] w-full justify-between h-[51px]">
-
-            {/* PROFILE TAB */}
-            <div
-              className={`w-[100px] flex items-center justify-center border-2 cursor-pointer ${
-                activeTab === "profile"
-                  ? "bg-[#077D40] text-white"
-                  : "border-[#00000080] hover:bg-[#077D40] hover:text-white"
-              }`}
-              onClick={() => setActiveTab("profile")}
-            >
-              <button>Profile</button>
-            </div>
-
-            {/* MY ORDERS TAB */}
-            <div
-              className={`w-[100px] flex items-center justify-center border cursor-pointer ${
-                activeTab === "orders"
-                  ? "bg-[#077D40] text-white border-[#077D40]"
-                  : "border-[#00000080] hover:bg-[#077D40] hover:text-white"
-              }`}
-              onClick={() => setActiveTab("orders")}
-            >
-              <button>My Orders</button>
-            </div>
+      {/* TABS */}
+      <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
+        <div className="flex max-w-[220px] w-full justify-between h-[51px]">
+          <div
+            className={`w-[100px] h-[51px] flex items-center justify-center border-2 cursor-pointer ${
+              activeTab === "profile"
+                ? "bg-[#077D40] text-white"
+                : "bg-[#077D40] border-[#077D40] text-white"
+            }`}
+          >
+            <Link href="/shop">Shop</Link>
           </div>
 
-          {/* ---------------------------------------------------------------------------------------------------
-              ⭐ DROPDOWN PROFILE MENU
-          --------------------------------------------------------------------------------------------------- */}
-          <div className="relative flex items-center gap-2 max-w-[306px] h-[51px] rounded-[14px] w-full bg-[#F7F7F9] shadow px-4 py-2 border border-[#C5C5C5]">
-            <div
-              onClick={() => setOpenDropdown(!openDropdown)}
-              className="flex cursor-pointer justify-between items-center w-full"
-            >
-              <button className="flex items-center gap-2">
-                <img
-                  src={
-                    profile.profileImage ||
-                    "https://cdn-icons-png.flaticon.com/512/149/149071.png"
-                  }
-                  className="w-7 h-7 rounded-full"
-                />
-                <span className="font-medium">{profile.firstName}</span>
-              </button>
-
-              {openDropdown ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-            </div>
-
-            {/* ⭐ Dropdown Panel */}
-            {openDropdown && (
-              <div className="absolute top-full right-0 mt-2 w-[305px] bg-white shadow-xl rounded-xl p-4 animate-fadeIn z-50">
-
-                {/* User Preview */}
-                <div className="flex items-center gap-3 mb-3">
-                  <img
-                    src={profile.profileImage}
-                    className="w-10 h-10 rounded-full"
-                  />
-                  <div>
-                    <p className="font-semibold">
-                      {profile.firstName} {profile.lastName}
-                    </p>
-                    <p className="text-gray-500 text-sm">{profile.email}</p>
-                  </div>
-                </div>
-
-                <hr className="my-2" />
-
-                {/* ⭐ Edit Profile */}
-                <button
-                  onClick={() => {
-                    setOpenEditModal(true);
-                    setOpenDropdown(false);
-                  }}
-                  className="flex items-center gap-2 px-1 py-2 hover:bg-gray-100 rounded w-full text-left"
-                >
-                  ✏️ Edit Profile
-                </button>
-
-                <button className="flex items-center gap-2 px-1 py-2 hover:bg-gray-100 rounded w-full text-left">
-                  ⚙️ Profile Settings
-                </button>
-
-                <hr className="my-2" />
-
-                {/* Logout */}
-                <button
-                  onClick={() => {
-                    logoutUser();
-                    window.location.reload();
-                  }}
-                  className="flex items-center gap-2 px-1 py-2 hover:bg-gray-100 rounded w-full text-left"
-                >
-                  ↩️ Sign Out
-                </button>
-              </div>
-            )}
+          <div
+            className={`w-[100px] h-[51px] flex items-center justify-center border cursor-pointer ${
+              activeTab === "orders"
+                ? "hover:bg-[#077D40] hover:text-white hover:border-[#077D40]"
+                : "border-[#00000080] hover:bg-[#077D40] hover:border-[#077D40] hover:text-white"
+            }`}
+            onClick={() => setActiveTab("orders")}
+          >
+            <button>My Orders</button>
           </div>
         </div>
 
-        {/* ---------------------------------------------------------------------------------------------------
-            ⭐ TAB CONTENT BELOW (Profile OR Orders)
-        --------------------------------------------------------------------------------------------------- */}
+        {/* DROPDOWN */}
+        <div className="relative flex items-center gap-2 max-w-[306px] h-[51px] rounded-[14px] w-full bg-[#F7F7F9] shadow px-4 py-2 border border-[#C5C5C5]">
+          <div
+            onClick={() => setOpenDropdown(!openDropdown)}
+            className="flex cursor-pointer justify-between items-center w-full"
+          >
+            <button className="flex items-center gap-2">
+              <img
+                src={
+                  profile.profileImage ||
+                  "https://cdn-icons-png.flaticon.com/512/149/149071.png"
+                }
+                className="w-7 h-7 rounded-full"
+              />
+              <span className="font-medium">{profile.firstName}</span>
+            </button>
 
-        {/* ⭐ PROFILE TAB SECTION */}
-        {activeTab === "profile" && (
-          <>
-            <div className="bg-white shadow rounded-lg p-6 border">
-              <h2 className="font-semibold text-lg mb-6">Profile</h2>
+            {openDropdown ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+          </div>
 
-              <p>
-                <strong>Name:</strong> {profile.firstName} {profile.lastName}
-              </p>
-              <p className="mt-3">
-                <strong>Email:</strong> {profile.email}
-              </p>
+          {openDropdown && (
+            <div className="absolute top-full right-0 mt-2 w-[305px] bg-white shadow-xl rounded-xl p-4 animate-fadeIn z-50">
+              <div className="flex items-center gap-3 mb-3">
+                <img
+                  src={profile.profileImage}
+                  className="w-10 h-10 rounded-full"
+                />
+                <div>
+                  <p className="font-semibold">
+                    {profile.firstName} {profile.lastName}
+                  </p>
+                  <p className="text-gray-500 text-sm">{profile.email}</p>
+                </div>
+              </div>
+
+              <hr className="my-2" />
+
+              <button
+                onClick={() => {
+                  setOpenEditModal(true);
+                  setOpenDropdown(false);
+                }}
+                className="flex items-center text-[18px] font-medium gap-2 px-1 py-2 hover:bg-gray-100 rounded w-full text-left"
+              >
+                <PencilLine /> Edit Profile
+              </button>
+
+              <button className="flex items-center text-[18px] font-medium gap-2 px-1 py-2 hover:bg-gray-100 rounded w-full text-left">
+                <Settings /> Profile Settings
+              </button>
+
+              <hr className="my-2" />
+
+              <button
+                onClick={() => {
+                  logoutUser();
+                  window.location.reload();
+                }}
+                className="flex items-center text-[18px] font-medium gap-2 px-1 py-2 hover:bg-gray-100 rounded w-full text-left"
+              >
+                <LogOut /> Sign Out
+              </button>
             </div>
+          )}
+        </div>
+      </div>
 
-            <div className="bg-white shadow rounded-lg p-6 border mt-10">
-              <p className="mt-3">
-                <strong>Address:</strong> <br />
-                {profile.address} <br />
-                {profile.pinCode} <br />
-                {profile.cityName}
-              </p>
-            </div>
-          </>
-        )}
+      {/* PROFILE TAB */}
+      {activeTab === "profile" && (
+        <>
+          <div className="bg-white shadow rounded-lg p-6 border">
+            <h2 className="font-semibold text-lg mb-6">Profile</h2>
 
-        {/* ⭐ MY ORDERS TAB SECTION */}
-        {activeTab === "orders" && (
-          <div 
-            className="bg-white cursor-pointer shadow p-6 rounded-lg border mt-6">
-            <h2 className="text-2xl font-semibold mb-5">My Orders</h2>
+            <p>
+              <strong>Name:</strong> {profile.firstName} {profile.lastName}
+            </p>
+            <p className="mt-3">
+              <strong>Email:</strong> {profile.email}
+            </p>
+          </div>
 
-            {ordersLoading ? (
-              <p>Loading orders...</p>
-            ) : orders.length === 0 ? (
-              <p>No orders found.</p>
-            ) : (
-              <div className="space-y-4">
-                {orders.map((order) => (
-                  <Link 
-                    href={`/orders/${order.order_id}`}>
-                  <div
-                    key={order.order_id}
-                    className="p-4 rounded-lg shadow-lg border flex gap-4"
-                  >
-                    <img
-                      className="w-[150px] h-[110px] object-cover rounded"
-                      src={order.items?.[0]?.image_url}
-                    />
+          <div className="bg-white shadow rounded-lg p-6 border mt-10">
+            <p>
+              <strong>Address:</strong> <br />
+              {profile.address} <br />
+              {profile.pinCode} <br />
+              {profile.cityName}
+            </p>
+          </div>
+        </>
+      )}
 
-                    <div className="flex-1">
+      {/* ORDERS TAB */}
+      {activeTab === "orders" && (
+        <div className="mt-6">
+          <h2 className="text-2xl font-bold mb-5">My Orders</h2>
+
+          {ordersLoading ? (
+            <p>Loading orders...</p>
+          ) : orders.length === 0 ? (
+            <p>No orders found.</p>
+          ) : (
+            <div className="space-y-6">
+              {orders.map((order) => (
+                <Link
+                  key={order.order_id}
+                  href={`/orders/${order.order_id}`}
+                  className="block p-4 rounded-lg shadow-lg lg:h-[145px] transition border lg:border-0 hover:shadow-xl"
+                >
+                  <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    <div className="lg:w-[666.57px] relative lg:h-[109px] lg:flex justify-between items-center">
+                      {/* SAVE BADGE */}
+                      <div className="absolute top-4 right-3 lg:top-3 lg:right-0 lg:left-22 xl:left-28 bg-[#077D40] flex items-center justify-center text-white text-[12px] font-bold w-[100px] h-[33px] rounded-full z-10">
+                        Save 20%
+                      </div>
+                      {/* IMAGE */}
+                      <div className="">
+                        <img
+                          className="w-full lg:w-[220px] lg:h-[109px] h-[150px] object-cover rounded"
+                          src={
+                            order.items?.[0]?.image_url || "/placeholder.png"
+                          }
+                          alt="product"
+                        />
+                      </div>
+
+                      {/* TEXT */}
+                      <div className="xl:w-[430px] lg:w-[200px]">
+                        <p className="text-lg font-bold">
+                          {order.items?.[0]?.productName || "Product Name"}
+                        </p>
+
+                        <p className="text-gray-600 mt-1">
+                          {order.items?.[0]?.product_description ||
+                            "Description"}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="lg:w-[180px]">
                       <p className="font-semibold text-lg">
-                        {order.items?.[0]?.productName}
-                      </p>
-
-                      <p className="text-sm text-gray-600">
-                        {order.items?.[0]?.product_description}
+                        Rs. {order.total_amount}
                       </p>
                     </div>
 
-                    <div className="text-right">
-                      <p className="font-semibold text-lg">
-                        Rs. {order.items?.[0]?.price}
-                      </p>
-
+                    <div className="">
                       <p
-                        className={`text-sm ${
+                        className={`text-lg ${
                           order.order_status === "Pending"
                             ? "text-orange-600"
                             : "text-green-600"
@@ -328,90 +377,135 @@ export default function ProfilePage() {
                         {order.order_status}
                       </p>
                     </div>
+
+                    {/* BUTTONS */}
+                    <div>
+                      <div className="flex gap-7 mt-2 lg:mt-0">
+                        <button className="bg-[#077D40] w-[100px] h-10 text-white text-sm">
+                          Track Order
+                        </button>
+
+                        {["pending", "processing"].includes(
+                          order.order_status.toLowerCase()
+                        ) && (
+                          <button
+                            onClick={() => handleCancelOrder(order.order_id)}
+                            disabled={cancelLoading}
+                            className={`border w-[100px] h-10 border-gray-400 text-[14px]
+                            ${
+                              cancelLoading
+                                ? "bg-gray-400 cursor-not-allowed"
+                                : ""
+                            }`}
+                          >
+                            {/* {cancelLoading ? "Cancelling..." : "Cancel Order"} */}
+                            Cancel Order
+                          </button>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-      </div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
-      {/* ---------------------------------------------------------------------------------------------------
-          ⭐ EDIT PROFILE POPUP
-      --------------------------------------------------------------------------------------------------- */}
+      {/* EDIT MODAL */}
       {openEditModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-[999]">
-          <div className="bg-white w-[420px] rounded-xl shadow-xl p-6 animate-fadeIn relative">
-
-            <button
-              className="absolute top-3 right-3"
-              onClick={() => setOpenEditModal(false)}
-            >
-              <X size={20} />
-            </button>
-
+        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50 px-4">
+          <div className="bg-white w-full max-w-[570px] rounded-xl shadow-xl p-6 relative">
             <h2 className="text-xl font-semibold mb-4">Edit Profile</h2>
 
             <div className="space-y-3">
-              <input
-                name="firstName"
-                value={editForm.firstName}
-                onChange={handleEditChange}
-                className="w-full border px-3 py-2 rounded"
-              />
-              <input
-                name="lastName"
-                value={editForm.lastName}
-                onChange={handleEditChange}
-                className="w-full border px-3 py-2 rounded"
-              />
-              <input
-                name="email"
-                value={editForm.email}
-                onChange={handleEditChange}
-                className="w-full border px-3 py-2 rounded"
-              />
+              {/* FIRST + LAST NAME */}
+              <div className="flex flex-col lg:flex-row gap-3">
+                <div className="w-full">
+                  <label>First Name</label>
+                  <input
+                    name="firstName"
+                    value={editForm.firstName}
+                    onChange={handleEditChange}
+                    className="w-full border px-3 py-2 rounded"
+                  />
+                </div>
+                <div className="w-full">
+                  <label>Last Name</label>
+                  <input
+                    name="lastName"
+                    value={editForm.lastName}
+                    onChange={handleEditChange}
+                    className="w-full border px-3 py-2 rounded"
+                  />
+                </div>
+              </div>
 
-              <input
-                name="phoneNo"
-                value={editForm.phoneNo}
-                onChange={handleEditChange}
-                className="w-full border px-3 py-2 rounded"
-              />
-
-              <textarea
-                name="address"
-                value={editForm.address}
-                onChange={handleEditChange}
-                className="w-full border px-3 py-2 rounded h-20"
-              />
-
-              <div className="flex gap-2">
+              {/* EMAIL */}
+              <div>
+                <label>Email Address</label>
                 <input
-                  name="cityName"
-                  value={editForm.cityName}
+                  name="email"
+                  value={editForm.email}
                   onChange={handleEditChange}
-                  className="w-1/2 border px-3 py-2 rounded"
+                  className="w-full border px-3 py-2 rounded"
                 />
+              </div>
+
+              {/* ADDRESS */}
+              <div>
+                <label>Street Address</label>
                 <input
-                  name="pinCode"
-                  value={editForm.pinCode}
+                  name="address"
+                  value={editForm.address}
                   onChange={handleEditChange}
-                  className="w-1/2 border px-3 py-2 rounded"
+                  className="w-full border px-3 py-2 rounded"
                 />
+              </div>
+
+              {/* City + Pin */}
+              <div className="flex flex-col lg:flex-row gap-3">
+                <div className="w-full">
+                  <label>City</label>
+                  <input
+                    name="cityName"
+                    value={editForm.cityName}
+                    onChange={handleEditChange}
+                    className="w-full border px-3 py-2 rounded"
+                  />
+                </div>
+                <div className="w-full">
+                  <label>Pin Code</label>
+                  <input
+                    name="pinCode"
+                    value={editForm.pinCode}
+                    onChange={handleEditChange}
+                    className="w-full border px-3 py-2 rounded"
+                  />
+                </div>
               </div>
             </div>
 
-            <button
-              className="bg-green-600 text-white w-full py-2 mt-5 rounded"
-              onClick={saveProfile}
-            >
-              Save Changes
-            </button>
+            {/* BUTTONS */}
+            <div className="flex justify-end gap-4 mt-5">
+              <button
+                onClick={() => setOpenEditModal(false)}
+                className="px-5 py-2 border rounded hover:bg-gray-100"
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={saveProfile}
+                className="px-5 py-2 bg-[#077D40] text-white rounded"
+              >
+                Save Changes
+              </button>
+            </div>
           </div>
         </div>
       )}
     </div>
   );
 }
+

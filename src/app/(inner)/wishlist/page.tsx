@@ -1,5 +1,5 @@
 "use client";
-import CartMain from "./CartMain";
+import CartMain from "./WishlistMain";
 import HeaderThree from "@/components/header/HeaderThree";
 import FooterTwo from "@/components/footer/FooterTwo";
 import { useRouter } from "next/navigation"; // ✅ Correct router

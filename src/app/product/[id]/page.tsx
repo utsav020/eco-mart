@@ -417,16 +417,22 @@ const CompareElements: React.FC = () => {
                 </button>
               </div>
 
-              <div className="md:w-[332px] mt-4 lg:mt-4 xl:mt-0 md:mt-0">
+              <div className="md:w-[332px] mt-4 lg:mt-0 xl:mt-0 md:mt-0">
                 <button
-                  onClick={() => {
-                    // quick "Buy it now" flow: add to cart then navigate to checkout (example)
+                  onClick={(e) => {
+                    e.stopPropagation();
                     handleAdd(product, 0);
-                    router.push("/checkout");
+                    router.push("/cart-summary");
                   }}
-                  className="w-full px-4 py-3 bg-[#077D40] text-white font-bold"
+                  className={`mt-5 w-full cursor-pointer h-[45px] border rounded ${
+                    addedProductId === product.product_id
+                      ? "bg-[#077D40] text-white"
+                      : "bg-[#077D40] text-white"
+                  }`}
                 >
-                  Buy It Now
+                  {addedProductId === product.product_id
+                    ? "Buy Now ✓"
+                    : "Buy Now"}
                 </button>
               </div>
             </div>

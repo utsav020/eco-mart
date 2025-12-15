@@ -300,7 +300,7 @@ const CartMain = () => {
           </div>
 
           {/* Country / State */}
-          <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-5">
+          {/* <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-5">
             <div>
               <p className="text-lg mb-2">Country</p>
               <select className="w-full border rounded-lg py-3 px-3 text-sm">
@@ -322,23 +322,9 @@ const CartMain = () => {
               type="text"
               className="w-full border rounded-lg px-3 py-3 text-sm"
             />
-          </div>
+          </div> */}
         </div>
       </div>
-
-      {/* ======================== CHECKOUT MODAL ======================== */}
-      {/* {showCheckout && (
-        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex justify-center items-center z-50">
-          <div className="relative w-full max-w-[570px] max-h-[90vh] overflow-y-auto rounded-lg p-4">
-            <button
-              onClick={() => setShowCheckout(false)}
-              className="absolute top-4 right-4 text-gray-600"
-            >
-              <X size={28} />
-            </button>
-          </div>
-        </div>
-      )} */}
     </div>
   );
 };

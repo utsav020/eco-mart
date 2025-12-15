@@ -3,25 +3,46 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { API_BASE_URL } from "@/lib/api";
-import { 
-  ShoppingCart, 
-  Package, 
-  Tag, 
-  CreditCard, 
-  Shield, 
-  Truck,
+import {
+  ShoppingCart,
+  Package,
+  Tag,
+  CreditCard,
   ArrowLeft,
   Loader2,
   AlertCircle,
-  CheckCircle2
+  ChevronDown,
+  ChevronUp,
+  Trash2,
 } from "lucide-react";
 import router from "next/router";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import HeaderThree from "@/components/header/HeaderThree";
 
 export default function CartSummaryPage() {
   const [summary, setSummary] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [proceeding, setProceeding] = useState(false);
+
+  // ⭐ PAYMENT POPUP STATE
+  const [popupOpen, setPopupOpen] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState("COD");
+  const [placingOrder, setPlacingOrder] = useState(false);
+
+  // ⭐ SHIPPING DETAILS + USER PROFILE
+  const [shipping, setShipping] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    cityName: "",
+    pinCode: "",
+    address: "",
+    phone: "",
+    state: "",
+  });
+  const [profile, setProfile] = useState<any>(null);
+  const [profileLoading, setProfileLoading] = useState(false);
 
   useEffect(() => {
     const token =
@@ -36,327 +57,436 @@ export default function CartSummaryPage() {
     fetchSummary(token);
   }, []);
 
+  // FETCH CART SUMMARY
   const fetchSummary = async (token: string) => {
     try {
       setLoading(true);
-      setError("");
 
       const response = await axios.get(
         `${API_BASE_URL}/api/cart/checkoutcart/summary`,
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
 
-      const summaryData = response?.data?.data ?? response?.data ?? null;
+      const data = response.data.data ?? response.data;
 
-      if (!summaryData) {
-        setError("No summary data found.");
-        setLoading(false);
-        return;
-      }
+      const items = data.items ?? [];
 
-      // Calculate totals
-      const items = summaryData.items ?? [];
-      const calculatedTotalItems = items.reduce(
-        (acc: number, item: any) => acc + (item.quantity || 0),
-        0
-      );
-      const calculatedTotalPrice = items.reduce(
-        (acc: number, item: any) => acc + (item.price || 0) * (item.quantity || 0),
+      const totalItems = items.reduce(
+        (acc: number, item: any) => acc + item.quantity,
         0
       );
 
-      const finalSummary = {
+      const totalPrice = items.reduce(
+        (acc: number, item: any) => acc + item.price * item.quantity,
+        0
+      );
+
+      setSummary({
         items,
-        totalItems: summaryData.totalItems ?? calculatedTotalItems,
-        totalPrice: summaryData.totalPrice ?? calculatedTotalPrice,
-        discount: summaryData.discount ?? 0,
-        finalPrice:
-          summaryData.finalPrice ??
-          calculatedTotalPrice - (summaryData.discount ?? 0),
-      };
-
-      setSummary(finalSummary);
-    } catch (error: any) {
-      console.error("Summary error:", error);
-      setError(error?.response?.data?.message || "Failed to load summary. Please try again.");
+        totalItems,
+        totalPrice,
+        discount: data.discount ?? 0,
+        finalPrice: data.finalPrice ?? totalPrice - (data.discount ?? 0),
+      });
+    } catch (err) {
+      setError("Failed to load cart.");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleProceedToPayment = async () => {
-    setProceeding(true);
-    // Simulate payment processing
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    alert("Redirecting to payment gateway...");
-    setProceeding(false);
-    router.push("/order-details");
+  // DELETE ITEM
+  const removeItem = async (cart_id: number) => {
+    try {
+      await axios.delete(
+        `https://ekomart-backend.onrender.com/api/cart/removecartitem/${cart_id}`,
+        { data: { cart_id } }
+      );
+      fetchCart();
+    } catch (err) {
+      console.log("Delete error:", err);
+    }
   };
 
-  const handleContinueShopping = () => {
-    window.history.back();
+  const fetchCart = async () => {
+    const token = localStorage.getItem("token");
+    if (token) fetchSummary(token);
   };
+
+  // UPDATE QUANTITY
+  const updateQuantity = async (cart_id: number, quantity: number) => {
+    if (quantity < 1) return;
+
+    try {
+      await axios.put(
+        `https://ekomart-backend.onrender.com/api/cart/updatecart/${cart_id}`,
+        { cart_id, quantity }
+      );
+      fetchCart();
+    } catch (err) {
+      console.log("Quantity update error:", err);
+    }
+  };
+
+  // ⭐ LOAD USER PROFILE WHEN POPUP OPENS
+  const openPaymentPopup = async () => {
+    setPopupOpen(true);
+    setProfileLoading(true);
+
+    try {
+      const user_id = localStorage.getItem("user_id") || 2;
+
+      const response = await axios.get(
+        `https://ekomart-backend.onrender.com/api/user/profile/${user_id}`
+      );
+
+      const data = response.data.user;
+
+      setProfile(data);
+
+      // Autofill shipping fields
+      setShipping({
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        cityName: data.cityName,
+        pinCode: data.pinCode,
+        address: data.address,
+        phone: data.phoneNo,
+        state: data.state,
+      });
+    } catch (err) {
+      toast.error("Failed to load profile");
+    } finally {
+      setProfileLoading(false);
+    }
+  };
+
+  // ⭐ PLACE ORDER
+  const placeOrder = async () => {
+    setPlacingOrder(true);
+
+    try {
+      const token = localStorage.getItem("token");
+      const user_id = localStorage.getItem("user_id");
+
+      if (!token || !user_id) {
+        toast.error("User not logged in");
+        return;
+      }
+
+      const cartResponse = await axios.get(
+        `${API_BASE_URL}/api/cart/getusercart/${user_id}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (!Array.isArray(cartResponse.data) || cartResponse.data.length === 0) {
+        toast.error("Your cart is empty!");
+        return;
+      }
+
+      const order = await axios.post(
+        `${API_BASE_URL}/api/cart/place-order`,
+        {
+          type: "cart",
+          payment_method: paymentMethod,
+          shipping,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      toast.success("Order placed successfully!");
+
+      setTimeout(() => {
+        window.location.href = `/account`;
+      }, 1200);
+    } catch (err) {
+      console.log(err);
+      toast.error("Order Failed");
+    } finally {
+      setPlacingOrder(false);
+    }
+  };
+
+  const handleContinueShopping = () => window.history.back();
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-linear-to-b from-gray-50 to-gray-100 flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="h-12 w-12 text-blue-600 animate-spin mx-auto mb-4" />
-          <p className="text-gray-600 text-lg">Loading your order summary...</p>
-        </div>
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-10 h-10 animate-spin text-blue-600" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-b from-gray-50 to-gray-100">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="bg-blue-100 p-2 rounded-lg">
-                <ShoppingCart className="h-6 w-6 text-blue-600" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">Checkout Summary</h1>
-                <p className="text-gray-500">Review your order before payment</p>
-              </div>
-            </div>
-            <button
-              onClick={handleContinueShopping}
-              className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors"
-            >
-              <ArrowLeft className="h-5 w-5" />
-              <span>Continue Shopping</span>
-            </button>
+    <div className="min-h-screen bg-gray-50">
+      <ToastContainer />
+
+      {/* MAIN PAGE */}
+      <div className="max-w-7xl mx-auto py-8 px-4">
+        {/* Header */}
+        <div className="bg-white rounded-lg shadow p-6 mb-6 flex justify-between">
+          <div className="flex items-center gap-3">
+            <HeaderThree />
           </div>
         </div>
-      </div>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {error ? (
-          <div className="bg-white rounded-xl shadow-lg p-8 text-center">
-            <AlertCircle className="h-16 w-16 text-red-400 mx-auto mb-4" />
-            <h2 className="text-2xl font-semibold text-gray-800 mb-2">Oops!</h2>
-            <p className="text-gray-600 mb-6">{error}</p>
-            <button
-              onClick={() => window.location.reload()}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
-            >
-              Try Again
-            </button>
-          </div>
-        ) : summary ? (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Left Column - Order Items */}
-            <div className="lg:col-span-2">
-              <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
-                    <Package className="h-5 w-5" />
-                    Order Items ({summary.totalItems})
-                  </h2>
-                  <span className="text-sm font-medium text-gray-500">
-                    {summary.items?.length} unique items
-                  </span>
-                </div>
+        {/* ITEMS + SUMMARY */}
+        <div className="grid grid-cols-1 mt-[100px] lg:grid-cols-3 gap-8">
+          {/* LEFT SIDE ITEMS */}
+          <div className="lg:col-span-2 bg-white rounded-xl shadow p-6">
+            <h2 className="text-xl font-semibold flex items-center gap-2 mb-4">
+              <Package />
+              Order Items ({summary.totalItems})
+            </h2>
 
-                <div className="space-y-4">
-                  {summary.items && summary.items.length > 0 ? (
-                    summary.items.map((item: any, index: number) => (
-                      <div
-                        key={index}
-                        className="flex items-center gap-4 p-4 hover:bg-gray-50 rounded-lg transition-colors border border-gray-100"
-                      >
-                        <div className="relative">
-                          <img
-                            src={item.image_url || "/api/placeholder/96/96"}
-                            alt={item.productName}
-                            className="w-24 h-24 object-cover rounded-lg border"
-                          />
-                          <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center">
-                            {item.quantity}
-                          </span>
-                        </div>
-
-                        <div className="flex-1">
-                          <div className="flex justify-between items-start">
-                            <div>
-                              <h3 className="font-semibold text-gray-900">
-                                {item.productName}
-                              </h3>
-                              {item.productVariantName && (
-                                <p className="text-sm text-gray-500 mt-1">
-                                  Variant: {item.productVariantName}
-                                </p>
-                              )}
-                              <p className="text-sm text-gray-500 mt-1">
-                                Unit Price: ₹{item.price}
-                              </p>
-                            </div>
-                            <div className="text-right">
-                              <p className="font-bold text-gray-900 text-lg">
-                                ₹{(item.price * item.quantity)}
-                              </p>
-                              <p className="text-sm text-gray-500">
-                                ₹{item.price} × {item.quantity}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="text-center py-12">
-                      <ShoppingCart className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-                      <p className="text-gray-500">No items found in your cart</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Trust Badges */}
-              <div className="bg-white rounded-xl shadow-lg p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  Why Shop With Us
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                    <Shield className="h-8 w-8 text-green-600" />
-                    <div>
-                      <p className="font-medium text-gray-900">Secure Payment</p>
-                      <p className="text-sm text-gray-500">100% Secure</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                    <Truck className="h-8 w-8 text-blue-600" />
-                    <div>
-                      <p className="font-medium text-gray-900">Fast Delivery</p>
-                      <p className="text-sm text-gray-500">2-3 Business Days</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                    <CheckCircle2 className="h-8 w-8 text-purple-600" />
-                    <div>
-                      <p className="font-medium text-gray-900">Easy Returns</p>
-                      <p className="text-sm text-gray-500">30 Day Policy</p>
-                    </div>
+            {summary.items.map((item: any) => (
+              <div
+                key={item.cart_id}
+                className="flex items-center justify-between border p-4 rounded-lg mb-3"
+              >
+                <div className="flex items-center gap-4">
+                  <img
+                    src={item.image_url}
+                    className="w-20 h-20 object-cover rounded"
+                  />
+                  <div>
+                    <p className="font-semibold">{item.productName}</p>
+                    <p className="text-sm text-gray-500">
+                      Qty: {item.quantity}
+                    </p>
                   </div>
                 </div>
-              </div>
-            </div>
 
-            {/* Right Column - Order Summary */}
-            <div className="lg:col-span-1">
-              <div className="sticky top-8">
-                {/* Order Summary */}
-                <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
-                  <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center gap-2">
-                    <CreditCard className="h-5 w-5" />
-                    Order Summary
-                  </h2>
-
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center pb-3 border-b">
-                      <span className="text-gray-600">Subtotal</span>
-                      <span className="font-medium text-gray-900">
-                        ₹{summary.totalPrice?.toFixed(2)}
-                      </span>
-                    </div>
-
-                    {summary.discount > 0 && (
-                      <div className="flex justify-between items-center pb-3 border-b">
-                        <span className="text-gray-600 flex items-center gap-2">
-                          <Tag className="h-4 w-4 text-green-600" />
-                          Discount
-                        </span>
-                        <span className="font-medium text-green-600">
-                          - ₹{summary.discount?.toFixed(2)}
-                        </span>
-                      </div>
-                    )}
-
-                    <div className="flex justify-between items-center pb-3 border-b">
-                      <span className="text-gray-600">Shipping</span>
-                      <span className="font-medium text-green-600">FREE</span>
-                    </div>
-
-                    <div className="flex justify-between items-center pb-3 border-b">
-                      <span className="text-gray-600">Tax</span>
-                      <span className="font-medium text-gray-900">₹0.00</span>
-                    </div>
-
-                    <div className="flex justify-between items-center pt-4 border-t">
-                      <span className="text-lg font-bold text-gray-900">Total Amount</span>
-                      <div className="text-right">
-                        <div className="text-2xl font-bold text-gray-900">
-                          ₹{summary.finalPrice?.toFixed(2)}
-                        </div>
-                        <p className="text-sm text-gray-500">Inclusive of all taxes</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Payment Button */}
-                  <a href="/user-details">
-                    <button
-                    onClick={handleProceedToPayment}
-                    disabled={proceeding}
-                    className={`w-full mt-6 py-4 px-4 rounded-lg font-semibold text-white transition-all duration-300 flex items-center justify-center ${
-                      proceeding
-                        ? "bg-blue-400 cursor-not-allowed"
-                        : "bg-linear-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg hover:shadow-xl"
-                    }`}
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() =>
+                      updateQuantity(item.cart_id, item.quantity + 1)
+                    }
                   >
-                    {proceeding ? (
-                      <>
-                        <Loader2 className="h-5 w-5 animate-spin mr-2" />
-                        Processing...
-                      </>
-                    ) : (
-                      <>
-                        <CreditCard className="h-5 w-5 mr-2" />
-                        Proceed to Payment
-                      </>
-                    )}
+                    <ChevronUp />
                   </button>
-                  </a>
-
-                  <p className="text-center text-xs text-gray-500 mt-3">
-                    By completing your purchase, you agree to our Terms of Service
-                  </p>
+                  <span>{item.quantity}</span>
+                  <button
+                    onClick={() =>
+                      item.quantity > 1 &&
+                      updateQuantity(item.cart_id, item.quantity - 1)
+                    }
+                  >
+                    <ChevronDown />
+                  </button>
                 </div>
 
-                {/* Help Section */}
-                <div className="bg-blue-50 border border-blue-100 rounded-xl p-5">
-                  <h3 className="font-medium text-blue-900 mb-2">Need Help?</h3>
-                  <p className="text-sm text-blue-700 mb-3">
-                    Contact our 24/7 customer support for any queries.
-                  </p>
-                  <button className="w-full bg-white text-blue-600 border border-blue-200 hover:bg-blue-50 py-2 rounded-lg font-medium transition-colors text-sm">
-                    Contact Support
-                  </button>
+                <div>
+                  <p className="font-semibold">₹{item.price * item.quantity}</p>
+                </div>
+
+                <button
+                  onClick={() => removeItem(item.cart_id)}
+                  className="text-red-500"
+                >
+                  <Trash2 />
+                </button>
+              </div>
+            ))}
+          </div>
+
+          {/* RIGHT SIDE SUMMARY */}
+          <div className="bg-white rounded-xl shadow p-6">
+            <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+              <CreditCard />
+              Summary
+            </h2>
+
+            <p className="flex justify-between mb-2">
+              <span>Subtotal</span>
+              <span>₹{summary.totalPrice}</span>
+            </p>
+
+            <p className="flex justify-between text-green-600 mb-2">
+              <span>Discount</span>
+              <span>- ₹{summary.discount}</span>
+            </p>
+
+            <p className="flex justify-between font-bold text-lg border-t pt-3">
+              <span>Total</span>
+              <span>₹{summary.finalPrice}</span>
+            </p>
+
+            <button
+              onClick={openPaymentPopup}
+              className="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg"
+            >
+              Proceed to Payment
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* ⭐ FULL SCREEN PAYMENT POPUP ⭐ */}
+      {popupOpen && (
+        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-999 p-4">
+          <div className="bg-white w-full max-w-2xl rounded-xl shadow-2xl p-8 relative">
+            <h2 className="text-3xl font-bold mb-4 text-center">
+              Complete Your Payment
+            </h2>
+
+            <div className="mb-6">
+              <h2 className="text-xl font-semibold mb-4">Shipping Details</h2>
+
+              <div className="space-y-3">
+                {/* FIRST + LAST NAME */}
+                <div className="flex flex-col lg:flex-row gap-3">
+                  <div className="w-full">
+                    <label>First Name</label>
+                    <input
+                      name="firstName"
+                      value={shipping.firstName}
+                      onChange={(e) =>
+                        setShipping({ ...shipping, firstName: e.target.value })
+                      }
+                      className="w-full border px-3 py-2 rounded"
+                    />
+                  </div>
+                  <div className="w-full">
+                    <label>Last Name</label>
+                    <input
+                      name="lastName"
+                      value={shipping.lastName}
+                      onChange={(e) =>
+                        setShipping({ ...shipping, lastName: e.target.value })
+                      }
+                      className="w-full border px-3 py-2 rounded"
+                    />
+                  </div>
+                </div>
+
+                {/* EMAIL */}
+                <div>
+                  <label>Phone No</label>
+                  <input
+                    name="phone"
+                    value={shipping.phone}
+                    onChange={(e) =>
+                      setShipping({ ...shipping, phone: e.target.value })
+                    }
+                    className="w-full border px-3 py-2 rounded"
+                  />
+                </div>
+
+                {/* ADDRESS */}
+                <div>
+                  <label>Street Address</label>
+                  <input
+                    name="address"
+                    value={shipping.address}
+                    onChange={(e) =>
+                      setShipping({ ...shipping, address: e.target.value })
+                    }
+                    className="w-full border px-3 py-2 rounded"
+                  />
+                </div>
+
+                {/* City + Pin */}
+                <div className="flex flex-col lg:flex-row gap-3">
+                  <div className="w-full">
+                    <label>City</label>
+                    <input
+                      name="cityName"
+                      value={shipping.cityName}
+                      onChange={(e) =>
+                        setShipping({ ...shipping, cityName: e.target.value })
+                      }
+                      className="w-full border px-3 py-2 rounded"
+                    />
+                  </div>
+                  
+                  {/* STATE */}
+                  <div className="w-full">
+                    <label>State</label>
+                    <input
+                      name="state"
+                      value={shipping.state}
+                      onChange={(e) =>
+                        setShipping({ ...shipping, state: e.target.value })
+                      }
+                      className="w-full border px-3 py-2 rounded"
+                    />
+                  </div>
+                </div>
+
+                {/* ZIP CODE */}
+                <div>
+                  <label>Zip/Postal Code</label>
+                  <input
+                    name="zipCode"
+                    value={shipping.pinCode}
+                    onChange={(e) =>
+                      setShipping({ ...shipping, pinCode: e.target.value })
+                    }
+                    className="w-full border px-3 py-2 rounded"
+                  />
                 </div>
               </div>
             </div>
-          </div>
-        ) : null}
-      </div>
 
-      {/* Footer Note */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 mt-8">
-        <div className="text-center text-sm text-gray-500">
-          <p>Prices and availability are subject to change. All prices are in INR.</p>
-          <p className="mt-1">© {new Date().getFullYear()} Your Store. All rights reserved.</p>
+            {/* PAYMENT TYPE */}
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold mb-3">
+                Select Payment Method
+              </h3>
+
+              <label className="flex items-center gap-3 border p-3 mb-3 rounded-lg">
+                <input
+                  type="radio"
+                  value="COD"
+                  checked={paymentMethod === "COD"}
+                  onChange={() => setPaymentMethod("COD")}
+                />
+                Cash On Delivery (COD)
+              </label>
+
+              <label className="flex items-center gap-3 border p-3 rounded-lg">
+                <input
+                  type="radio"
+                  value="ONLINE"
+                  checked={paymentMethod === "ONLINE"}
+                  onChange={() => setPaymentMethod("ONLINE")}
+                />
+                Online Payment
+              </label>
+            </div>
+
+            {/* PLACE ORDER BUTTON */}
+            <div className="flex gap-4 justify-end">
+              <div className="w-[200px] py-3 flex items-center justify-center hover:bg-[#077D40] hover:text-white text-black border rounded-sm">
+                <button 
+                  className=""
+                  onClick={() => setPopupOpen(false)}>
+                  Cancel
+                </button>
+              </div>
+
+              <div className="w-[200px]">
+                <button
+                  onClick={placeOrder}
+                  disabled={placingOrder}
+                  className={`w-full py-3 text-white rounded-sm ${
+                    placingOrder
+                      ? "bg-gray-500"
+                      : "bg-[#077D40] hover:bg-[#077D40]"
+                  }`}
+                >
+                  {placingOrder ? "Placing Order..." : "Place Order"}
+                </button>
+              </div>
+
+            </div>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
