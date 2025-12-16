@@ -59,9 +59,9 @@ export default function Login() {
   return (
     <div className="w-full max-w-[795px] h-[750px] mx-auto mt-24 bg-white rounded-2xl shadow-lg border border-gray-200 relative p-8 lg:p-10">
       <div className="max-w-[528px] mx-auto">
-        <button className="absolute top-4 right-4 text-gray-500 hover:text-black transition">
+        {/* <button className="absolute top-4 right-4 text-gray-500 hover:text-black transition">
           <X size={20} />
-        </button>
+        </button> */}
 
         {/* Title */}
         <h2 className="text-center text-[32px] font-bold text-[#333333]">Log in</h2>
@@ -126,13 +126,21 @@ export default function Login() {
                 className="flex-1 outline-none"
               />
             </div>
+
+            <div className="">
+              <a>
+                <p className="text-right text-[#666666] text-[18px] mt-2 underline">
+                  Forgot password?
+                </p>
+              </a>
+            </div>
           </div>
 
           {/* Login Button */}
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-gray-800 text-white py-3 rounded-full text-center text-[16px] font-medium hover:bg-black transition disabled:bg-gray-400"
+            className="w-full bg-black text-white py-3 rounded-full text-center text-[16px] font-medium hover:bg-black transition disabled:bg-black disabled:inset-ring-white"
           >
             {loading ? "Logging in..." : "Log in"}
           </button>

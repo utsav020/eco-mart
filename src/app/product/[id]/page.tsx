@@ -49,7 +49,7 @@ const CompareElements: React.FC = () => {
 
   const [product, setProduct] = useState<ProductType | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<ProductType[]>([]);
-  const [added, setAdded] = useState(false);
+  // const [added, setAdded] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [activeImage, setActiveImage] = useState<string>("");
   const [selectedWeight, setSelectedWeight] = useState<string | null>(null);
@@ -143,37 +143,42 @@ const CompareElements: React.FC = () => {
     }
   }, [product?.product_id]);
 
+  const redirectIfNotLoggedIn = () => {
+    if (typeof window === "undefined") return true;
+
+    const token = localStorage.getItem("token");
+    const user_id = localStorage.getItem("user_id");
+
+    if (!token || !user_id) {
+      const currentPath = window.location.pathname;
+      window.location.href = `/login?redirect=${encodeURIComponent(
+        currentPath
+      )}`;
+      return true;
+    }
+
+    return false;
+  };
+
   // ⭐ Add To Cart (FINAL FIXED)
   const handleAdd = async (product: ProductType, index: number) => {
+    if (redirectIfNotLoggedIn()) return;
+
     const user_id = Number(localStorage.getItem("user_id"));
-
-    if (!user_id || isNaN(user_id)) {
-      toast.error("User not logged in. Please login first.");
-      return;
-    }
-
     const token = localStorage.getItem("token") || "";
 
-    // ⭐ Correct product_id mapping
-    const productId = product.product_id
-      ? product.product_id
-      : product._id
-      ? Number(product._id)
-      : null;
+    const productId =
+      product.product_id ?? (product._id ? Number(product._id) : null);
 
-    if (!productId) {
-      toast.error("Invalid product id.");
-      return;
-    }
+    if (!productId) return;
 
-    // ⭐ Correct payload format
     const payload = {
-      user_id: user_id,
+      user_id,
       items: [
         {
           product_id: productId,
           product_variant_id: product.product_variant_id || null,
-          quantity: 1,
+          quantity,
         },
       ],
     };
@@ -185,28 +190,22 @@ const CompareElements: React.FC = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: token ? `Bearer ${token}` : "",
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(payload),
         }
       );
 
-      const data = await res.json();
+      if (!res.ok) return;
 
-      if (!res.ok) {
-        toast.error(data.message || "Unable to add to cart");
-        return;
-      }
-
-      // ⭐ UI Local update (NO second API CALL)
       toast.success("Product added to cart!");
-
       setAddedProductId(productId);
       setTimeout(() => setAddedProductId(null), 1500);
-    } catch (error) {
-      toast.error("Server Error: Unable to add to cart");
+    } catch {
+      toast.error("Server error");
     }
   };
+
   const thumbnails =
     product?.productImages && product.productImages.length > 0
       ? product.productImages
@@ -514,25 +513,25 @@ const CompareElements: React.FC = () => {
 };
 
 export default CompareElements;
-function getImage(product: ProductType, index: number): string {
-  throw new Error("Function not implemented.");
-}
+// function getImage(product: ProductType, index: number): string {
+//   throw new Error("Function not implemented.");
+// }
 
-function addToCart(
-  arg0: {
-    id: number;
-    product_variant_id: any;
-    productName: string;
-    price: number;
-    regularPrice: number | null | undefined;
-    productImage: string;
-    image: string;
-    quantity: number;
-    active: boolean;
-    description: string;
-    title: undefined;
-  },
-  user_id: number
-) {
-  throw new Error("Function not implemented.");
-}
+// function addToCart(
+//   arg0: {
+//     id: number;
+//     product_variant_id: any;
+//     productName: string;
+//     price: number;
+//     regularPrice: number | null | undefined;
+//     productImage: string;
+//     image: string;
+//     quantity: number;
+//     active: boolean;
+//     description: string;
+//     title: undefined;
+//   },
+//   user_id: number
+// ) {
+//   throw new Error("Function not implemented.");
+// }

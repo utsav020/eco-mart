@@ -94,11 +94,11 @@ export default function Register() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-10">
-      <div className="w-full max-w-[550px] bg-white rounded-xl shadow-lg border p-8">
+      <div className="w-full max-w-[550px] bg-white rounded-xl shadow-lg p-8">
         <h2 className="text-center text-2xl font-bold">Create Account</h2>
         <p className="text-center text-gray-500 text-sm mt-1">
           Already have an Account?{" "}
-          <a href="/login" className="text-blue-600 hover:underline">
+          <a href="/login" className="text-blue-600 underline hover:underline">
             Login
           </a>
         </p>
@@ -128,7 +128,7 @@ export default function Register() {
                 required
                 value={formData.firstName}
                 onChange={handleChange}
-                className="w-full mt-2 px-4 py-2 border rounded-lg"
+                className="w-full mt-2 px-4 py-2 border border-[#66666659] rounded-lg"
               />
             </div>
             <div>
@@ -139,7 +139,7 @@ export default function Register() {
                 required
                 value={formData.lastName}
                 onChange={handleChange}
-                className="w-full mt-2 px-4 py-2 border rounded-lg"
+                className="w-full mt-2 px-4 py-2 border border-[#66666659] rounded-lg"
               />
             </div>
           </div>
@@ -153,7 +153,7 @@ export default function Register() {
               required
               value={formData.address}
               onChange={handleChange}
-              className="w-full mt-2 px-4 py-2 border rounded-lg"
+              className="w-full mt-2 px-4 py-2 border border-[#66666659] rounded-lg"
             />
           </div>
 
@@ -167,7 +167,7 @@ export default function Register() {
                 required
                 value={formData.cityName}
                 onChange={handleChange}
-                className="w-full mt-2 px-4 py-2 border rounded-lg"
+                className="w-full mt-2 px-4 py-2 border border-[#66666659] rounded-lg"
               />
             </div>
 
@@ -179,7 +179,7 @@ export default function Register() {
                 required
                 value={formData.pinCode}
                 onChange={handleChange}
-                className="w-full mt-2 px-4 py-2 border rounded-lg"
+                className="w-full mt-2 px-4 py-2 border border-[#66666659] rounded-lg"
               />
             </div>
           </div>
@@ -193,7 +193,7 @@ export default function Register() {
               required
               value={formData.phoneNo}
               onChange={handleChange}
-              className="w-full mt-2 px-4 py-2 border rounded-lg"
+              className="w-full mt-2 px-4 py-2 border border-[#66666659] rounded-lg"
             />
           </div>
 
@@ -204,13 +204,13 @@ export default function Register() {
               type="file"
               accept="image/*"
               onChange={handleImageUpload}
-              className="w-full mt-2 border rounded-lg p-2"
+              className="w-full mt-2 border border-[#66666659] rounded-lg p-2"
             />
 
             {imagePreview && (
               <img
                 src={imagePreview}
-                className="w-20 h-20 rounded-full object-cover mt-3 border"
+                className="w-20 h-20 rounded-full object-cover mt-3 border border-[#66666659]"
                 alt="preview"
               />
             )}
@@ -225,14 +225,14 @@ export default function Register() {
               required
               value={formData.email}
               onChange={handleChange}
-              className="w-full mt-2 px-4 py-2 border rounded-lg"
+              className="w-full mt-2 px-4 py-2 border border-[#66666659] rounded-lg"
             />
           </div>
 
           {/* Password */}
           <div>
             <label className="text-sm">Password</label>
-            <div className="w-full mt-2 flex items-center border rounded-lg px-4 py-2">
+            <div className="w-full mt-2 flex items-center border border-[#66666659] rounded-lg px-4 py-2">
               <input
                 id="password"
                 type={showPassword ? "text" : "password"}
@@ -245,6 +245,7 @@ export default function Register() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
+                className="text-gray-500"
               >
                 {showPassword ? <EyeOff /> : <Eye />}
               </button>
@@ -255,7 +256,7 @@ export default function Register() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-3 rounded-full"
+            className="w-full bg-black text-white py-3 rounded-full"
           >
             {loading ? "Creating Account..." : "Create Account"}
           </button>

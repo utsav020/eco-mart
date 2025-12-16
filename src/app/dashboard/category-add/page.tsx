@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import SideLeft from "../components/SideLeft";
 import Header from "../components/Header";
-import DemoContent from "../category-add/DemoContext";
+import DemoContent from "./DemoContext";
 
 export default function Home() {
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);

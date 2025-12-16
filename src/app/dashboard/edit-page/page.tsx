@@ -1,5 +1,5 @@
 import React from 'react'
-import EditProductPage from '../edit-page/DemoContent'
+import EditProductPage from './DemoContent'
 
 export default function page() {
   return (
