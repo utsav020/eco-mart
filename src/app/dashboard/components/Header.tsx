@@ -56,8 +56,8 @@ export default function Header({ onToggleSidebar }: HeaderProps) {
 
   return (
     <header className="w-full bg-white border-b">
-      <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-0">
-        <div className="flex items-center mx-auto max-w-[1430px] w-[1430px] justify-between h-16">
+      <div className="max-w-[1920px] w-full mx-auto px-4 sm:px-6 lg:px-0">
+        <div className="flex items-center mx-auto max-w-[1920px] w-full justify-between h-16">
           {/* Left: Sidebar Toggle */}
           <div className="flex items-center gap-3">
             <div className="">
