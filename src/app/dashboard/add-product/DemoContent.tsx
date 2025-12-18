@@ -114,66 +114,136 @@ const AddProductPage = () => {
   };
 
   // Submit
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   setErrorMsg(null);
+  //   setIsSubmitting(true);
+
+  //   try {
+  //     const fd = new FormData();
+
+  //     // ✅ Product fields
+  //     fd.append("category_id", String(formData.category_id));
+  //     fd.append("productName", formData.productName);
+  //     fd.append("description", formData.description);
+  //     fd.append("has_variants", formData.has_variants ? "1" : "0");
+
+  //     // ✅ Product image
+  //     if (formData.productImage) {
+  //       fd.append("productImage", formData.productImage);
+  //     }
+
+  //     // ✅ Simple product
+  //     if (!formData.has_variants) {
+  //       fd.append("regularPrice", String(formData.regularPrice));
+  //       fd.append("salePrice", String(formData.salePrice));
+  //       fd.append("weights", formData.weights);
+  //       fd.append("quantity", String(formData.quantity));
+  //       fd.append("variants", "[]");
+  //     }
+
+  //     // ✅ Variants
+  //     if (formData.has_variants) {
+  //       const variantsPayload = formData.variants.map((v, index) => {
+  //         // append variant image separately
+  //         if (v.image) {
+  //           fd.append(`variantImages[${index}]`, v.image);
+  //         }
+
+  //         return {
+  //           productVariantName: v.productVariantName,
+  //           regularPrice: Number(v.regularPrice),
+  //           salePrice: Number(v.salePrice),
+  //           weights: v.weights,
+  //           quantity: Number(v.quantity),
+  //           is_default: v.is_default ? 1 : 0,
+  //         };
+  //       });
+
+  //       fd.append("variants", JSON.stringify(variantsPayload));
+  //     }
+
+  //     await axios.post(`${API_BASE_URL}/api/product/addproduct`, fd, {
+  //       headers: { "Content-Type": "multipart/form-data" },
+  //     });
+
+  //     router.push("/dashboard/product-list");
+  //   } catch (err: any) {
+  //     setErrorMsg(err.response?.data?.error || "Failed to submit product");
+  //   } finally {
+  //     setIsSubmitting(false);
+  //   }
+  // };
+
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setErrorMsg(null);
-    setIsSubmitting(true);
+  e.preventDefault();
+  setErrorMsg(null);
+  setIsSubmitting(true);
 
-    try {
-      const fd = new FormData();
+  try {
+    const fd = new FormData();
 
-      // ✅ Product fields
-      fd.append("category_id", String(formData.category_id));
-      fd.append("productName", formData.productName);
-      fd.append("description", formData.description);
-      fd.append("has_variants", formData.has_variants ? "1" : "0");
+    fd.append("category_id", String(formData.category_id));
+    fd.append("productName", formData.productName);
+    fd.append("description", formData.description);
+    fd.append("has_variants", formData.has_variants ? "1" : "0");
 
-      // ✅ Product image
-      if (formData.productImage) {
-        fd.append("productImage", formData.productImage);
-      }
+    if (formData.productImage) {
+      fd.append("productImage", formData.productImage);
+    }
 
-      // ✅ Simple product
-      if (!formData.has_variants) {
-        fd.append("regularPrice", String(formData.regularPrice));
-        fd.append("salePrice", String(formData.salePrice));
-        fd.append("weights", formData.weights);
-        fd.append("quantity", String(formData.quantity));
-        fd.append("variants", "[]");
-      }
+    /* ---------------- SIMPLE PRODUCT ---------------- */
+    if (!formData.has_variants) {
+      fd.append("regularPrice", String(formData.regularPrice));
+      fd.append("salePrice", String(formData.salePrice || 0));
+      fd.append("weights", formData.weights);
+      fd.append("quantity", String(formData.quantity));
+      fd.append("variants", "[]");
+    }
 
-      // ✅ Variants
-      if (formData.has_variants) {
-        const variantsPayload = formData.variants.map((v, index) => {
-          // append variant image separately
-          if (v.image) {
-            fd.append(`variantImages[${index}]`, v.image);
-          }
+    /* ---------------- VARIANT PRODUCT ---------------- */
+    if (formData.has_variants) {
+      // 🔥 get default variant
+      const defaultVariant =
+        formData.variants.find((v) => v.is_default) ||
+        formData.variants[0];
 
-          return {
-            productVariantName: v.productVariantName,
-            regularPrice: Number(v.regularPrice),
-            salePrice: Number(v.salePrice),
-            weights: v.weights,
-            quantity: Number(v.quantity),
-            is_default: v.is_default ? 1 : 0,
-          };
-        });
+      // ✅ SET MAIN PRODUCT VALUES (THIS FIXES NULL ISSUE)
+      fd.append("regularPrice", String(defaultVariant.regularPrice));
+      fd.append("salePrice", String(defaultVariant.salePrice || 0));
+      fd.append("weights", defaultVariant.weights);
+      fd.append("quantity", String(defaultVariant.quantity));
 
-        fd.append("variants", JSON.stringify(variantsPayload));
-      }
+      const variantsPayload = formData.variants.map((v, index) => {
+        if (v.image) {
+          fd.append(`variantImages[${index}]`, v.image);
+        }
 
-      await axios.post(`${API_BASE_URL}/api/product/addproduct`, fd, {
-        headers: { "Content-Type": "multipart/form-data" },
+        return {
+          productVariantName: v.productVariantName,
+          regularPrice: Number(v.regularPrice),
+          salePrice: Number(v.salePrice || 0),
+          weights: v.weights,
+          quantity: Number(v.quantity),
+          is_default: v.is_default ? 1 : 0,
+        };
       });
 
-      router.push("/dashboard/product-list");
-    } catch (err: any) {
-      setErrorMsg(err.response?.data?.error || "Failed to submit product");
-    } finally {
-      setIsSubmitting(false);
+      fd.append("variants", JSON.stringify(variantsPayload));
     }
-  };
+
+    await axios.post(`${API_BASE_URL}/api/product/addproduct`, fd, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+
+    router.push("/dashboard/product-list");
+  } catch (err: any) {
+    setErrorMsg(err.response?.data?.error || "Failed to submit product");
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-gray-50 p-8 md:p-6">

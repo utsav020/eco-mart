@@ -65,19 +65,23 @@
 //   // cart item
 //   const { addToCart } = useCart(); // Now works
 
-//   const handleAdd = () => {
-//     addToCart({
-//       id: Date.now(), // unique ID
-//       image: `/assets/images/grocery/${ProductImage}`,
-//       title: ProductTitle ?? "Default Product Title",
-//       price: parseFloat(Price ?? "0"),
-//       quantity: 1,
-//       active: true,
-//       productName: "",
-//       regularPrice: undefined,
-//       productImage: ""
-//     });
-//   };
+//     function handleAdd() {
+//         throw new Error("Function not implemented.");
+//     }
+
+// //   const handleAdd = () => {
+// //     addToCart({
+// //       id: Date.now(), // unique ID
+// //       image: `/assets/images/grocery/${ProductImage}`,
+// //       title: ProductTitle ?? "Default Product Title",
+// //       price: parseFloat(Price ?? "0"),
+// //       quantity: 1,
+// //       active: true,
+// //       productName: "",
+// //       regularPrice: undefined,
+// //       productImage: ""
+// //     });
+// //   };
 
 //   return (
 //     <>

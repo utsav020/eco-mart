@@ -6,25 +6,7 @@ import axios from "axios";
 import AddEditCategoryPage from "../category-add/DemoContext";
 import { API_BASE_URL } from "@/lib/api";
 import { useRouter } from "next/navigation";
-import {
-  X,
-  SquarePen,
-  Eye,
-  Trash2,
-  Package,
-  Search,
-  Filter,
-  Plus,
-  MoreVertical,
-  TrendingUp,
-  FolderOpen,
-  Calendar,
-  Edit3,
-  Layers,
-  BarChart3,
-  Download,
-  Upload,
-} from "lucide-react";
+import {X,SquarePen,Eye,Trash2,Package,Search,TrendingUp,FolderOpen,Calendar,Edit3,Layers,} from "lucide-react";
 
 interface Category {
   category_id: number;
@@ -61,9 +43,7 @@ const CategoryDashboard: React.FC = () => {
   const [showProductsModal, setShowProductsModal] = useState(false);
   const router = useRouter();
   const [showForm, setShowForm] = useState(false);
-  const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(
-    null
-  );
+  const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
 
   const fetchCategories = async () => {

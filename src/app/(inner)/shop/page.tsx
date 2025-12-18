@@ -8,7 +8,6 @@ import FooterTwo from "@/components/footer/FooterTwo";
 import { usePathname, useRouter } from "next/navigation";
 import { useProduct } from "@/components/context/page";
 import { ProductImage } from "@/app/dashboard/types/product";
-import { useCategory } from "@/components/context/CategoryContext";
 import LogoLineLoader from "@/components/loader/LogoLineLoader";
 
 interface ProductType {
@@ -22,35 +21,43 @@ interface ProductType {
   [key: string]: any;
 }
 
+interface CategoryType {
+  category_id: number;
+  categoryName: string;
+}
+
 export default function BlogGridMain() {
-  const [activeCategory, setActiveCategory] = useState("All Products");
+  const [categories, setCategories] = useState<CategoryType[]>([]);
+  const [activeCategory, setActiveCategory] = useState<number | "all">("all");
   const [products, setProducts] = useState<ProductType[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string>("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const router = useRouter();
+  const pathname = usePathname();
   const { setSelectedProduct } = useProduct();
-  const { setSelectedCategory } = useCategory();
 
   const [addedProductId, setAddedProductId] = useState<number | null>(null);
 
   const defaultImages = [
-    "/Soyabean.png",
-    "/Oats.png",
-    "/CornSeed.png",  
-    "/Moong.png",
-    "/MultigrainAtta.png",
+    "/assets/images/products/Oats.png",
   ];
 
-  const categoryMap: Record<string, number> = {
-    Millets: 1,
-    Beans: 2,
-    Dals: 3,
-    "Grains & Cereals": 4,
+  /* -------------------- FETCH CATEGORIES -------------------- */
+  const fetchCategories = async () => {
+    try {
+      const res = await fetch(
+        "https://ekomart-backend.onrender.com/api/categories/getallcategory"
+      );
+      const data = await res.json();
+      setCategories(data || []);
+    } catch {
+      toast.error("Failed to load categories");
+    }
   };
 
-  // Fetch products
-  const fetchProductsByCategory = async (categoryId?: number) => {
+  /* -------------------- FETCH PRODUCTS -------------------- */
+  const fetchProducts = async (categoryId?: number) => {
     setLoading(true);
     setError("");
 
@@ -62,7 +69,7 @@ export default function BlogGridMain() {
       const res = await fetch(url);
       const data = await res.json();
 
-      if (!data.length) {
+      if (!data?.length) {
         setProducts([]);
         setError("No products found.");
       } else {
@@ -76,7 +83,8 @@ export default function BlogGridMain() {
   };
 
   useEffect(() => {
-    fetchProductsByCategory();
+    fetchCategories();
+    fetchProducts();
   }, []);
 
   const getImage = (product: ProductType, index: number) => {
@@ -86,38 +94,25 @@ export default function BlogGridMain() {
     return defaultImages[index % defaultImages.length];
   };
 
-  const pathname = usePathname();
-
+  /* -------------------- LOGIN CHECK -------------------- */
   const redirectIfNotLoggedIn = () => {
     const token = localStorage.getItem("token");
     const user_id = localStorage.getItem("user_id");
 
     if (!token || !user_id) {
       router.push(`/login?redirect=${encodeURIComponent(pathname)}`);
-      return true; // redirected
+      return true;
     }
-
-    return false; // logged in
+    return false;
   };
 
-  // Add to cart
+  /* -------------------- ADD TO CART -------------------- */
   const handleAdd = async (product: ProductType) => {
     if (redirectIfNotLoggedIn()) return;
 
     const user_id = Number(localStorage.getItem("user_id"));
     const token = localStorage.getItem("token") || "";
     const productId = product.product_id ?? Number(product._id);
-
-    const payload = {
-      user_id,
-      items: [
-        {
-          product_id: productId,
-          product_variant_id: product.product_variant_id || null,
-          quantity: 1,
-        },
-      ],
-    };
 
     try {
       const res = await fetch(
@@ -128,7 +123,16 @@ export default function BlogGridMain() {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify(payload),
+          body: JSON.stringify({
+            user_id,
+            items: [
+              {
+                product_id: productId,
+                product_variant_id: product.product_variant_id || null,
+                quantity: 1,
+              },
+            ],
+          }),
         }
       );
 
@@ -143,7 +147,7 @@ export default function BlogGridMain() {
     }
   };
 
-  // ⭐ INDIVIDUAL PRODUCT CARD COMPONENT
+  /* -------------------- PRODUCT CARD -------------------- */
   const ProductCard = ({
     product,
     index,
@@ -152,103 +156,21 @@ export default function BlogGridMain() {
     index: number;
   }) => {
     const [isFav, setIsFav] = useState(false);
-
     const product_id =
       product.product_id ?? (product._id ? Number(product._id) : null);
 
-    const product_variant_id = product.product_variant_id
-      ? Number(product.product_variant_id)
-      : null;
-
-    // ⭐ Check wishlist when this product is rendered
-    useEffect(() => {
-      const checkWishlist = async () => {
-        const user_id = Number(localStorage.getItem("user_id"));
-        if (!user_id || !product_id) return;
-
-        try {
-          const res = await fetch(
-            `https://ekomart-backend.onrender.com/api/user/wishlist-check?user_id=${user_id}&product_id=${product_id}&product_variant_id=${
-              product_variant_id ?? ""
-            }`
-          );
-
-          const data = await res.json();
-          setIsFav(data.isFavourite === true);
-        } catch (err) {
-          console.log("wishlist check failed");
-        }
-      };
-
-      checkWishlist();
-    }, [product_id]);
-
-    // Add/Remove wishlist
-    const toggleWishlist = async (e: any) => {
-      e.stopPropagation();
-
-      const user_id = Number(localStorage.getItem("user_id"));
-      const token = localStorage.getItem("token") || "";
-      if (!user_id) return toast.error("Login first.");
-
-      try {
-        const res = await fetch(
-          isFav
-            ? "https://ekomart-backend.onrender.com/api/user/wishlist/remove"
-            : "https://ekomart-backend.onrender.com/api/user/wishlist/add",
-          {
-            method: isFav ? "DELETE" : "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: token ? `Bearer ${token}` : "",
-            },
-            body: JSON.stringify({
-              user_id,
-              product_id,
-              product_variant_id: product.product_variant_id || null,
-            }),
-          }
-        );
-
-        const data = await res.json();
-        if (!res.ok)
-          return toast.error(data.message || "Wishlist update failed");
-
-        setIsFav(!isFav);
-        toast.success(
-          !isFav ? "Added to favourites!" : "Removed from favourites!"
-        );
-      } catch {
-        toast.error("Wishlist update failed");
-      }
-    };
-
     return (
       <div
-        className="w-[332px] h-[450px] mx-auto relative cursor-pointer"
+        className="w-[332px] h-[450px] mx-auto cursor-pointer"
         onClick={() => {
           setSelectedProduct(product);
           router.push(`/product/${product._id}`);
         }}
       >
-        <div className="relative flex justify-center items-center">
-          <img
-            src={getImage(product, index) || "/assets/images/products/Oats.png"}
-            className="w-[331.75px] h-72 object-cover"
-          />
-
-          {/* HEART ICON */}
-          <button
-            onClick={toggleWishlist}
-            className="absolute bottom-2 right-2 p-2"
-          >
-            <Heart
-              className={`w-6 h-6 transition ${
-                isFav ? "fill-[#077D40] text-[#077D40]" : "text-[#333]"
-              }`}
-            />
-          </button>
-        </div>
+        <img
+          src={getImage(product, index)}
+          className="w-full h-72 object-cover"
+        />
 
         <p className="pt-3 font-bold">{product.productName}</p>
         <p className="text-gray-600 mt-2">₹{product.regularPrice ?? 95}</p>
@@ -270,70 +192,58 @@ export default function BlogGridMain() {
     );
   };
 
-  const categories = [
-    "All Products",
-    "Millets",
-    "Beans",
-    "Dals",
-    "Grains & Cereals",
-  ];
-
-  // function handleCategoryClick(category: string): void {
-  //   throw new Error("Function not implemented.");
-  // }
-
-  const handleCategoryClick = (category: string) => {
-    setActiveCategory(category);
-    category === "All Products"
-      ? fetchProductsByCategory()
-      : fetchProductsByCategory(categoryMap[category]);
+  /* -------------------- CATEGORY CLICK -------------------- */
+  const handleCategoryClick = (categoryId?: number) => {
+    setActiveCategory(categoryId ?? "all");
+    fetchProducts(categoryId);
   };
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="border-2">
-        <HeaderThree />
-      </div>
+      <HeaderThree />
 
-      <div className="max-w-[1430px] mt-[150px] 2xl:mt-[180px] mx-auto">
-        {/* ✅ CATEGORY BAR */}
-        <div className="bg-[#F5F5F5] h-[250px] 2xl:pl-[35px] md:h-20 pt-5 md:pt-0 2xl:pt-0 rounded-2xl md:rounded-[200px] md:flex md:items-center md:justify-start gap-4">
-          <div className=" h-[230px] md:h-20 xl:h-auto pt-5 md:pt-0 md:pl-5 2xl:pl-0 block md:flex items-center justify-center md:justify-start 2xl:items-start gap-4">
-            {categories.map((category) => (
-              <div className="text-center mx-auto">
-                <div>
-                  <button
-                    key={category}
-                    onClick={() => handleCategoryClick(category)}
-                    className={`px-5 py-2 rounded-full ${
-                      activeCategory === category
-                        ? "bg-[#A3C526] text-white"
-                        : "text-gray-700"
-                    }`}
-                  >
-                    {category}
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
+      <div className="max-w-[1430px] mt-[150px] mx-auto">
+        {/* CATEGORY BAR */}
+        <div className="bg-[#F5F5F5] p-5 rounded-full flex gap-3 flex-wrap">
+          <button
+            onClick={() => handleCategoryClick()}
+            className={`px-5 py-2 rounded-full ${
+              activeCategory === "all"
+                ? "bg-[#A3C526] text-white"
+                : "text-gray-700"
+            }`}
+          >
+            All Products
+          </button>
+
+          {categories.map((cat) => (
+            <button
+              key={cat.category_id}
+              onClick={() => handleCategoryClick(cat.category_id)}
+              className={`px-5 py-2 rounded-full ${
+                activeCategory === cat.category_id
+                  ? "bg-[#A3C526] text-white"
+                  : "text-gray-700"
+              }`}
+            >
+              {cat.categoryName}
+            </button>
+          ))}
         </div>
 
-        <div className="max-w-[1430px] px-5 mx-auto">
-          {/* PRODUCT GRID */}
-          <div className="mt-10">
-            {loading ? (
-              <LogoLineLoader />
-            ) : error ? (
-              <p className="text-center text-gray-500">{error}</p>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-                {products.map((product, index) => (
-                  <ProductCard key={index} product={product} index={index} />
-                ))}
-              </div>
-            )}
-          </div>
+        {/* PRODUCTS */}
+        <div className="mt-10 px-5">
+          {loading ? (
+            <LogoLineLoader />
+          ) : error ? (
+            <p className="text-center text-gray-500">{error}</p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+              {products.map((product, index) => (
+                <ProductCard key={index} product={product} index={index} />
+              ))}
+            </div>
+          )}
         </div>
       </div>
 

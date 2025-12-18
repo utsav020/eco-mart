@@ -513,25 +513,3 @@ const CompareElements: React.FC = () => {
 };
 
 export default CompareElements;
-// function getImage(product: ProductType, index: number): string {
-//   throw new Error("Function not implemented.");
-// }
-
-// function addToCart(
-//   arg0: {
-//     id: number;
-//     product_variant_id: any;
-//     productName: string;
-//     price: number;
-//     regularPrice: number | null | undefined;
-//     productImage: string;
-//     image: string;
-//     quantity: number;
-//     active: boolean;
-//     description: string;
-//     title: undefined;
-//   },
-//   user_id: number
-// ) {
-//   throw new Error("Function not implemented.");
-// }

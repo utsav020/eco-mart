@@ -420,7 +420,7 @@ const ProductTable = () => {
               Product Status
             </label>
             <div className="relative border flex items-center h-[50px] border-gray-300 rounded-lg cursor-pointer">
-              <div className="w-[300px] bg-white px-4 py-2.5 pr-10 duration-200 ">
+              <div className="w-full bg-white px-4 py-2.5 pr-10 duration-200">
                 <select
                   value={selectedStatus}
                   onChange={(e) => setSelectedStatus(e.target.value)}

@@ -8,7 +8,7 @@ export default function Home() {
   return (
     <div className="flex flex-col max-w-[1920px] mx-auto min-h-screen bg-white">
       {/* Header */}
-      <div className="">
+      <div>
         <HeaderThree />
       </div>
 
@@ -28,7 +28,7 @@ export default function Home() {
           <div className="xl:flex lg:items-center">
             <div className="lg:w-[783px] h-[1016px] bg-[#077D40] rounded-[15px]">
               <div className="md:w-[680px] lg:w-[730px] mx-auto">
-                <div className="w-[684px] h-[128px] md:px-[0] lg:mt-[52px]">
+                <div className="w-[684px] h-32 md:px-0 lg:mt-[52px]">
                   <p className="text-[30px] h-[65px] text-white font-bold leading-[76.5px]">
                     Get In Touch
                   </p>
@@ -38,8 +38,8 @@ export default function Home() {
                 </div>
 
                 {/* Phone */}
-                <div className="md:w-[200px] w-[250px] px-[20px] md:px-[0] flex gap-[15px] h-[90px] mt-[25px]">
-                  <div className="mt-[28px] text-[#A7F3D0]">
+                <div className="md:w-[200px] w-[250px] px-5 md:px-0 flex gap-[15px] h-[90px] mt-[25px]">
+                  <div className="mt-7 text-[#A7F3D0]">
                     <Phone />
                   </div>
                   <div className="mt-[26px]">
@@ -54,8 +54,8 @@ export default function Home() {
                 </div>
 
                 {/* Email */}
-                <div className="w-[200px] px-[20px] md:px-[0] flex gap-[15px] h-[90px] mt-[25px]">
-                  <div className="text-[#A7F3D0] mt-[28px]">
+                <div className="w-[200px] px-5 md:px-0 flex gap-[15px] h-[90px] mt-[25px]">
+                  <div className="text-[#A7F3D0] mt-7">
                     <Mail />
                   </div>
                   <div className="mt-[26px]">
@@ -85,8 +85,8 @@ export default function Home() {
                 </div>
 
                 {/* Google Map */}
-                <div className="px-[0px] lg:pt-[0] pt-[20px]">
-                  <div className="lg:col-span-2 h-[400px] lg:h-[428px] max-w-[730px] mx-auto mt-[28px] w-full rounded-2xl overflow-hidden shadow-md">
+                <div className="px-0 lg:pt-0 pt-5">
+                  <div className="lg:col-span-2 h-[400px] lg:h-[428px] max-w-[730px] mx-auto mt-7 w-full rounded-2xl overflow-hidden shadow-md">
                     <iframe
                       src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d14602.288851207937!2d90.47855065!3d23.798243149999998!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sbd!4v1716725338558!5m2!1sen!2sbd"
                       width="100%"
@@ -102,7 +102,7 @@ export default function Home() {
             </div>
 
             {/* Contact Form Section */}
-            <div className="max-w-[550px] px-[20px] w-full h-[1016px] mx-auto">
+            <div className="max-w-[550px] px-5 w-full h-[1016px] mx-auto">
               <div>
                 <div className="w-[267px] h-[65px] mt-[52px] text-[30px] font-bold flex items-end">
                   <p>Send a Message</p>
@@ -111,15 +111,15 @@ export default function Home() {
                 <form className="text-[20px] max-w-[550px] mx-auto">
                   {/* Name */}
                   <div className="h-[131px] mt-[15px]">
-                    <label className="text-[20px] mt-[10px] font-semibold">
+                    <label className="text-[20px] mt-2.5 font-semibold">
                       Name
                     </label>
                     <br />
-                    <div className="bg-white flex items-center mt-[27px] text-[#00000080] border-[#7D7D7D] h-[60px] border rounded-[8px]">
+                    <div className="bg-white flex items-center mt-[27px] text-[#00000080] border-[#7D7D7D] h-[60px] border rounded-lg">
                       <input
                         type="text"
                         placeholder="Enter your name"
-                        className="w-[500px] h-[50px] rounded-[8px] mt-[10px] px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                        className="w-[500px] h-[50px] rounded-lg mt-2.5 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-600"
                       />
                     </div>
                   </div>
@@ -130,11 +130,11 @@ export default function Home() {
                       Email
                     </label>
                     <br />
-                    <div className="bg-white text-[20px] flex items-center mt-[27px] text-[#00000080] border-[#7D7D7D] h-[60px] border rounded-[8px]">
+                    <div className="bg-white text-[20px] flex items-center mt-[27px] text-[#00000080] border-[#7D7D7D] h-[60px] border rounded-lg">
                       <input
                         type="email"
                         placeholder="Enter your email"
-                        className="w-[500px] h-[50px] rounded-[8px] mt-[10px] px-4 py-3"
+                        className="w-[500px] h-[50px] rounded-lg mt-2.5 px-4 py-3"
                       />
                     </div>
                   </div>
@@ -148,22 +148,22 @@ export default function Home() {
                       </span>
                     </label>
                     <br />
-                    <div className="bg-white flex items-center mt-[27px] text-[#00000080] border-[#7D7D7D] h-[60px] border rounded-[8px]">
+                    <div className="bg-white flex items-center mt-[27px] text-[#00000080] border-[#7D7D7D] h-[60px] border rounded-lg">
                       <input
                         type="phone"
                         placeholder="Enter Your Number"
-                        className="rounded-[8px] px-4"
+                        className="rounded-lg px-4"
                       />
                     </div>
                   </div>
 
                   {/* Message */}
-                  <div className="h-[328px] mt-[20px]">
+                  <div className="h-[328px] mt-5">
                     <label className="text-[20px] font-semibold mt-[15px]">
                       Message
                     </label>
                     <br />
-                    <div className="bg-white text-[20px] mt-[27px] text-[#00000080] border-[#7D7D7D] h-[186px] border rounded-[8px]">
+                    <div className="bg-white text-[20px] mt-[27px] text-[#00000080] border-[#7D7D7D] h-[186px] border rounded-lg">
                       <textarea
                         rows={5}
                         placeholder="Your Massage here....."
@@ -173,7 +173,7 @@ export default function Home() {
                   </div>
 
                   {/* Button */}
-                  <div className="md:w-[550px] xl:w-full h-[60px] text-[20px] flex items-center justify-center mt-[17px] bg-[#077D40] rounded-[8px] text-white font-bold">
+                  <div className="md:w-[550px] xl:w-full h-[60px] text-[20px] flex items-center justify-center mt-[17px] bg-[#077D40] rounded-lg text-white font-bold">
                     <button className="">Send Message</button>
                   </div>
                 </form>
