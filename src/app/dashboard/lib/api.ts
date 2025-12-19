@@ -51,24 +51,24 @@ export const productApi = {
         responseData = { rawResponse: responseText };
       }
 
-      if (!response.ok) {
-        console.error("🔴 Server error details:");
-        console.error("- Status:", response.status);
-        console.error("- Status Text:", response.statusText);
-        console.error("- Response:", responseData);
+      // if (!response.ok) {
+      //   console.error("🔴 Server error details:");
+      //   console.error("- Status:", response.status);
+      //   console.error("- Status Text:", response.statusText);
+      //   console.error("- Response:", responseData);
 
-        // More specific error message
-        let errorMessage = `Server Error ${response.status}: `;
-        if (responseData.error) {
-          errorMessage += responseData.error;
-        } else if (responseData.message) {
-          errorMessage += responseData.message;
-        } else {
-          errorMessage += "Unknown server error occurred";
-        }
+      //   // More specific error message
+      //   let errorMessage = `Server Error ${response.status}: `;
+      //   if (responseData.error) {
+      //     errorMessage += responseData.error;
+      //   } else if (responseData.message) {
+      //     errorMessage += responseData.message;
+      //   } else {
+      //     errorMessage += "Unknown server error occurred";
+      //   }
 
-        throw new Error(errorMessage);
-      }
+      //   throw new Error(errorMessage);
+      // }
 
       return responseData;
     } catch (error: any) {

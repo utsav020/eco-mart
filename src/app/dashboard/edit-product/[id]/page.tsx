@@ -72,22 +72,26 @@ export default function EditProductPage() {
         category_id: product.category_id,
         productName: product.productName,
         description: product.description,
+        regularPrice: product.regularPrice,
+        salePrice: product.salePrice,
+        weights: product.weights,
+        quantity: product.quantity,
         has_variants: product.has_variants,
       };
 
       // Only include these fields if they have values
-      if (product.regularPrice !== null && product.regularPrice !== "") {
-        updateData.regularPrice = product.regularPrice;
-      }
-      if (product.salePrice !== null && product.salePrice !== "") {
-        updateData.salePrice = product.salePrice;
-      }
-      if (product.weights !== null && product.weights !== "") {
-        updateData.weights = product.weights;
-      }
-      if (product.quantity !== null && product.quantity !== undefined) {
-        updateData.quantity = product.quantity;
-      }
+      // if (product.regularPrice !== null && product.regularPrice !== "") {
+      //   updateData.regularPrice = product.regularPrice;
+      // }
+      // if (product.salePrice !== null && product.salePrice !== "") {
+      //   updateData.salePrice = product.salePrice;
+      // }
+      // if (product.weights !== null && product.weights !== "") {
+      //   updateData.weights = product.weights;
+      // }
+      // if (product.quantity !== null && product.quantity !== undefined) {
+      //   updateData.quantity = product.quantity;
+      // }
 
       // Include product images data
       const productImages = product.productImages || [];
@@ -127,9 +131,9 @@ export default function EditProductPage() {
       setSuccess("Product updated successfully!");
 
       // Redirect after 2 seconds
-      setTimeout(() => {
-        router.push("/products");
-      }, 2000);
+      // setTimeout(() => {
+      //   router.push("/products");
+      // }, 2000);
     } catch (err: any) {
       const errorMessage = err.message || "Failed to update product";
       setError(errorMessage);

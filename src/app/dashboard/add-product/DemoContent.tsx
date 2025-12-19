@@ -114,135 +114,139 @@ const AddProductPage = () => {
   };
 
   // Submit
-  // const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   setErrorMsg(null);
-  //   setIsSubmitting(true);
-
-  //   try {
-  //     const fd = new FormData();
-
-  //     // ✅ Product fields
-  //     fd.append("category_id", String(formData.category_id));
-  //     fd.append("productName", formData.productName);
-  //     fd.append("description", formData.description);
-  //     fd.append("has_variants", formData.has_variants ? "1" : "0");
-
-  //     // ✅ Product image
-  //     if (formData.productImage) {
-  //       fd.append("productImage", formData.productImage);
-  //     }
-
-  //     // ✅ Simple product
-  //     if (!formData.has_variants) {
-  //       fd.append("regularPrice", String(formData.regularPrice));
-  //       fd.append("salePrice", String(formData.salePrice));
-  //       fd.append("weights", formData.weights);
-  //       fd.append("quantity", String(formData.quantity));
-  //       fd.append("variants", "[]");
-  //     }
-
-  //     // ✅ Variants
-  //     if (formData.has_variants) {
-  //       const variantsPayload = formData.variants.map((v, index) => {
-  //         // append variant image separately
-  //         if (v.image) {
-  //           fd.append(`variantImages[${index}]`, v.image);
-  //         }
-
-  //         return {
-  //           productVariantName: v.productVariantName,
-  //           regularPrice: Number(v.regularPrice),
-  //           salePrice: Number(v.salePrice),
-  //           weights: v.weights,
-  //           quantity: Number(v.quantity),
-  //           is_default: v.is_default ? 1 : 0,
-  //         };
-  //       });
-
-  //       fd.append("variants", JSON.stringify(variantsPayload));
-  //     }
-
-  //     await axios.post(`${API_BASE_URL}/api/product/addproduct`, fd, {
-  //       headers: { "Content-Type": "multipart/form-data" },
-  //     });
-
-  //     router.push("/dashboard/product-list");
-  //   } catch (err: any) {
-  //     setErrorMsg(err.response?.data?.error || "Failed to submit product");
-  //   } finally {
-  //     setIsSubmitting(false);
-  //   }
-  // };
-
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setErrorMsg(null);
-  setIsSubmitting(true);
+    e.preventDefault();
+    setErrorMsg(null);
+    setIsSubmitting(true);
 
-  try {
-    const fd = new FormData();
+    try {
+      const fd = new FormData();
 
-    fd.append("category_id", String(formData.category_id));
-    fd.append("productName", formData.productName);
-    fd.append("description", formData.description);
-    fd.append("has_variants", formData.has_variants ? "1" : "0");
-
-    if (formData.productImage) {
-      fd.append("productImage", formData.productImage);
-    }
-
-    /* ---------------- SIMPLE PRODUCT ---------------- */
-    if (!formData.has_variants) {
+      // ✅ Product fields
+      fd.append("category_id", String(formData.category_id));
+      fd.append("productName", formData.productName);
+      fd.append("description", formData.description);
       fd.append("regularPrice", String(formData.regularPrice));
-      fd.append("salePrice", String(formData.salePrice || 0));
+      fd.append("salePrice", String(formData.salePrice));
       fd.append("weights", formData.weights);
       fd.append("quantity", String(formData.quantity));
-      fd.append("variants", "[]");
-    }
+      fd.append("has_variants", formData.has_variants ? "1" : "0");
 
-    /* ---------------- VARIANT PRODUCT ---------------- */
-    if (formData.has_variants) {
-      // 🔥 get default variant
-      const defaultVariant =
-        formData.variants.find((v) => v.is_default) ||
-        formData.variants[0];
+      // ✅ Product image
+      if (formData.productImage) {
+        fd.append("productImage", formData.productImage);
+      }
 
-      // ✅ SET MAIN PRODUCT VALUES (THIS FIXES NULL ISSUE)
-      fd.append("regularPrice", String(defaultVariant.regularPrice));
-      fd.append("salePrice", String(defaultVariant.salePrice || 0));
-      fd.append("weights", defaultVariant.weights);
-      fd.append("quantity", String(defaultVariant.quantity));
+      // ✅ Simple product
+      if (!formData.has_variants) {
+        fd.append("regularPrice", String(formData.regularPrice));
+        fd.append("salePrice", String(formData.salePrice));
+        fd.append("weights", formData.weights);
+        fd.append("quantity", String(formData.quantity));
+        fd.append("variants", "[]");
+      }
 
-      const variantsPayload = formData.variants.map((v, index) => {
-        if (v.image) {
-          fd.append(`variantImages[${index}]`, v.image);
-        }
+      // ✅ Variants
+      if (formData.has_variants) {
+        const variantsPayload = formData.variants.map((v, index) => {
+          // append variant image separately
+          if (v.image) {
+            fd.append(`variantImages[${index}]`, v.image);
+          }
 
-        return {
-          productVariantName: v.productVariantName,
-          regularPrice: Number(v.regularPrice),
-          salePrice: Number(v.salePrice || 0),
-          weights: v.weights,
-          quantity: Number(v.quantity),
-          is_default: v.is_default ? 1 : 0,
-        };
+          return {
+            productVariantName: v.productVariantName,
+            regularPrice: Number(v.regularPrice),
+            salePrice: Number(v.salePrice),
+            weights: v.weights,
+            quantity: Number(v.quantity),
+            is_default: v.is_default ? 1 : 0,
+          };
+        });
+
+        fd.append("variants", JSON.stringify(variantsPayload));
+      }
+
+      await axios.post(`${API_BASE_URL}/api/product/addproduct`, fd, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
 
-      fd.append("variants", JSON.stringify(variantsPayload));
+      router.push("/dashboard/product-list");
+    } catch (err: any) {
+      setErrorMsg(err.response?.data?.error || "Failed to submit product");
+    } finally {
+      setIsSubmitting(false);
     }
+  };
 
-    await axios.post(`${API_BASE_URL}/api/product/addproduct`, fd, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+//   const handleSubmit = async (e: React.FormEvent) => {
+//   e.preventDefault();
+//   setErrorMsg(null);
+//   setIsSubmitting(true);
 
-    router.push("/dashboard/product-list");
-  } catch (err: any) {
-    setErrorMsg(err.response?.data?.error || "Failed to submit product");
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+//   try {
+//     const fd = new FormData();
+
+//     fd.append("category_id", String(formData.category_id));
+//     fd.append("productName", formData.productName);
+//     fd.append("description", formData.description);
+//     fd.append("has_variants", formData.has_variants ? "1" : "0");
+
+//     if (formData.productImage) {
+//       fd.append("productImage", formData.productImage);
+//     }
+
+//     /* ---------------- SIMPLE PRODUCT ---------------- */
+//     if (!formData.has_variants) {
+//       fd.append("regularPrice", String(formData.regularPrice));
+//       fd.append("salePrice", String(formData.salePrice || 0));
+//       fd.append("weights", formData.weights);
+//       fd.append("quantity", String(formData.quantity));
+//       fd.append("variants", "[]");
+//     }
+
+//     /* ---------------- VARIANT PRODUCT ---------------- */
+//     if (formData.has_variants) {
+//       // 🔥 get default variant
+//       const defaultVariant =
+//         formData.variants.find((v) => v.is_default) ||
+//         formData.variants[0];
+
+//       // ✅ SET MAIN PRODUCT VALUES (THIS FIXES NULL ISSUE)
+//       fd.append("regularPrice", String(defaultVariant.regularPrice));
+//       fd.append("salePrice", String(defaultVariant.salePrice || 0));
+//       fd.append("weights", defaultVariant.weights);
+//       fd.append("quantity", String(defaultVariant.quantity));
+
+//       const variantsPayload = formData.variants.map((v, index) => {
+//         if (v.image) {
+//           fd.append(`variantImages[${index}]`, v.image);
+//         }
+
+//         return {
+//           productVariantName: v.productVariantName,
+//           regularPrice: Number(v.regularPrice),
+//           salePrice: Number(v.salePrice || 0),
+//           weights: v.weights,
+//           quantity: Number(v.quantity),
+//           is_default: v.is_default ? 1 : 0,
+//         };
+//       });
+
+//       fd.append("variants", JSON.stringify(variantsPayload));
+//     }
+
+//     await axios.post(`${API_BASE_URL}/api/product/addproduct`, fd, {
+//       headers: { "Content-Type": "multipart/form-data" },
+//     });
+
+//     router.push("/dashboard/product-list");
+//   } catch (err: any) {
+//     setErrorMsg(err.response?.data?.error || "Failed to submit product");
+//   } finally {
+//     setIsSubmitting(false);
+//   }
+// };
 
 
   return (

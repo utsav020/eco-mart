@@ -22,10 +22,11 @@ const menuItems: MenuItem[] = [
   {
     title: "Order",
     icon: "/assets/images-dashboard/icons/09.svg",
-    children: [
-      { title: "Order", href: "/dashboard/order" },
-      { title: "Order Details", href: "/dashboard/order-details" },
-    ],
+    href: "/dashboard/order",
+    // children: [
+    //   { title: "Order",  },
+    //   { title: "Order Details", href: "/dashboard/order-details/{order_id}" },
+    // ],
   },
   {
     title: "Product",

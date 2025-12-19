@@ -10,6 +10,7 @@ import { useProduct } from "@/components/context/page";
 import { ProductImage } from "@/app/dashboard/types/product";
 import LogoLineLoader from "@/components/loader/LogoLineLoader";
 
+/* ---------------- TYPES ---------------- */
 interface ProductType {
   _id?: string;
   product_id?: number;
@@ -18,7 +19,6 @@ interface ProductType {
   productImages?: ProductImage[];
   image?: string;
   product_variant_id?: number | null;
-  [key: string]: any;
 }
 
 interface CategoryType {
@@ -33,30 +33,42 @@ export default function BlogGridMain() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  /** 🔥 WISHLIST STATE */
+  const [wishlistState, setWishlistState] = useState<Record<number, boolean>>(
+    {}
+  );
+
   const router = useRouter();
   const pathname = usePathname();
   const { setSelectedProduct } = useProduct();
 
   const [addedProductId, setAddedProductId] = useState<number | null>(null);
+  const defaultImages = ["/assets/images/products/Oats.png"];
 
-  const defaultImages = [
-    "/assets/images/products/Oats.png",
-  ];
+  /* ---------------- LOGIN CHECK ---------------- */
+  const redirectIfNotLoggedIn = () => {
+    const token = localStorage.getItem("token");
+    const user_id = localStorage.getItem("user_id");
+    if (!token || !user_id) {
+      router.push(`/login?redirect=${encodeURIComponent(pathname)}`);
+      return true;
+    }
+    return false;
+  };
 
-  /* -------------------- FETCH CATEGORIES -------------------- */
+  /* ---------------- FETCH CATEGORIES ---------------- */
   const fetchCategories = async () => {
     try {
       const res = await fetch(
         "https://ekomart-backend.onrender.com/api/categories/getallcategory"
       );
-      const data = await res.json();
-      setCategories(data || []);
+      setCategories(await res.json());
     } catch {
       toast.error("Failed to load categories");
     }
   };
 
-  /* -------------------- FETCH PRODUCTS -------------------- */
+  /* ---------------- FETCH PRODUCTS ---------------- */
   const fetchProducts = async (categoryId?: number) => {
     setLoading(true);
     setError("");
@@ -68,13 +80,7 @@ export default function BlogGridMain() {
 
       const res = await fetch(url);
       const data = await res.json();
-
-      if (!data?.length) {
-        setProducts([]);
-        setError("No products found.");
-      } else {
-        setProducts(data);
-      }
+      setProducts(data || []);
     } catch {
       setError("Failed to load products.");
     } finally {
@@ -82,72 +88,130 @@ export default function BlogGridMain() {
     }
   };
 
+  /* ---------------- WISHLIST CHECK (IMPORTANT) ---------------- */
+  /* ---------------- WISHLIST CHECK (FIXED) ---------------- */
+  const checkWishlistStatus = async (productList: ProductType[]) => {
+    const user_id = Number(localStorage.getItem("user_id"));
+    if (!user_id) return;
+
+    const token = localStorage.getItem("token") || "";
+    const statusMap: Record<number, boolean> = {};
+
+    await Promise.all(
+      productList.map(async (product) => {
+        const product_id =
+          product.product_id ?? (product._id ? Number(product._id) : null);
+
+        if (!product_id) return;
+
+        try {
+          const res = await fetch(
+            `https://ekomart-backend.onrender.com/api/user/wishlist-check?user_id=${user_id}&product_id=${product_id}&variant=0`,
+            {
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
+          const data = await res.json();
+
+          /**
+           * ✅ ONLY TRUE WHEN BACKEND CONFIRMS IT
+           * Adjust keys if backend uses different naming
+           */
+          statusMap[product_id] =
+            data?.wishlist === true || data?.status === true;
+        } catch {
+          statusMap[product_id] = false;
+        }
+      })
+    );
+
+    setWishlistState(statusMap);
+  };
+
+  /* ---------------- EFFECTS ---------------- */
   useEffect(() => {
     fetchCategories();
     fetchProducts();
   }, []);
 
-  const getImage = (product: ProductType, index: number) => {
-    if (product.productImages?.length)
-      return product.productImages[0].image_url;
-    if (product.image?.trim()) return product.image;
-    return defaultImages[index % defaultImages.length];
-  };
-
-  /* -------------------- LOGIN CHECK -------------------- */
-  const redirectIfNotLoggedIn = () => {
-    const token = localStorage.getItem("token");
-    const user_id = localStorage.getItem("user_id");
-
-    if (!token || !user_id) {
-      router.push(`/login?redirect=${encodeURIComponent(pathname)}`);
-      return true;
+  useEffect(() => {
+    if (products.length) {
+      checkWishlistStatus(products);
     }
-    return false;
-  };
+  }, [products]);
 
-  /* -------------------- ADD TO CART -------------------- */
+  /* ---------------- ADD TO CART ---------------- */
   const handleAdd = async (product: ProductType) => {
     if (redirectIfNotLoggedIn()) return;
 
     const user_id = Number(localStorage.getItem("user_id"));
     const token = localStorage.getItem("token") || "";
-    const productId = product.product_id ?? Number(product._id);
+    const product_id =
+      product.product_id ?? (product._id ? Number(product._id) : null);
 
     try {
-      const res = await fetch(
-        "https://ekomart-backend.onrender.com/api/cart/addcart",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            user_id,
-            items: [
-              {
-                product_id: productId,
-                product_variant_id: product.product_variant_id || null,
-                quantity: 1,
-              },
-            ],
-          }),
-        }
-      );
+      await fetch("https://ekomart-backend.onrender.com/api/cart/addcart", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          user_id,
+          items: [{ product_id, quantity: 1 }],
+        }),
+      });
 
-      const data = await res.json();
-      if (!res.ok) return toast.error(data.message || "Add to cart failed");
-
-      toast.success("Added to cart!");
-      setAddedProductId(productId);
+      toast.success("Added to cart");
+      setAddedProductId(product_id);
       setTimeout(() => setAddedProductId(null), 1200);
     } catch {
       toast.error("Server error");
     }
   };
 
-  /* -------------------- PRODUCT CARD -------------------- */
+  /* ---------------- WISHLIST TOGGLE ---------------- */
+  const handleWishlist = async (product: ProductType) => {
+    if (redirectIfNotLoggedIn()) return;
+
+    const user_id = Number(localStorage.getItem("user_id"));
+    const token = localStorage.getItem("token") || "";
+    const product_id =
+      product.product_id ?? (product._id ? Number(product._id) : null);
+
+    if (!product_id) return;
+
+    const isWishlisted = wishlistState[product_id];
+
+    try {
+      await fetch(
+        isWishlisted
+          ? "https://ekomart-backend.onrender.com/api/user/wishlist/remove"
+          : "https://ekomart-backend.onrender.com/api/user/wishlist/add",
+        {
+          method: isWishlisted ? "DELETE" : "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ user_id, product_id }),
+        }
+      );
+
+      setWishlistState((prev) => ({
+        ...prev,
+        [product_id]: !isWishlisted,
+      }));
+    } catch {
+      toast.error("Wishlist update failed");
+    }
+  };
+
+  /* ---------------- PRODUCT CARD ---------------- */
   const ProductCard = ({
     product,
     index,
@@ -155,7 +219,6 @@ export default function BlogGridMain() {
     product: ProductType;
     index: number;
   }) => {
-    const [isFav, setIsFav] = useState(false);
     const product_id =
       product.product_id ?? (product._id ? Number(product._id) : null);
 
@@ -167,10 +230,28 @@ export default function BlogGridMain() {
           router.push(`/product/${product._id}`);
         }}
       >
-        <img
-          src={getImage(product, index)}
-          className="w-full h-72 object-cover"
-        />
+        <div className="relative">
+          <img
+            src={defaultImages[index % defaultImages.length]}
+            className="w-full h-72 object-cover"
+          />
+
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleWishlist(product);
+            }}
+            className="absolute bottom-2 right-2"
+          >
+            <Heart
+              className={`w-6 h-6 transition ${
+                wishlistState[product_id!]
+                  ? "fill-[#077D40] text-[#077D40]"
+                  : "text-[#333]"
+              }`}
+            />
+          </button>
+        </div>
 
         <p className="pt-3 font-bold">{product.productName}</p>
         <p className="text-gray-600 mt-2">₹{product.regularPrice ?? 95}</p>
