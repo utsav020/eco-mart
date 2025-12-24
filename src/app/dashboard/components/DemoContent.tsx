@@ -77,17 +77,6 @@ function DemoContent() {
             </h1>
           </div>
 
-          {/* Total Revenue */}
-          <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-5">
-            <div className="flex items-center gap-3">
-              <IndianRupee className="w-6 h-6 text-green-600" />
-              <p className="rext-md text-[#059669]">Total Revenue</p>
-            </div>
-            <h1 className="text-2xl py-5 font-bold text-[#059669] mt-2">
-              {loading ? "--" : `₹${summary?.total_revenue}`}
-            </h1>
-          </div>
-
           {/* Delivered Revenue */}
           <div className="bg-green-50 border border-green-200 rounded-xl p-5">
             <div className="flex items-center gap-3">
@@ -129,6 +118,17 @@ function DemoContent() {
              </div>
             <h1 className="text-[16px] py-5 font-bold text-[#DC2626] mt-2">
               {loading ? "--" : summary?.cancelled_orders}
+            </h1>
+          </div>
+
+          {/* Total Revenue */}
+          <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-5">
+            <div className="flex items-center gap-3">
+              <IndianRupee className="w-6 h-6 text-green-600" />
+              <p className="rext-md text-[#059669]">Total Revenue</p>
+            </div>
+            <h1 className="text-2xl py-5 font-bold text-[#059669] mt-2">
+              {loading ? "--" : `₹${summary?.total_revenue}`}
             </h1>
           </div>
         </div>
