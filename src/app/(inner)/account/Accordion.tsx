@@ -6,14 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { useState, useEffect } from "react";
 import { api, apiGet } from "@/lib/api";
 import { getUserId, logoutUser } from "../../../lib/auth";
-import {
-  ChevronDown,
-  ChevronUp,
-  LogOut,
-  PencilLine,
-  Settings,
-  X,
-} from "lucide-react";
+import { ChevronDown, ChevronUp, LogOut, PencilLine, Settings } from "lucide-react";
 import Link from "next/link";
 
 interface OrderItem {
@@ -21,7 +14,6 @@ interface OrderItem {
   productName: string;
   product_description: string;
 }
-
 interface Order {
   order_id: string;
   items?: OrderItem[];
@@ -36,10 +28,8 @@ export default function ProfilePage() {
   const [openDropdown, setOpenDropdown] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
   const [activeTab, setActiveTab] = useState("profile");
-
   const [orders, setOrders] = useState<Order[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
-
   const [profile, setProfile] = useState({
     firstName: "",
     lastName: "",
@@ -50,7 +40,6 @@ export default function ProfilePage() {
     phoneNo: "",
     profileImage: "",
   });
-
   const [editForm, setEditForm] = useState({ ...profile });
 
   if (!user_id) {
@@ -58,13 +47,19 @@ export default function ProfilePage() {
       <div className="min-h-screen mt-[300px]">
         <p className="text-lg text-center">Please login to view your profile</p>
         <div className="flex justify-center items-center gap-4">
-          <a href="/login" className="mt-4 bg-black text-white px-5 py-2 rounded">
-          Login
-        </a>
+          <a
+            href="/login"
+            className="mt-4 bg-black text-white px-5 py-2 rounded"
+          >
+            Login
+          </a>
 
-        <a href="/register" className="mt-4 bg-black text-white px-5 py-2 rounded">
-          Sign Up
-        </a>
+          <a
+            href="/register"
+            className="mt-4 bg-black text-white px-5 py-2 rounded"
+          >
+            Sign Up
+          </a>
         </div>
       </div>
     );
@@ -116,48 +111,64 @@ export default function ProfilePage() {
   }, [activeTab]);
 
   const handleCancelOrder = async (order_id: string) => {
-  if (!order_id) return;
+    if (!order_id) return;
 
-  const confirmCancel = window.confirm(
-    "Are you sure you want to cancel this order?"
-  );
-
-  if (!confirmCancel) return;
-
-  try {
-    setCancelLoading(true);
-
-    const token = localStorage.getItem("token");
-
-    await axios.put(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/user/cancelorder/${order_id}`,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
+    const confirmCancel = window.confirm(
+      "Are you sure you want to cancel this order?"
     );
 
-    toast.success("Order cancelled successfully");
+    if (!confirmCancel) return;
 
-    // 🔥 Update UI instantly
-    setOrders((prev: any) =>
-      prev.map((order: any) =>
-        order.order_id === order_id
-          ? { ...order, order_status: "Cancelled" }
-          : order
-      )
-    );
-  } catch (error: any) {
-    toast.error(
-      error?.response?.data?.message || "Failed to cancel order"
-    );
-  } finally {
-    setCancelLoading(false);
-  }
-};
+    try {
+      setCancelLoading(true);
 
+      const token = localStorage.getItem("token");
+
+      await axios.put(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/user/cancelorder/${order_id}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      toast.success("Order cancelled successfully");
+
+      // 🔥 Update UI instantly
+      setOrders((prev: any) =>
+        prev.map((order: any) =>
+          order.order_id === order_id
+            ? { ...order, order_status: "Cancelled" }
+            : order
+        )
+      );
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "Failed to cancel order");
+    } finally {
+      setCancelLoading(false);
+    }
+  };
+
+  const getOrderStatusColor = (status: string) => {
+    switch (status.toLowerCase()) {
+      case "pending":
+        return "text-yellow-500";
+      case "processing":
+        return "text-blue-500";
+      case "shipped":
+        return "text-indigo-700";
+      case "delivered":
+        return "text-green-600";
+      case "cancelled":
+        return "text-red-600";
+      case "failed":
+        return "text-red-700";
+      default:
+        return "text-gray-600";
+    }
+  };
 
   const handleEditChange = (e: { target: { name: any; value: any } }) => {
     setEditForm({ ...editForm, [e.target.name]: e.target.value });
@@ -194,8 +205,24 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen max-w-[1420px] mt-[150px] mb-20 mx-auto px-4">
-      
-      <h1 className="text-xl font-semibold mb-4">Home / Profile</h1>
+      <div className="flex items-center mb-6 gap-3 text-[18px]">
+        <div className="text-gray-600">
+          <Link className="cursor-pointer" href="/">
+            Home
+          </Link>
+        </div>
+
+        <div>/</div>
+
+        <div>
+          <button
+            className="cursor-pointer"
+            onClick={() => setActiveTab("profile")}
+          >
+            Profile
+          </button>
+        </div>
+      </div>
 
       {/* TABS */}
       <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
@@ -342,7 +369,8 @@ export default function ProfilePage() {
                         <img
                           className="w-full lg:w-[220px] lg:h-[109px] h-[150px] object-cover rounded"
                           src={
-                            order.items?.[0]?.image_url || "/placeholder.png"
+                            order.items?.[0]?.image_url ||
+                            "/assets/images/products/Oats.png"
                           }
                           alt="product"
                         />
@@ -369,11 +397,9 @@ export default function ProfilePage() {
 
                     <div className="">
                       <p
-                        className={`text-lg ${
-                          order.order_status === "Pending"
-                            ? "text-orange-600"
-                            : "text-green-600"
-                        }`}
+                        className={`text-lg font-semibold ${getOrderStatusColor(
+                          order.order_status
+                        )}`}
                       >
                         {order.order_status}
                       </p>
@@ -386,23 +412,27 @@ export default function ProfilePage() {
                           Track Order
                         </button>
 
-                        {["pending", "processing"].includes(
-                          order.order_status.toLowerCase()
-                        ) && (
-                          <button
-                            onClick={() => handleCancelOrder(order.order_id)}
-                            disabled={cancelLoading}
-                            className={`border w-[100px] h-10 border-gray-400 text-[14px]
+                        <div className="">
+                          {["pending", "processing"].includes(
+                            order.order_status.toLowerCase()
+                          ) && (
+                            <button
+                              onClick={(e) => {
+                                e.preventDefault(); // ⛔ stop Link navigation
+                                handleCancelOrder(order.order_id);
+                              }}
+                              disabled={cancelLoading}
+                              className={`border w-[100px] h-10 text-[14px]
                             ${
                               cancelLoading
                                 ? "bg-gray-400 cursor-not-allowed"
-                                : ""
+                                : "border-gray-400 hover:bg-red-50"
                             }`}
-                          >
-                            {/* {cancelLoading ? "Cancelling..." : "Cancel Order"} */}
-                            Cancel Order
-                          </button>
-                        )}
+                            >
+                              Cancel Order
+                            </button>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -509,4 +539,3 @@ export default function ProfilePage() {
     </div>
   );
 }
-

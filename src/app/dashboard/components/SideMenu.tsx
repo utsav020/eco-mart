@@ -23,10 +23,6 @@ const menuItems: MenuItem[] = [
     title: "Order",
     icon: "/assets/images-dashboard/icons/09.svg",
     href: "/dashboard/order",
-    // children: [
-    //   { title: "Order",  },
-    //   { title: "Order Details", href: "/dashboard/order-details/{order_id}" },
-    // ],
   },
   {
     title: "Product",
@@ -114,18 +110,18 @@ export default function SidebarMenu() {
                 className={`flex items-center hover:bg-[#629d23] hover:text-white justify-between w-full h-[46px] px-6 text-[#2D3B29] transition-all`}
               >
                 <div className="flex gap-4">
-                  <div className="">
+                  <div>
                     <img
                       src={item.icon}
                       className="w-8 mr-3 hover:text-white"
                     />
                   </div>
-                  <div className="">
+                  <div>
                     <p className="flex-1 text-left font-medium">{item.title}</p>
                   </div>
                 </div>
 
-                <div className="">
+                <div>
                   <i
                     className={`fa-solid fa-chevron-down text-sm transition-transform duration-300
                     ${open ? "rotate-180" : ""}

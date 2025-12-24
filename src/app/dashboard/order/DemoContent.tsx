@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import DataTable, { TableColumn } from "react-data-table-component";
 import { useRouter } from "next/navigation";
+import { Search } from "lucide-react";
 
 interface ShippingDetails {
   cityName?: string;
@@ -38,7 +39,7 @@ export default function OrdersOverviewPage() {
   const [orders, setOrders] = useState<OrderRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
   const [updatingId, setUpdatingId] = useState<number | null>(null);
   const [activeStatus, setActiveStatus] = useState("All");
 
@@ -122,9 +123,7 @@ export default function OrdersOverviewPage() {
       selector: (row) => row.order_id,
       sortable: true,
       cell: (row) => (
-        <span className="font-semibold text-green-600">
-          #{row.order_id}
-        </span>
+        <span className="font-semibold text-green-600">#{row.order_id}</span>
       ),
     },
     {
@@ -133,7 +132,7 @@ export default function OrdersOverviewPage() {
       cell: (row) => (
         <div>
           <p className="font-medium">{row.user_name}</p>
-          <p className="text-xs text-gray-500">{row.user_email}</p>
+          <p className="text-[14px] text-gray-500">{row.user_email}</p>
         </div>
       ),
     },
@@ -144,7 +143,7 @@ export default function OrdersOverviewPage() {
         return (
           <div>
             <p>{ship.cityName}</p>
-            <p className="text-xs text-gray-500">{ship.state}</p>
+            <p className="text-[14px] text-gray-500">{ship.state}</p>
           </div>
         );
       },
@@ -153,39 +152,35 @@ export default function OrdersOverviewPage() {
       name: "Amount",
       selector: (row) => row.total_amount,
       sortable: true,
-      cell: (row) => (
-        <span className="font-semibold">₹{row.total_amount}</span>
-      ),
+      cell: (row) => <span className="font-semibold">₹{row.total_amount}</span>,
     },
     {
       name: "Payment",
       selector: (row) => row.payment_method,
       cell: (row) => (
-        <span className="text-blue-600 font-medium">
-          {row.payment_method}
-        </span>
+        <span className="text-blue-600 font-medium">{row.payment_method}</span>
       ),
     },
     {
       name: "Status",
       cell: (row) => (
-        <select
-          value={row.order_status}
-          disabled={updatingId === row.order_id}
-          onClick={(e) => e.stopPropagation()}
-          onChange={(e) =>
-            updateOrderStatus(row.order_id, e.target.value)
-          }
-          className={`px-3 py-1 rounded-full text-sm border outline-none ${getStatusClass(
-            row.order_status
-          )}`}
-        >
-          {STATUSES.filter((s) => s !== "All").map((s) => (
-            <option key={s} value={s}>
-              {s}
-            </option>
-          ))}
-        </select>
+        <div className="">
+          <select
+            value={row.order_status}
+            disabled={updatingId === row.order_id}
+            onClick={(e) => e.stopPropagation()}
+            onChange={(e) => updateOrderStatus(row.order_id, e.target.value)}
+            className={`px-3 py-1 rounded-full text-[14px] border outline-none ${getStatusClass(
+              row.order_status
+            )}`}
+          >
+            {STATUSES.filter((s) => s !== "All").map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
+            ))}
+          </select>
+        </div>
       ),
     },
     {
@@ -193,7 +188,7 @@ export default function OrdersOverviewPage() {
       selector: (row) => row.created_at,
       sortable: true,
       cell: (row) => (
-        <span className="text-sm text-gray-600">
+        <span className="text-[14px] text-gray-600">
           {new Date(row.created_at).toLocaleDateString()}
         </span>
       ),
@@ -202,7 +197,7 @@ export default function OrdersOverviewPage() {
 
   /* ---------------- SEARCH ---------------- */
   const filteredOrders = orders.filter((order) =>
-    `${order.order_id} ${order.user_name} ${order.user_email}`
+    `${order.order_id} ${order.user_name} ${order.user_email} ${order.order_status} ${order.total_amount} ${order.payment_method} ${order.shipping_details}` 
       .toLowerCase()
       .includes(search.toLowerCase())
   );
@@ -216,17 +211,17 @@ export default function OrdersOverviewPage() {
           {STATUSES.map((status) => (
             <div className="w-[100px]">
               <button
-              key={status}
-              onClick={() => fetchOrders(status)}
-              className={`px-5 py-2 rounded-full
+                key={status}
+                onClick={() => fetchOrders(status)}
+                className={`px-5 py-2 rounded-full
                 ${
                   activeStatus === status
                     ? "bg-[#A3C526] text-white"
                     : "text-gray-700"
                 }`}
-            >
-              {status}
-            </button>
+              >
+                {status}
+              </button>
             </div>
           ))}
         </div>
@@ -234,23 +229,28 @@ export default function OrdersOverviewPage() {
 
       {/* CONTROLS */}
       <div className="bg-white rounded-xl shadow p-4 flex justify-between mb-6">
-        <select
-          value={rowsPerPage}
-          onChange={(e) => setRowsPerPage(Number(e.target.value))}
-          className="border rounded px-2 py-1 text-sm"
-        >
-          {[5, 10, 20].map((n) => (
-            <option key={n}>{n}</option>
-          ))}
-        </select>
+        {/* <div className="">
+          <select
+            value={rowsPerPage}
+            onChange={(e) => setRowsPerPage(Number(e.target.value))}
+            className="border rounded px-2 py-1 text-[14px]"
+          >
+            {[5, 10, 20].map((n) => (
+              <option key={n}>{n}</option>
+            ))}
+          </select>
+        </div> */}
 
-        <input
-          type="text"
-          placeholder="Search orders..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="border rounded-lg px-4 py-2 text-sm w-64"
-        />
+        <div className="border h-[50px] w-full pl-5 flex items-center border-gray-300 rounded-lg">
+          <Search className="text-gray-400" size={20} />
+          <input
+            type="text"
+            placeholder="Search orders..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="border rounded-lg px-4 py-2 text-[14px] w-64"
+          />
+        </div>
       </div>
 
       {/* TABLE */}

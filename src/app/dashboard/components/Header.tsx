@@ -90,7 +90,7 @@ export default function Header({ onToggleSidebar }: HeaderProps) {
               <div className="">
                 <button
                   onClick={() => togglePopup("search")}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-md focus:outline-none ${
+                  className={`flex items-center w-[30px] h-[33px] gap-2 px-3 py-2 rounded-[9999px] focus:outline-none ${
                     activePopup === "search"
                       ? "bg-[#629d23] text-white"
                       : "hover:bg-[#629d23] hover:text-white"
@@ -127,7 +127,7 @@ export default function Header({ onToggleSidebar }: HeaderProps) {
               <div className="">
                 <button
                   onClick={() => togglePopup("notification")}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-md focus:outline-none ${
+                  className={`flex items-center w-[30px] h-[33px] gap-2 px-3 py-2 rounded-full focus:outline-none ${
                     activePopup === "notification"
                       ? "bg-[#629d23] text-white"
                       : "hover:bg-[#629d23] hover:text-white"
@@ -199,7 +199,7 @@ export default function Header({ onToggleSidebar }: HeaderProps) {
               <div className="">
                 <button
                   onClick={() => togglePopup("language")}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-md focus:outline-none ${
+                  className={`flex items-center w-[30px] h-[33px] gap-2 px-3 py-2 rounded-full focus:outline-none ${
                     activePopup === "language"
                       ? "bg-[#629d23] text-white"
                       : "hover:bg-[#629d23] hover:text-white"
@@ -233,19 +233,18 @@ export default function Header({ onToggleSidebar }: HeaderProps) {
 
             {/* Profile */}
             <div className="relative">
-              <div className="">
+              <div>
                 <button
                   onClick={() => togglePopup("profile")}
-                  className={`flex items-center gap-2 px-2 py-1 rounded-md focus:outline-none ${
+                  className={`flex items-center gap-2 px-2 py-1 rounded-full w-[30px] h-[33px] focus:outline-none ${
                     activePopup === "profile"
                       ? "bg-[#629d23] text-white"
                       : "hover:bg-[#629d23] hover:text-white"
                   }`}
                   aria-expanded={activePopup === "profile"}
-                  aria-haspopup="true"
-                >
+                  aria-haspopup="true">
+
                   <div className="w-9 h-9 rounded-full overflow-hidden bg-gray-100">
-                    {/* example avatar; replace with your path or uploaded image path */}
                     <Image
                       src="/assets/images/avatar/01.png"
                       alt="User Avatar"
@@ -257,14 +256,13 @@ export default function Header({ onToggleSidebar }: HeaderProps) {
                 </button>
               </div>
 
-              <div className="">
+              <div>
                 {activePopup === "profile" && (
                   <div
                     onClick={(e) => e.stopPropagation()}
-                    className="absolute right-0 mt-12 w-146 bg-white rounded-lg shadow-lg z-50"
-                  >
-                    <div className="p-4 border-b">
-                      <div className="flex gap-5 items-center">
+                    className="absolute right-0 mt-7 w-110 bg-white rounded-lg shadow-md z-50">
+                    <div className="p-4">
+                      <div className="flex gap-5 w-full justify-center items-center">
                         <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100 shrink-0">
                         <Image
                           src="/assets/images/avatar/user-2.svg"
@@ -275,11 +273,11 @@ export default function Header({ onToggleSidebar }: HeaderProps) {
                         />
                       </div>
                       <div>
-                        <div className="h-20">
-                          <div className="">
-                            <p className="text-[30px] font-medium">MR.Crow Kader</p>
+                        <div className="h-17">
+                          <div>
+                            <p className="text-[20px] font-medium">MR.Crow Kader</p>
                           </div>
-                          <p className="text-sm text-gray-500">
+                          <p className="text-[14px] text-gray-500">
                             CEO, Valo How Masud
                           </p>
                         </div>
@@ -288,21 +286,21 @@ export default function Header({ onToggleSidebar }: HeaderProps) {
                     </div>
 
                     <div className="p-2">
-                      <div className="">
+                      <div>
                         {profileMenu.map((item, idx) => (
                           <div key={idx} className="w-full flex hover:bg-[#629d23] rounded-md hover:text-white items-center h-[50px]">
                             <a
                               href={item.href}
-                              className="block px-3 py-2 text-[18px] text-gray-700 hover:text-white"
+                              className="block px-3 py-2 text-center w-full text-[18px] text-gray-700 hover:text-white"
                             >
                               {item.text}
                             </a>
                           </div>
                         ))}
-                        <div className="w-full h-[50px] flex items-center">
+                        <div className="w-full hover:bg-red-200 rounded-md h-[50px] flex items-center">
                           <a
                             href="#"
-                            className="block px-3 py-2 text-[18px] text-red-600"
+                            className="block w-full text-center px-3 py-2 text-[18px] text-red-600"
                           >
                             Logout
                           </a>

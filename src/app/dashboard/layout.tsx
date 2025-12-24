@@ -1,6 +1,6 @@
+// app/layout.tsx
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-// import "../../../public-dashboard/assets/css/plugins.css";
 import "../../../public-dashboard/assets/css/table.css";
 import "../../../public-dashboard/assets/css/style.css";
 
@@ -29,9 +29,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
       <head>
@@ -43,7 +43,9 @@ export default function RootLayout({
           referrerPolicy="no-referrer"
         />
       </head>
-      <body>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable}`}
+      >
         <div className="dashboard-wrapper">{children}</div>
       </body>
     </html>

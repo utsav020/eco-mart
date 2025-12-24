@@ -10,14 +10,16 @@ interface SideLeftProps {
 function SideLeft({ collapsed }: SideLeftProps) {
   return (
     <div className={`sidebar_left ${collapsed ? 'collapsed' : ''}`}>
-      <a href="/dashboard" className="logo">
+      <div className="max-w-46 mx-auto">
+        <a href="/dashboard" className="logo">
         <Image
-          src="/assets/images-dashboard/logo/logo.svg"
+          src="/assets/images-dashboard/logo/Dadu_Fresh_Logo 1.png"
           alt="logo"
-          width={131}
+          width={100}
           height={32}
         />
       </a>
+      </div>
       <SideMenu />
     </div>
   );

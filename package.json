@@ -8,6 +8,8 @@
     "start": "next start"
   },
   "dependencies": {
+    "@headlessui/react": "^2.2.9",
+    "@heroicons/react": "^2.2.0",
     "axios": "^1.13.2",
     "framer-motion": "^12.23.25",
     "lucide-react": "^0.554.0",

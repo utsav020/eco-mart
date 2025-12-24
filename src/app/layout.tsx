@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       {
-        url: "/assets/images/fav.png",
+        url: "/assets/images/logo/Dadu_Fresh_Logo 1.png",
         type: "image/x-icon",
       },
     ],
@@ -43,7 +43,7 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className={poltawski.className}>
+      <body>
         <WishlistProvider>
           <CartProvider>
             <ProductProvider>

@@ -137,7 +137,7 @@ export default function OrderInvoicePage() {
         </div>
 
         {/* ORDER TABLE */}
-        <div className="overflow-x-auto">x
+        <div className="overflow-x-auto">
           <table className="w-full border text-[14px]">
             <thead className="bg-gray-100">
               <tr>

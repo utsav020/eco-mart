@@ -3,13 +3,14 @@
 import React, { useState, useEffect } from "react";
 import ShortService from "@/components/service/ShortService";
 import FooterTwo from "@/components/footer/FooterTwo";
-import { Minus, Plus } from "lucide-react";
+import { Heart, Minus, Plus } from "lucide-react";
 // import { useCart } from "@/components/header/CartContext";
 import { ToastContainer, toast } from "react-toastify";
 import { useProduct } from "../../../components/context/page";
 import { useRouter, useParams } from "next/navigation";
 import "react-toastify/dist/ReactToastify.css";
 import HeaderThree from "@/components/header/HeaderThree";
+import { img } from "framer-motion/client";
 
 interface ProductImage {
   image_id: number;
@@ -22,6 +23,26 @@ interface WeightOption {
   price: number;
 }
 
+interface variantImages {
+  image_id: number;
+  image_url: string;
+}
+
+interface ProductVariant {
+  product_variant_id: number;
+  weight?: string;
+  productVariantName?: string;
+  salePrice: number;
+  regularPrice?: number;
+  quantity?: number;
+  variantImages?: variantImages[];
+  stock?: number;
+}
+
+interface WishlistResponse {
+  iswishlist: boolean;
+}
+
 interface ProductType {
   _id?: string;
   product_id?: number;
@@ -29,14 +50,11 @@ interface ProductType {
   productName: string;
   regularPrice?: number | null;
   salePrice?: number | null;
-  description?: string;
-  discription?: string;
   has_variants?: boolean | number;
   productImages?: ProductImage[];
-  productWeight?: string;
-  weightOptions?: WeightOption[];
   image?: string;
   stock?: number;
+  variants?: ProductVariant[]; // ✅ ADD THIS
   [key: string]: any;
 }
 
@@ -57,6 +75,20 @@ const CompareElements: React.FC = () => {
   const [activeTab, setActiveTab] = useState("tab1");
   const [loading, setLoading] = useState<boolean>(true);
   const [addedProductId, setAddedProductId] = useState<number | null>(null);
+  const [wishlistState, setWishlistState] = useState<Record<number, boolean>>(
+    {}
+  );
+
+  const redirectIfNotLoggedIn = () => {
+    const token = localStorage.getItem("token");
+    const user_id = localStorage.getItem("user_id");
+
+    if (!token || !user_id) {
+      router.push("/login");
+      return true;
+    }
+    return false;
+  };
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -143,23 +175,6 @@ const CompareElements: React.FC = () => {
     }
   }, [product?.product_id]);
 
-  const redirectIfNotLoggedIn = () => {
-    if (typeof window === "undefined") return true;
-
-    const token = localStorage.getItem("token");
-    const user_id = localStorage.getItem("user_id");
-
-    if (!token || !user_id) {
-      const currentPath = window.location.pathname;
-      window.location.href = `/login?redirect=${encodeURIComponent(
-        currentPath
-      )}`;
-      return true;
-    }
-
-    return false;
-  };
-
   // ⭐ Add To Cart (FINAL FIXED)
   const handleAdd = async (product: ProductType, index: number) => {
     if (redirectIfNotLoggedIn()) return;
@@ -203,6 +218,95 @@ const CompareElements: React.FC = () => {
       setTimeout(() => setAddedProductId(null), 1500);
     } catch {
       toast.error("Server error");
+    }
+  };
+
+  /* ================= WISHLIST HELPERS ================= */
+
+  const getWishlistFromStorage = () => {
+    const stored = localStorage.getItem("variant_wishlist");
+    return stored ? JSON.parse(stored) : {};
+  };
+
+  const saveWishlistToStorage = (data: Record<number, boolean>) => {
+    localStorage.setItem("variant_wishlist", JSON.stringify(data));
+  };
+
+  const updateWishlistInStorage = (
+    productId: number,
+    isWishlisted: boolean
+  ) => {
+    const currentWishlist = getWishlistFromStorage();
+    const updatedWishlist = {
+      ...currentWishlist,
+      [productId]: isWishlisted,
+    };
+    saveWishlistToStorage(updatedWishlist);
+    return updatedWishlist;
+  };
+
+  useEffect(() => {
+    setWishlistState(getWishlistFromStorage());
+  }, []);
+
+  /* ================= WISHLIST TOGGLE (FIXED) ================= */
+
+  const handleWishlist = async (
+    product: ProductType,
+    variant: ProductVariant
+  ) => {
+    if (redirectIfNotLoggedIn()) return;
+
+    const user_id = Number(localStorage.getItem("user_id"));
+    const token = localStorage.getItem("token") || "";
+
+    const product_id = product.product_id;
+    const variant_id = variant.product_variant_id;
+
+    if (!product_id || !variant_id) return;
+
+    const isWishlisted = wishlistState[variant_id] || false;
+
+    const endpoint = isWishlisted
+      ? "https://ekomart-backend.onrender.com/api/user/wishlist/remove"
+      : "https://ekomart-backend.onrender.com/api/user/wishlist/add";
+
+    // Optimistic UI
+    const updatedState = {
+      ...wishlistState,
+      [variant_id]: !isWishlisted,
+    };
+    setWishlistState(updatedState);
+    saveWishlistToStorage(updatedState);
+
+    try {
+      const res = await fetch(endpoint, {
+        method: isWishlisted ? "DELETE" : "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          user_id,
+          product_id,
+          variant_id,
+        }),
+      });
+
+      if (!res.ok) throw new Error();
+
+      toast.success(
+        isWishlisted ? "Removed from wishlist" : "Added to wishlist"
+      );
+    } catch {
+      // revert
+      const reverted = {
+        ...wishlistState,
+        [variant_id]: isWishlisted,
+      };
+      setWishlistState(reverted);
+      saveWishlistToStorage(reverted);
+      toast.error("Wishlist update failed");
     }
   };
 
@@ -504,10 +608,82 @@ const CompareElements: React.FC = () => {
         </div>
       </div>
 
+      {/* ================= PRODUCT VARIANTS ================= */}
+      {product.has_variants && product.variants && (
+        <div className="max-w-[1430px] mx-auto px-4 mt-16">
+          <h2 className="text-2xl font-bold mb-6">Available Variants</h2>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            {product.variants.map((variant) => (
+              <div
+                key={variant.product_variant_id}
+                className="hover:shadow-md relative max-w-[332px] h-[450px] border-2 transition"
+              >
+                <div className="relative h-72 overflow-hidden">
+                  <img
+                    src={
+                      variant.variantImages?.[0]?.image_url ||
+                      "/assets/images/products/Oats.png"
+                    }
+                    className="w-full h-full object-cover"
+                  />
+
+                  <button
+                    onClick={() => handleWishlist(product, variant)}
+                    className="absolute bottom-3 right-3 p-2 rounded-full bg-white"
+                  >
+                    <Heart
+                      className={`w-6 h-6 ${
+                        wishlistState[variant.product_variant_id]
+                          ? "fill-[#077D40] text-[#077D40]"
+                          : "text-gray-600"
+                      }`}
+                    />
+                  </button>
+                </div>
+
+                <div className="p-4">
+                  <h3 className="font-semibold">
+                    {variant.productVariantName}
+                  </h3>
+                  <p>{variant.weight}</p>
+                  <p className="font-semibold">Rs. {variant.salePrice}</p>
+                </div>
+
+                <div className="absolute bottom-0 left-0 right-0">
+                  <button
+                    disabled={variant.quantity === 0}
+                    onClick={() =>
+                      handleAdd(
+                        {
+                          ...product,
+                          product_variant_id: variant.product_variant_id,
+                        },
+                        0
+                      )
+                    }
+                    className={`w-full h-[45px] border transition-all duration-300 font-medium
+                      ${
+                        variant.quantity === 0
+                          ? "bg-[#077D40] text-white scale-95"
+                          : "bg-white text-gray-700 border-gray-300 hover:bg-[#077D40] hover:text-white hover:border-[#077D40]"
+                      }`}
+                  >
+                    {addedProductId === variant.product_variant_id
+                      ? "Added ✓"
+                      : "Add to Cart"}
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="mt-[100px]">
         <FooterTwo />
       </div>
-      <ToastContainer position="bottom-right" autoClose={3000} />
+      <ToastContainer position="top-right" autoClose={3000} />
     </div>
   );
 };
