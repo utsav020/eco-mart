@@ -224,7 +224,13 @@ const CartMain = () => {
                   >
                     <ChevronUp />
                   </button>
-                  <span>{item.quantity}</span>
+
+                  <input
+                    type="number"
+                    value={item.quantity}
+                    min={0}
+                  />
+
                   <button
                     onClick={() =>
                       item.quantity > 1 &&
