@@ -22,6 +22,7 @@ interface OrderSummary {
   pending_orders: number;
   cancelled_orders: number;
   Shipped_orders: number;
+  Delivered_orders: number;
 }
 
 const SUMMARY_API = "https://ekomart-backend.onrender.com/api/adminorder/orders-summary";
@@ -85,6 +86,17 @@ function DemoContent() {
             </div>
             <h1 className="text-2xl py-5 font-bold text-[#16A34A] mt-2">
               {loading ? "--" : `₹${summary?.delivered_revenue}`}
+            </h1>
+          </div>
+
+          {/* Delivered Revenue */}
+          <div className="bg-green-50 border border-green-200 rounded-xl p-5">
+            <div className="flex items-center gap-3">
+              <CheckCircle className="w-6 h-6 text-green-600" />
+              <p className="rext-md text-[#16A34A]">Delivered Orders</p>
+            </div>
+            <h1 className="text-2xl py-5 font-bold text-[#16A34A] mt-2">
+              {loading ? "--" : `${summary?.Delivered_orders}`}
             </h1>
           </div>
 

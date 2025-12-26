@@ -1,269 +1,3 @@
-// "use client";
-
-// import { SetStateAction, useEffect, useState } from "react";
-// import { useRouter } from "next/navigation";
-// import { api } from "../../dashboard/lib/api";
-// // import { Category, Variant } from "@/types/product";
-// import {
-//   Plus,
-//   Trash2,
-//   AlertCircle,
-// } from "lucide-react";
-// import { API_BASE_URL } from "@/lib/api";
-// import axios from "axios";
-
-// export interface Category {
-//   category_id: number;
-//   categoryName: string;
-// }
-
-// export interface Variant {
-//   productVariantName: string;
-//   regularPrice: string;
-//   salePrice: string;
-//   weights: string;
-//   quantity: string;
-//   is_default: boolean;
-//   images: File[];
-// }
-
-// export default function AddProductPage() {
-//   const router = useRouter();
-
-//   const [categories, setCategories] = useState<Category[]>([]);
-//   const [loading, setLoading] = useState(false);
-//   const [error, setError] = useState("");
-
-//   const [formData, setFormData] = useState({
-//     category_id: "",
-//     productName: "",
-//     description: "",
-//     regularPrice: "",
-//     salePrice: "",
-//     quantity: "",
-//     has_variants: "",
-//     productImages: [] as File[],
-//     variants: [] as Variant[],
-//   });
-
-//   /* ---------------- FETCH CATEGORIES ---------------- */
-//   useEffect(() => {
-//     const fetchCategories = async () => {
-//       try {
-//         const res = await axios.get(
-//           `${API_BASE_URL}/api/categories/getallcategory`
-//         );
-//         setCategories(res.data?.categories || res.data || []);
-//       } catch {
-//         setError("Failed to load categories");
-//       }
-//     };
-//     fetchCategories();
-//   }, []);
-
-//   /* ---------------- ADD VARIANT ---------------- */
-//   const addVariant = () => {
-//     setFormData(prev => ({
-//       ...prev,
-//       has_variants: "1",
-//       variants: [
-//         ...prev.variants,
-//         {
-//           productVariantName: "",
-//           regularPrice: "",
-//           salePrice: "",
-//           weights: "",
-//           quantity: "",
-//           is_default: prev.variants.length === 0,
-//           images: [],
-//         },
-//       ],
-//     }));
-//   };
-
-//   /* ---------------- REMOVE VARIANT ---------------- */
-//   const removeVariant = (index: number) => {
-//     const updated = [...formData.variants];
-//     updated.splice(index, 1);
-
-//     setFormData(prev => ({
-//       ...prev,
-//       variants: updated,
-//       has_variants: "1",
-//     }));
-//   };
-
-//   /* ---------------- SUBMIT ---------------- */
-//   const handleSubmit = async () => {
-//     try {
-//       setLoading(true);
-//       setError("");
-
-//       const payload = new FormData();
-
-//       payload.append("category_id", formData.category_id);
-//       payload.append("productName", formData.productName);
-//       payload.append("description", formData.description);
-//       payload.append("regularPrice", formData.regularPrice);
-//       payload.append("salePrice", formData.salePrice);
-//       payload.append("quantity", formData.quantity);
-//       payload.append("has_variants", String(formData.has_variants));
-
-//       formData.productImages.forEach(img =>
-//         payload.append("productImages", img)
-//       );
-
-//       payload.append("variants", JSON.stringify(
-//         formData.variants.map(v => ({
-//           productVariantName: v.productVariantName,
-//           regularPrice: v.regularPrice,
-//           salePrice: v.salePrice,
-//           weights: v.weights,
-//           quantity: v.quantity,
-//           is_default: v.is_default ? 1 : 0,
-//         }))
-//       ));
-
-//       formData.variants.forEach((v, i) =>
-//         v.images.forEach((img: string | Blob) =>
-//           payload.append(`variantImages_${i}`, img)
-//         )
-//       );
-
-//       await axios.post(`${API_BASE_URL}/api/product/addproduct`, payload);
-//       router.push("/dashboard/product-list");
-//     } catch (err) {
-//       setError("Failed to add product");
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   /* ---------------- UI ---------------- */
-//   return (
-//     <div className="max-w-5xl mx-auto p-6">
-//       <h1 className="text-2xl font-bold mb-6">Add Product</h1>
-
-//       {error && (
-//         <div className="flex gap-2 text-red-600 mb-4">
-//           <AlertCircle size={18} /> {error}
-//         </div>
-//       )}
-
-//       {/* BASIC INFO */}
-//       <div className="grid grid-cols-2 gap-4">
-//         <select
-//           className="border p-2"
-//           onChange={e => setFormData({ ...formData, category_id: e.target.value })}
-//         >
-//           <option value="">Select Category</option>
-//           {categories.map(cat => (
-//             <option key={cat.category_id} value={cat.category_id}>
-//               {cat.categoryName}
-//             </option>
-//           ))}
-//         </select>
-
-//         <input
-//           className="border p-2"
-//           placeholder="Product Name"
-//           onChange={e => setFormData({ ...formData, productName: e.target.value })}
-//         />
-
-//         <input
-//           className="border p-2"
-//           placeholder="Regular Price"
-//           onChange={e => setFormData({ ...formData, regularPrice: e.target.value })}
-//         />
-
-//         <input
-//           className="border p-2"
-//           placeholder="Sale Price"
-//           onChange={e => setFormData({ ...formData, salePrice: e.target.value })}
-//         />
-
-//         <input
-//           className="border p-2"
-//           placeholder="Quantity"
-//           onChange={e => setFormData({ ...formData, quantity: e.target.value })}
-//         />
-//       </div>
-
-//   {/* ADD VARIANT BUTTON */}
-//   <button
-//     onClick={addVariant}
-//     className="flex items-center gap-2 mt-6 text-blue-600"
-//   >
-//     <Plus size={18} /> Add Variant
-//   </button>
-
-//       {/* VARIANTS */}
-//       {formData.variants.map((variant, index) => (
-//         <div key={index} className="border p-4 mt-4 rounded">
-//   <div className="flex justify-between mb-2">
-//     <h3 className="font-semibold">Variant {index + 1}</h3>
-//     <Trash2
-//       className="cursor-pointer text-red-500"
-//       onClick={() => removeVariant(index)}
-//     />
-//   </div>
-
-//           <div className="grid grid-cols-2 gap-3">
-//             <input
-//               className="border p-2"
-//               placeholder="Variant Name"
-//               onChange={e => {
-//                 const updated = [...formData.variants];
-//                 updated[index].productVariantName = e.target.value;
-//                 setFormData({ ...formData, variants: updated });
-//               }}
-//             />
-
-//             <input
-//               className="border p-2"
-//               placeholder="Weight"
-//               onChange={e => {
-//                 const updated = [...formData.variants];
-//                 updated[index].weights = e.target.value;
-//                 setFormData({ ...formData, variants: updated });
-//               }}
-//             />
-
-//             <input
-//               className="border p-2"
-//               placeholder="Regular Price"
-//               onChange={e => {
-//                 const updated = [...formData.variants];
-//                 updated[index].regularPrice = e.target.value;
-//                 setFormData({ ...formData, variants: updated });
-//               }}
-//             />
-
-//             <input
-//               className="border p-2"
-//               placeholder="Sale Price"
-//               onChange={e => {
-//                 const updated = [...formData.variants];
-//                 updated[index].salePrice = e.target.value;
-//                 setFormData({ ...formData, variants: updated });
-//               }}
-//             />
-//           </div>
-//         </div>
-//       ))}
-
-//       {/* SUBMIT */}
-//       <button
-//         disabled={loading}
-//         onClick={handleSubmit}
-//         className="mt-8 bg-black text-white px-6 py-2 rounded"
-//       >
-//         {loading ? "Saving..." : "Add Product"}
-//       </button>
-//     </div>
-//   );
-// }
-
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -392,7 +126,6 @@ const AddProductPage = () => {
       payload.append("description", formData.description);
       payload.append("regularPrice", formData.regularPrice);
       payload.append("salePrice", formData.salePrice);
-      payload.append("weight", formData.Weight)
       payload.append("quantity", formData.quantity);
       payload.append("has_variants", String(formData.has_variants));
 
@@ -432,28 +165,22 @@ const AddProductPage = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-between">
-          <div className="">
-            <button
-              onClick={() => router.back()}
-              className="flex items-center text-gray-600 mb-4"
-            >
-              <ArrowLeft className="mr-2" /> Back
-            </button>
+        <button
+          onClick={() => router.back()}
+          className="flex items-center text-gray-600 mb-4"
+        >
+          <ArrowLeft className="mr-2" /> Back
+        </button>
 
-            <h1 className="text-3xl font-bold mb-6">Add New Product</h1>
-          </div>
+        <h1 className="text-3xl font-bold mb-6">Add New Product</h1>
 
-          {/* ADD VARIANT BUTTON */}
-          <div className="bg-black w-60 h-15 flex items-center hover:bg-white rounded-md justify-center">
-            <button
-              onClick={addVariant}
-              className="flex items-center justify-center hover:text-green-600 gap-2 border-2 text-white font-medium"
-            >
-              <Plus size={18} /> Add Variant
-            </button>
-          </div>
-        </div>
+        {/* ADD VARIANT BUTTON */}
+        <button
+          onClick={addVariant}
+          className="flex items-center gap-2 mt-6 text-blue-600"
+        >
+          <Plus size={18} /> Add Variant
+        </button>
 
         {errorMsg && (
           <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded flex gap-2">
@@ -596,8 +323,7 @@ const AddProductPage = () => {
                     <Scale className="h-8 w-8 text-gray-400" />
                   </div>
                   <input
-                    type="text"
-                    id="weight"
+                    id="weights"
                     value={formData.Weight}
                     onChange={handleChange}
                     className="pl-10 w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
@@ -780,11 +506,9 @@ const AddProductPage = () => {
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex gap-5">
                         <div className="w-8 h-8 mt-6 rounded-lg bg-blue-100 flex items-center justify-center">
-                          <div className="">
-                            <p className="text-blue-700 pt-0.5 font-medium">
-                              {index + 1}
-                            </p>
-                          </div>
+                          <p className="text-blue-700 pt-0.5 font-medium">
+                            {index + 1}
+                          </p>
                         </div>
                         <div className="">
                           <h3 className="font-medium text-gray-900">
@@ -796,13 +520,6 @@ const AddProductPage = () => {
                             )}
                           </h3>
                         </div>
-                      </div>
-
-                      <div className="flex justify-between mb-2">
-                        <Trash2
-                          className="cursor-pointer text-red-500"
-                          onClick={() => removeVariant(index)}
-                        />
                       </div>
 
                       {formData.variants.length > 1 && (

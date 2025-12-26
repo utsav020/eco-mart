@@ -35,7 +35,6 @@ const STATUSES = [
 
 export default function OrdersOverviewPage() {
   const router = useRouter();
-
   const [orders, setOrders] = useState<OrderRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -89,6 +88,27 @@ export default function OrdersOverviewPage() {
         return "bg-green-50 text-green-700 border-green-300";
       case "Cancelled":
         return "bg-red-50 text-red-700 border-red-300";
+      default:
+        return "bg-gray-50 text-gray-700 border-gray-300";
+    }
+  };
+
+  const getPaymentClass = (method: string) => {
+    switch (method?.toLowerCase()) {
+      case "cod":
+      case "cash on delivery":
+        return "bg-orange-50 text-orange-700 border-orange-300";
+      case "razorpay":
+      case "online":
+        return "bg-green-50 text-green-700 border-green-300";
+      case "upi":
+        return "bg-purple-50 text-purple-700 border-purple-300";
+      case "card":
+      case "credit card":
+      case "debit card":
+        return "bg-blue-50 text-blue-700 border-blue-300";
+      case "wallet":
+        return "bg-pink-50 text-pink-700 border-pink-300";
       default:
         return "bg-gray-50 text-gray-700 border-gray-300";
     }
@@ -158,9 +178,16 @@ export default function OrdersOverviewPage() {
       name: "Payment",
       selector: (row) => row.payment_method,
       cell: (row) => (
-        <span className="text-blue-600 font-medium">{row.payment_method}</span>
+        <span
+          className={`px-3 py-1 rounded-full text-[13px] font-medium border whitespace-nowrap ${getPaymentClass(
+            row.payment_method
+          )}`}
+        >
+          {row.payment_method}
+        </span>
       ),
     },
+
     {
       name: "Status",
       cell: (row) => (
@@ -197,7 +224,7 @@ export default function OrdersOverviewPage() {
 
   /* ---------------- SEARCH ---------------- */
   const filteredOrders = orders.filter((order) =>
-    `${order.order_id} ${order.user_name} ${order.user_email} ${order.order_status} ${order.total_amount} ${order.payment_method} ${order.shipping_details}` 
+    `${order.order_id} ${order.user_name} ${order.user_email} ${order.order_status} ${order.total_amount} ${order.payment_method} ${order.shipping_details}`
       .toLowerCase()
       .includes(search.toLowerCase())
   );
