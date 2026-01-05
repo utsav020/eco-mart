@@ -218,11 +218,12 @@ const CartMain = () => {
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() =>
-                      updateQuantity(item.cart_id, item.quantity + 1)
+                      item.quantity > 1 &&
+                      updateQuantity(item.cart_id, item.quantity - 1)
                     }
                     className="text-gray-600"
                   >
-                    <ChevronUp />
+                    <ChevronDown />
                   </button>
 
                   <input
@@ -233,12 +234,12 @@ const CartMain = () => {
 
                   <button
                     onClick={() =>
-                      item.quantity > 1 &&
-                      updateQuantity(item.cart_id, item.quantity - 1)
+                      
+                      updateQuantity(item.cart_id, item.quantity + 1)
                     }
                     className="text-gray-600"
                   >
-                    <ChevronDown />
+                    <ChevronUp />
                   </button>
                 </div>
 

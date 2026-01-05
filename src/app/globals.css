@@ -374,3 +374,17 @@ h1, h2, h3, h4, h5, h6 {
     transform: translateX(-50%);
   }
 }
+
+
+
+
+@media print {
+  body {
+    background: white;
+  }
+  .print\:hidden {
+    display: none !important;
+  }
+}
+
+

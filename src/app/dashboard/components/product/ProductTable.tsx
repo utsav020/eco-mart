@@ -532,7 +532,7 @@ import ProductViewModal from "./ProductViewModal";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-/* ---------------- TYPES ---------------- */
+/* TYPES */
 
 interface Variant {
   product_variant_id: number;
@@ -568,7 +568,7 @@ interface TableRow {
   hasVariants: boolean;
 }
 
-/* ---------------- COMPONENT ---------------- */
+/* COMPONENT */
 
 const ProductTable = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -578,8 +578,7 @@ const ProductTable = () => {
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
-  /* ---------------- FETCH ---------------- */
-
+  /* FETCH */
   const fetchAllProducts = async () => {
     try {
       setIsLoading(true);
@@ -597,8 +596,6 @@ const ProductTable = () => {
     fetchAllProducts();
   }, []);
 
-  /* ---------------- HELPERS ---------------- */
-
   // Stock status
   const getStatus = (quantity: string | number | null): string => {
     const qty = parseInt(quantity as string) || 0;
@@ -607,8 +604,7 @@ const ProductTable = () => {
     return "in-stock";
   };
 
-  /* ---------------- TABLE DATA (ONLY PRODUCTS) ---------------- */
-
+  /* TABLE DATA (ONLY PRODUCTS) */
   const tableData: TableRow[] = products.map((p) => ({
     product_id: p.product_id,
     name: p.productName,
@@ -620,8 +616,7 @@ const ProductTable = () => {
     hasVariants: !!p.has_variants,
   }));
 
-  /* ---------------- COLUMNS ---------------- */
-
+  /* COLUMNS */
   const columns: TableColumn<TableRow>[] = [
     {
       name: "PRODUCT NAME",
@@ -777,8 +772,7 @@ const ProductTable = () => {
     },
   ];
 
-  /* ---------------- FILTERS ---------------- */
-
+  /* FILTERS */
   const filteredItems = tableData.filter(
     (item) =>
       item.name.toLowerCase().includes(filterText.toLowerCase()) ||
@@ -800,7 +794,7 @@ const ProductTable = () => {
     selectedStatus === "all"
       ? filteredItems
       : filteredItems.filter((item) => item.status === selectedStatus);
-  /* ---------------- UI ---------------- */
+  /* UI */
 
   return (
     <div className="p-6 min-h-screen">
@@ -870,14 +864,6 @@ const ProductTable = () => {
       </div>
 
       {/* Search */}
-      {/* <div className="bg-white p-4 rounded-xl mb-4 border">
-        <input
-          placeholder="Search product..."
-          className="w-full border p-3 rounded"
-          value={filterText}
-          onChange={(e) => setFilterText(e.target.value)}
-        />
-      </div> */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {/* Status Filter */}
@@ -942,13 +928,14 @@ const ProductTable = () => {
               {selectedStatus === "in-stock" && "In Stock"}
               {selectedStatus === "low-stock" && "Low Stock"}
               {selectedStatus === "out-of-stock" && "Out of Stock"}
-
-              <button
-                onClick={() => setSelectedStatus("all")}
-                className="hover:text-blue-600"
-              >
-                ×
-              </button>
+              <div>
+                <button
+                  onClick={() => setSelectedStatus("all")}
+                  className="hover:text-blue-600"
+                >
+                  ×
+                </button>
+              </div>
             </div>
           </div>
         )}
@@ -971,7 +958,18 @@ const ProductTable = () => {
         />
       )}
 
-      <ToastContainer position="top-right" autoClose={2000} theme="colored" />
+      {/* TOST */}
+      <ToastContainer
+        position="top-right"
+        autoClose={2000}
+        theme="light"
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </div>
   );
 };

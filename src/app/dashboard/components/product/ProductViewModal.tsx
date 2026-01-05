@@ -122,7 +122,7 @@ const ProductViewModal: React.FC<Props> = ({ product, onClose }) => {
         </div>
 
         {/* Content */}
-        <div className="p-8 overflow-y-auto max-h-[70vh] custom-scrollbar space-y-8">
+        <div className="p-8 overflow-y-auto max-h-[70vh] custom-scrollbar scrollbar-hide   space-y-8">
           {/* Product Images Gallery */}
           {product.images && product.images.length > 0 && (
             <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100">
@@ -159,7 +159,7 @@ const ProductViewModal: React.FC<Props> = ({ product, onClose }) => {
           {/* Key Information Cards */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Pricing Card */}
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-100">
+            <div className="bg-linear-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-100">
               <div className="flex items-center space-x-3 mb-4">
                 <div className="bg-blue-500 p-2 rounded-lg">
                   <Tag size={20} className="text-white" />
@@ -217,7 +217,7 @@ const ProductViewModal: React.FC<Props> = ({ product, onClose }) => {
             </div>
 
             {/* Stock & Details Card */}
-            <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 border border-green-100">
+            <div className="bg-linear-to-br from-green-50 to-emerald-50 rounded-2xl p-6 border border-green-100">
               <div className="flex space-x-3 h-[70px] mb-4">
                 <div className="bg-green-500 p-2 h-[30px] rounded-lg">
                   <Package size={20} className="text-white" />
@@ -296,7 +296,7 @@ const ProductViewModal: React.FC<Props> = ({ product, onClose }) => {
           {product.has_variants && product.variants && (
             <div className="rounded-2xl p-6 border border-orange-100">
               <div className="flex space-x-3 h-[50px] mb-6">
-                <div className="bg-orange-500 mt-[10px] h-[30px] p-2 rounded-lg">
+                <div className="bg-orange-500 mt-2.5 h-[30px] p-2 rounded-lg">
                   <Layers size={20} className="text-white" />
                 </div>
                 <div>
